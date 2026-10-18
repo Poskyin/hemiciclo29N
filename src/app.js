@@ -290,6 +290,18 @@ function renderEncuestas(){
     <label class="toggle"><input type="checkbox" id="cis-tog" ${includeCIS?"checked":""}> Incluir el CIS en la media</label>
   </div>
   <div class="tiles">${MAIN6.slice().sort((a,b)=>A.avg[b]-A.avg[a]).map(k=>`<div class="tile" style="--pc:${color(k)}"><div class="small" style="font-weight:600">${esc(sname(k))}</div><div class="n num">${fmt(A.avg[k])}<span style="font-size:20px">%</span></div><div class="d">2023: ${P[k].r23?fmt(P[k].r23[0])+"%":"—"}</div></div>`).join("")}</div>
+  <section class="panel stack minw0">
+    <div class="row" style="justify-content:space-between; align-items:flex-end"><div><span class="eyebrow">Encuestas en escaños</span><h3 style="margin-top:6px">Cada encuesta, en el Congreso</h3></div>
+      <label class="toggle"><input type="checkbox" id="seat-all" ${seatRowsAll?"checked":""}> Mostrar también las anteriores al 1 de octubre</label></div>
+    <div class="seat-legend">${SEAT_ORDER.filter(k=>MODEL_PARTIES.includes(k)).map(k=>`<span><i class="sq" style="background:${color(k)}"></i>${esc(sname(k))}</span>`).join("")}</div>
+    <div class="seat-rows" id="seat-rows"></div>
+    <p class="small muted">Los 350 escaños, ordenados de izquierda a derecha. La línea central marca la mitad de la cámara: quien la cruza llega a la mayoría absoluta (176). Escaños calculados con nuestro modelo a partir de cada encuesta, para compararlas con el mismo método; los que publica cada encuestadora están en la tabla de abajo.</p>
+  </section>
+  <section class="panel stack minw0">
+    <div><span class="eyebrow">Partido a partido</span><h3 style="margin-top:6px">Qué le da cada encuestadora</h3></div>
+    <div class="party-pick" id="pb-pick" role="group" aria-label="Partido">${MAIN6.concat(["ERC","JUNTS","BILDU","PNV"]).map(k=>`<button class="chip" data-pb="${k}" aria-pressed="${k===pollParty}"><i class="dot" style="background:${color(k)}"></i>${esc(sname(k))}</button>`).join("")}</div>
+    <div id="party-bars"></div>
+  </section>
   <section class="panel stack">
     <h3>Evolución en 2026</h3>
     <div id="trend"></div>
@@ -308,6 +320,9 @@ function renderEncuestas(){
     <p class="small muted">«Nuestro modelo» aplica cada encuesta a los resultados de 2023 por provincia; donde la encuesta no da dato de partidos pequeños se usa su media. «+C.» es Compromís cuando la encuesta lo da aparte: en la media lo sumamos al Frente Amplio, porque el modelo pasa ese voto a Compromís-Front Valencià en la C. Valenciana. Las reestimaciones de los datos del CIS se muestran pero no entran en la media. Pulsa para abrirla en el simulador. Otro sondeo, el de Wintston para Artículo14 (29 sep.–1 oct.), solo publicó bloques: PP y Vox 204 escaños; PSOE y Sumar 112.</p>
   </section>`;
   $("#cis-tog").addEventListener("change", e => { includeCIS = e.target.checked; renderEncuestas(); });
+  $("#seat-all").addEventListener("change", e => { seatRowsAll = e.target.checked; renderSeatRows(); });
+  $$("#pb-pick .chip").forEach(b => b.addEventListener("click", ()=>{ pollParty = b.dataset.pb; $$("#pb-pick .chip").forEach(c=>c.setAttribute("aria-pressed", c===b?"true":"false")); renderPartyBars(); }));
+  renderSeatRows(); renderPartyBars();
   $$("[data-load]", v).forEach(b => b.addEventListener("click", ()=>{ loadPreset("poll:"+b.dataset.load); renderEscanos(); show("escanos", true); }));
   renderTrend();
 }
@@ -328,6 +343,51 @@ function renderTrend(){
   ends.sort((a,b)=>a.y-b.y); for (let i=1;i<ends.length;i++) if (ends[i].y - ends[i-1].y < 13) ends[i].y = ends[i-1].y + 13;
   ends.forEach(e => { s += `<text x="${W-Rr+8}" y="${(e.y+4).toFixed(1)}" font-size="12" font-weight="700" style="fill:var(--ink)"><tspan fill="${color(e.k)}">●</tspan> ${esc(sname(e.k))} ${fmt(e.v)}</text>`; });
   $("#trend").innerHTML = s + "</svg>";
+}
+
+
+/* ---------- Encuestas: escaños en barra y barras por encuestadora ---------- */
+let seatRowsAll = false, pollParty = "PP";
+function tipOn(root){
+  let tip = $("#viz-tip"); if (!tip) { tip = document.createElement("div"); tip.id = "viz-tip"; tip.className = "viz-tip"; tip.hidden = true; document.body.appendChild(tip); }
+  $$("[data-tip]", root).forEach(el => {
+    const showT = e => { tip.innerHTML = el.dataset.tip; tip.hidden = false; const r = el.getBoundingClientRect(); const x = (e && e.clientX!=null) ? e.clientX : r.left + r.width/2; const tw = tip.offsetWidth; tip.style.left = Math.max(8, Math.min(window.innerWidth - tw - 8, x - tw/2)) + "px"; tip.style.top = (r.top + window.scrollY - tip.offsetHeight - 8) + "px"; };
+    el.addEventListener("mousemove", showT); el.addEventListener("mouseenter", showT); el.addEventListener("focus", showT);
+    el.addEventListener("mouseleave", ()=> tip.hidden = true); el.addEventListener("blur", ()=> tip.hidden = true);
+  });
+}
+function seatBar(t, label){
+  const ks = SEAT_ORDER.filter(k => t[k] > 0);
+  return `<div class="seatbar" role="img" aria-label="${esc(label)}: ${ks.map(k=>`${sname(k)} ${t[k]}`).join(", ")}">${ks.map(k=>{ const w = t[k]/350*100; const dark = isDark(color(k)); return `<i tabindex="0" style="width:${w.toFixed(3)}%;background:${color(k)}" data-tip="<b>${esc(sname(k))}</b> ${t[k]} escaños<br><span>${esc(label)}</span>">${t[k]>=18?`<span style="color:${dark?"#fff":"#15171C"}">${t[k]}</span>`:""}</i>`; }).join("")}<span class="seatbar-maj" aria-hidden="true"></span></div>`;
+}
+function isDark(hex){ const h = hex.replace("#",""); const r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16); return (0.299*r + 0.587*g + 0.114*b) < 150; }
+function renderSeatRows(){
+  const el = $("#seat-rows"); if (!el) return;
+  const A = average(includeCIS), avgT = simulate(A.avg).totals;
+  const polls = POLLS.slice().sort((a,b)=>b.d.localeCompare(a.d)).filter(p => seatRowsAll || p.d >= "2026-10-01");
+  const row = (name, sub, t, cls) => { const right = (t.PP||0) + (t.VOX||0); return `<div class="seat-row ${cls||""}"><div class="sr-name"><b>${esc(name)}</b><span>${esc(sub)}</span></div>${seatBar(t, name+(sub?" · "+sub:""))}<div class="sr-sum" title="PP + Vox"><b class="num">${right}</b><span>PP+Vox</span></div></div>`; };
+  el.innerHTML = row("Media", `${A.n} encuestas${includeCIS?" con CIS":""}`, avgT, "avg") + polls.map(p => row(p.firm, dateLabel(p.d) + (p.cis ? " · CIS" : p.out ? " · reestimación" : ""), simulate(pollTargets(p)).totals, p.cis||p.out ? "out" : "")).join("");
+  tipOn(el);
+}
+function renderPartyBars(){
+  const el = $("#party-bars"); if (!el) return;
+  const k = pollParty, set = latestPerFirm(true).filter(p => p[k] != null || (k==="FA" && p.FA != null));
+  const val = p => k==="FA" ? p.FA + (p.CFV||0) : p[k];
+  const rows = set.map(p => ({p, v: val(p)})).filter(r => r.v != null).sort((a,b)=>b.v-a.v);
+  if (!rows.length) { el.innerHTML = `<p class="muted small">Ninguna encuestadora reciente da dato de ${esc(sname(k))}.</p>`; return; }
+  const A = average(false).avg[k], r23 = P[k].r23 ? P[k].r23[0] : null;
+  const max = Math.max(...rows.map(r=>r.v), A||0, r23||0) * 1.12;
+  const x = v => (v/max*100).toFixed(2) + "%";
+  const refL = (v, cls) => `<b class="ref ${cls}" style="left:${x(v)}"></b>`;
+  const lab = (v, txt, cls) => { const pos = v/max*100; return `<span class="ref-lab ${cls}" style="left:${pos.toFixed(2)}%;${pos>70?"transform:translateX(-100%)":""}">${txt}</span>`; };
+  const refs = (A?refL(A,"avg"):"") + (r23?refL(r23,"r23"):"");
+  el.innerHTML = `<div class="pbars" style="--pc:${color(k)}">
+    <div class="pbar pb-head" aria-hidden="true"><span class="pb-name"></span><span class="pb-track">${A?lab(A,`Media ${fmt(A)}%`,"avg"):""}${refs}</span></div>
+    ${rows.map(({p,v})=>`<div class="pbar${p.cis?" cis":""}"><span class="pb-name">${esc(p.firm)}<small>${dateLabel(p.d)}${p.cis?" · CIS":""}</small></span><span class="pb-track">${refs}<i tabindex="0" style="width:${x(v)}" data-tip="<b>${esc(p.firm)}</b>${p.media?" · "+esc(p.media):""}<br>${esc(sname(k))}: ${fmt(v)}%${k==="FA"&&p.CFV?` (incl. Compromís ${fmt(p.CFV)})`:""}"></i><em class="num">${fmt(v)}%</em></span></div>`).join("")}
+    <div class="pbar pb-head" aria-hidden="true"><span class="pb-name"></span><span class="pb-track">${r23?lab(r23,`2023: ${fmt(r23)}%`,"r23"):""}${refs}</span></div>
+  </div>
+  <p class="small muted">Última encuesta de cada empresa desde el 1 de septiembre. La línea continua es la media (sin CIS) y la discontinua, el resultado de 2023${k==="FA"?"; para el Frente Amplio sumamos Compromís cuando la encuesta lo da aparte":""}.</p>`;
+  tipOn(el);
 }
 
 /* ---------- ESCAÑOS / SIMULADOR ---------- */
