@@ -10,6 +10,5 @@ Web informativa sobre las elecciones generales del 29 de noviembre de 2026: prog
   - `app.js`, `style.css` y `template.html`: interfaz.
 - **Regenerar la página:** `python3 build.py --site`
 
-Las proyecciones de escaños son un cálculo propio a partir de encuestas publicadas: no son una encuesta ni una predicción. La sección «Pregúntale a Claude» solo funciona en la versión publicada dentro de Claude.
 
 Datos actualizados el 18 de octubre de 2026.

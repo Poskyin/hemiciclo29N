@@ -74,7 +74,8 @@ const BLOCS = [
 
 /* ---------- Vistas ---------- */
 const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
-const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"];
+const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE; // versión web independiente: sin consulta a Claude
+const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
 const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
 const parentOf = id => id==="comparar" ? "partidos" : id==="encuestas" ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
 function subnav(id){ const items = SUBNAV[parentOf(id)]; if (!items) return "";
@@ -85,7 +86,7 @@ function renderTabs(){
   $$("#tabs .tab").forEach(b => b.addEventListener("click", ()=> show(b.dataset.v, true)));
 }
 function show(id, push){
-  if (!VIEWS.some(v=>v[0]===id)) id = "resumen";
+  if (!VIEWS.some(v=>v[0]===id) || (SITE && id === "pregunta")) id = "resumen";
   $$(".view").forEach(v => v.hidden = v.id !== "v-"+id);
   if (id === "mapa") renderMapa(); else if (id === "senado") renderSenado();
   markTab(id);
@@ -113,7 +114,7 @@ function renderResumen(){
     <div class="stack">
       <span class="eyebrow">Elecciones generales · Congreso y Senado</span>
       <h1>Domingo <em>29 de noviembre</em> de 2026</h1>
-      <p class="lead">Consulta qué propone cada partido, qué dicen las encuestas, cómo se traducen en escaños y qué mayorías son posibles. Y pregunta a Claude lo que no encuentres.</p>
+      <p class="lead">Consulta qué propone cada partido, qué dicen las encuestas, cómo se traducen en escaños y qué mayorías son posibles.${SITE?"":" Y pregunta a Claude lo que no encuentres."}</p>
       <div class="hero-facts">
         <div class="fact"><b class="num">${daysLeft()}</b><span>días para votar</span></div>
         <div class="fact"><b class="num">350</b><span>diputados</span></div>
@@ -209,7 +210,7 @@ function renderPartyDetail(){
       <span class="eyebrow">En una frase</span>
       <p style="font-size:17px">${esc(g.pitch)}</p>
       ${p.note?`<p class="note">${esc(p.note)}</p>`:""}
-      <div class="row"><button class="btn" data-ask="${k}">Preguntar a Claude por ${esc(sname(k))}</button></div>
+      ${SITE?"":`<div class="row"><button class="btn" data-ask="${k}">Preguntar a Claude por ${esc(sname(k))}</button></div>`}
     </div>
   </div>
   <div class="panel prog">
@@ -227,7 +228,7 @@ function renderPartyDetail(){
     <p class="small muted">Resumen propio a partir de la fuente enlazada.</p>
   </div>`;
   $$("#doc-pick .chip").forEach(b => b.addEventListener("click", ()=>{ currentDoc=+b.dataset.d; renderPartyDetail(); }));
-  $("[data-ask]", $("#party-detail")).addEventListener("click", e => askAbout(`Resume las propuestas de ${P[e.currentTarget.dataset.ask].name} para el 29-N y en qué se diferencian de las de otros partidos.`));
+  const askB = $("[data-ask]", $("#party-detail")); if (askB) askB.addEventListener("click", e => askAbout(`Resume las propuestas de ${P[e.currentTarget.dataset.ask].name} para el 29-N y en qué se diferencian de las de otros partidos.`));
 }
 
 /* ---------- COMPARAR ---------- */
@@ -794,11 +795,12 @@ function renderCalendario(){
 function goLinks(){ document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { if (g.dataset.mapmode) mapMode = g.dataset.mapmode; show(g.dataset.go, true); } }); }
 function boot(){
   renderTabs(); renderCount(); goLinks();
-  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderEscanos(); renderPregunta(); renderCalendario();
+  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
   const h = (location.hash||"").replace("#","");
   show(h || "resumen", false);
   window.addEventListener("hashchange", ()=> show((location.hash||"").replace("#",""), false));
-  if (window.claude && typeof window.claude.use === "function") {
+  if (SITE) { const s = $("#v-pregunta"); if (s) s.remove(); }
+  else if (window.claude && typeof window.claude.use === "function") {
     window.claude.use("sample").then(fn => { sampleFn = fn || null; if (!fn) { const n=$("#chat-note"); if (n) n.innerHTML = "<b>La consulta a Claude solo funciona al abrir esta página dentro de Claude.</b> El resto de la web funciona igual."; } }).catch(()=>{ sampleFn = null; });
   } else { const n=$("#chat-note"); if (n) n.innerHTML = "<b>La consulta a Claude solo funciona al abrir esta página dentro de Claude.</b> El resto de la web funciona igual."; }
 }
