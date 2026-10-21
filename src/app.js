@@ -73,11 +73,11 @@ const BLOCS = [
 ];
 
 /* ---------- Vistas ---------- */
-const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
+const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
 const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE; // versión web independiente: sin consulta a Claude
 const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
-const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
-const parentOf = id => id==="comparar" ? "partidos" : id==="encuestas" ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
+const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
+const parentOf = id => id==="comparar" ? "partidos" : (id==="encuestas"||id==="grupos") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
 function subnav(id){ const items = SUBNAV[parentOf(id)]; if (!items) return "";
   return `<nav class="subnav" aria-label="Apartados">${items.map(([v,l,mm])=>`<button class="subtab" data-go="${v}"${mm?` data-mapmode="${mm}"`:""} aria-pressed="${v===id}">${l}</button>`).join("")}</nav>`; }
 function markTab(id){ const p = parentOf(id); $$("#tabs .tab").forEach(b => b.setAttribute("aria-selected", b.dataset.v===p ? "true":"false")); }
@@ -139,7 +139,7 @@ function renderResumen(){
     <div class="panel stack">
       <span class="eyebrow">Estimación de voto · media desde el 1 de sept.</span>
       <div class="bars">${order.map(k=>`<div class="bar"><span class="nm"><i class="dot" style="background:${color(k)}"></i>${esc(sname(k))}</span><span class="tr"><i style="width:${(avg[k]/maxV*100).toFixed(1)}%;background:${color(k)}"></i></span><span class="v num">${fmt(avg[k])}%</span></div>`).join("")}</div>
-      <p class="small muted">Última encuesta de cada empresa publicada desde el 1 de septiembre. Datos a ${UPDATED}. <button class="linkbtn" data-go="encuestas">Ver todas las encuestas</button></p>
+      <p class="small muted">Última encuesta de cada empresa publicada desde el 1 de septiembre. Datos a ${UPDATED}. <button class="linkbtn" data-go="encuestas">Ver todas las encuestas</button> · <button class="linkbtn" data-go="grupos">Voto por edad, sexo y profesión</button></p>
     </div>
     <div class="panel stack">
       <span class="eyebrow">¿Quién suma 176? · con la proyección media</span>
@@ -345,6 +345,51 @@ function renderTrend(){
   $("#trend").innerHTML = s + "</svg>";
 }
 
+
+/* ---------- Voto por grupos ---------- */
+let groupSrc = "cis", groupDim = "sexo";
+function renderGrupos(){
+  const v = $("#v-grupos");
+  const S = GROUPS.sources.find(x=>x.id===groupSrc) || GROUPS.sources[0], ks = S.parties;
+  const dim = S.dims.find(d=>d.id===groupDim) || S.dims[0];
+  const lead = r => { let b=-1; ks.forEach((k,i)=>{ const x=r[i+2]; if (x!=null && (b<0 || x>r[b+2])) b=i; }); return b; };
+  const rest = r => Math.max(0, 100 - ks.reduce((a,k,i)=>a+(r[i+2]||0),0));
+  const bar = (r, isTot) => { const t = lead(r);
+    const segs = ks.map((k,i)=>{ const val = r[i+2]; if (!val) return ""; const d = isTot ? null : val - S.total[i+2];
+      const tip = `<b>${esc(r[0])}</b><br>${esc(sname(k))}: ${fmt(val)}%${d==null?"":` (${d>=0?"+":"−"}${fmt(Math.abs(d))} puntos sobre la media)`}`;
+      return `<i tabindex="0" style="width:${val}%;background:${color(k)};color:${isDark(color(k))?"#fff":"#15171C"}" data-tip="${esc(tip)}">${val>=7?`<span class="num">${fmt(val,0)}</span>`:""}</i>`; }).join("");
+    const o = rest(r);
+    return `<div class="sgrow${isTot?" sgtot":""}"><span class="gname">${esc(r[0])}<small>${r[1]?`${r[1].toLocaleString("es-ES")} entrevistas · `:""}primero: ${t<0?"—":esc(sname(ks[t]))}</small></span>
+      <span class="sgbar">${segs}${o>0.4?`<i class="sgrest" tabindex="0" style="width:${o.toFixed(1)}%" data-tip="<b>${esc(r[0])}</b><br>${esc(S.rest)}: ${fmt(o)}%">${o>=7?`<span class="num">${fmt(o,0)}</span>`:""}</i>`:""}</span></div>`; };
+  const leaders = S.dims.filter(d=>d.id!=="ideo").map(d=>{ const by = {}; d.rows.forEach(r=>{ const i = lead(r); if (i<0) return; (by[ks[i]] = by[ks[i]]||[]).push(r[0].replace(/ años$/,"")); }); return {d, by}; });
+  v.innerHTML = `${subnav("grupos")}
+  <div class="view-head"><span class="eyebrow">Congreso · Voto por grupos</span><h2>¿Quién vota a quién?</h2>
+  <p class="lead">Cómo se reparte el voto por sexo, edad, profesión, estudios, clase social, municipio, religión e ideología, según las encuestas que publican estos cruces.</p></div>
+  <div class="stack" style="gap:12px">
+    <div class="row"><span class="eyebrow" style="min-width:70px">Encuesta</span><div class="party-pick" id="g-src" role="group" aria-label="Encuesta">${GROUPS.sources.map(x=>`<button class="chip" data-src="${x.id}" aria-pressed="${x.id===S.id}">${esc(x.label)}</button>`).join("")}</div></div>
+    <div class="row"><span class="eyebrow" style="min-width:70px">Grupo</span><div class="party-pick" id="g-pick" role="group" aria-label="Grupo">${S.dims.map(d=>`<button class="chip" data-g="${d.id}" aria-pressed="${d.id===dim.id}">${esc(d.label)}</button>`).join("")}</div></div>
+  </div>
+  <section class="panel stack minw0">
+    <div class="row" style="justify-content:space-between; align-items:flex-start"><div><span class="eyebrow">${esc(S.firm)} · ${esc(S.what)}</span><h3 style="margin-top:6px">${esc(dim.label)}</h3></div>
+      <span class="small muted">Publicada el ${dateLabel(S.d)} · campo ${esc(S.field)}</span></div>
+    <div class="seat-legend">${ks.map(k=>`<span><i class="sq" style="background:${color(k)}"></i>${esc(S.id==="cis"&&k==="FA"?"Sumar/FA":sname(k))}</span>`).join("")}<span><i class="sq sgrest-sq"></i>${esc(S.rest)}</span></div>
+    <div class="sgtable">${bar(S.total, true)}${dim.rows.map(r=>bar(r,false)).join("")}</div>
+    <p class="small muted">${esc(S.note)}${dim.note?" "+esc(dim.note):""} Cuantas menos entrevistas tiene un grupo, mayor es su margen de error. Pasa el ratón o toca un tramo para ver la diferencia con la media. <a href="${esc(S.page||S.url)}" target="_blank" rel="noopener">Datos originales</a>.</p>
+  </section>
+  <section class="stack">
+    <h3>Quién va primero en cada grupo</h3>
+    <div class="grid3">${leaders.map(({d,by})=>`<div class="panel stack small"><span class="eyebrow">${esc(d.label)}</span>${ks.filter(k=>by[k]).map(k=>`<p><i class="dot" style="background:${color(k)}"></i> <b>${esc(sname(k))}</b>: ${esc(by[k].join(" · "))}</p>`).join("")}</div>`).join("")}</div>
+    <p class="small muted">Según ${S.id==="cis"?"el CIS":esc(S.firm)}. Con diferencias de uno o dos puntos el orden puede cambiar de una encuesta a otra.${S.id==="cis"?" El CIS sitúa al PSOE muy por encima del resto de encuestas en su estimación general, y eso se nota también aquí.":""}</p>
+  </section>
+  <section class="stack">
+    <h3>Otros datos por grupo</h3>
+    <div class="grid2">${GROUPS.extra.map(e=>`<div class="panel stack small"><span class="eyebrow">${esc(e.who)}</span>${e.vals?`<div class="bars">${Object.keys(e.vals).map(k=>`<div class="bar"><span class="nm"><i class="dot" style="background:${color(k)}"></i>${esc(sname(k))}</span><span class="tr"><i style="width:${(e.vals[k]/45*100).toFixed(1)}%;background:${color(k)}"></i></span><span class="v num">${fmt(e.vals[k])}%</span></div>`).join("")}</div>`:""}<p>${esc(e.note)}</p><p class="muted">Fuente: <a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.src)}</a></p></div>`).join("")}</div>
+    <p class="small muted">La mayoría de las encuestas privadas solo publican la estimación general, sin cruces por grupos.</p>
+  </section>`;
+  $$("#g-src .chip", v).forEach(b => b.addEventListener("click", ()=>{ groupSrc = b.dataset.src; renderGrupos(); }));
+  $$("#g-pick .chip", v).forEach(b => b.addEventListener("click", ()=>{ groupDim = b.dataset.g; renderGrupos(); }));
+  tipOn(v);
+}
 
 /* ---------- Encuestas: escaños en barra y barras por encuestadora ---------- */
 let seatRowsAll = false, pollParty = "PP";
@@ -855,7 +900,7 @@ function renderCalendario(){
 function goLinks(){ document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { if (g.dataset.mapmode) mapMode = g.dataset.mapmode; show(g.dataset.go, true); } }); }
 function boot(){
   renderTabs(); renderCount(); goLinks();
-  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
+  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderGrupos(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
   const h = (location.hash||"").replace("#","");
   show(h || "resumen", false);
   window.addEventListener("hashchange", ()=> show((location.hash||"").replace("#",""), false));

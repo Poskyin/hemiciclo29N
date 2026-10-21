@@ -334,6 +334,25 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
   .bar .tr i,.meter i,.pact-bar i{transition:width .35s ease}
 }
 
+/* ---------- Voto por grupos ---------- */
+.sgtable{display:flex; flex-direction:column}
+.sgrow{display:grid; grid-template-columns:minmax(150px,210px) minmax(0,1fr); gap:14px; align-items:center; padding:9px 0; border-top:1px solid var(--line)}
+.sgrow.sgtot{border-top:0}
+.sgrow.sgtot + .sgrow{border-top:2px solid var(--ink)}
+.gname{font-weight:600; font-size:14px; line-height:1.25; display:flex; flex-direction:column}
+.gname small{font-weight:400; font-size:12px; color:var(--muted)}
+.sgtot .gname{font-weight:800}
+.sgbar{display:flex; height:26px; border-radius:4px; overflow:hidden; background:var(--soft)}
+.sgbar i{display:flex; align-items:center; justify-content:center; min-width:0; font-style:normal; font-size:12px; font-weight:700; border-right:1px solid var(--card); outline-offset:-3px}
+.sgbar i:last-child{border-right:0}
+.sgbar i span{overflow:hidden; white-space:nowrap}
+.sgbar i.sgrest,.sgrest-sq{background:var(--line); color:var(--muted)}
+@media (max-width:600px){
+  .sgrow{grid-template-columns:1fr; gap:5px; padding:8px 0}
+  .sgbar{height:22px}
+  .sgbar i{font-size:11px}
+}
+
 </style>
 </head>
 <body>
@@ -351,6 +370,7 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
   <section class="view" id="v-partidos" role="tabpanel" aria-labelledby="tab-partidos" hidden></section>
   <section class="view" id="v-comparar" role="tabpanel" aria-labelledby="tab-comparar" hidden></section>
   <section class="view" id="v-encuestas" role="tabpanel" aria-labelledby="tab-encuestas" hidden></section>
+  <section class="view" id="v-grupos" role="tabpanel" aria-labelledby="tab-escanos" hidden></section>
   <section class="view" id="v-escanos" role="tabpanel" aria-labelledby="tab-escanos" hidden></section>
   <section class="view" id="v-senado" role="tabpanel" aria-labelledby="tab-senado" hidden></section>
   <section class="view" id="v-mapa" role="tabpanel" aria-labelledby="tab-mapa" hidden></section>
@@ -358,7 +378,7 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
   <section class="view" id="v-calendario" role="tabpanel" aria-labelledby="tab-calendario" hidden></section>
 </main>
 <footer>
-  <span><b>Two-Hemiciclo 29N</b> · Web informativa independiente sobre las elecciones generales del 29 de noviembre de 2026. Datos actualizados el 18 de octubre de 2026.</span>
+  <span><b>Two-Hemiciclo 29N</b> · Web informativa independiente sobre las elecciones generales del 29 de noviembre de 2026. Datos actualizados el 21 de octubre de 2026.</span>
   <span>Las proyecciones de escaños son un cálculo propio a partir de encuestas publicadas; no son una encuesta ni una predicción.</span>
 </footer>
 <script>
@@ -577,23 +597,23 @@ function dhondt(share, seats, barrier){
 }
 
 
-/* ===== Datos de la plataforma (actualizados el 18 de octubre de 2026) ===== */
-const UPDATED = "18 de octubre de 2026";
+/* ===== Datos de la plataforma (actualizados el 21 de octubre de 2026) ===== */
+const UPDATED = "21 de octubre de 2026";
 const ELECTION_DATE = "2026-11-29T09:00:00+01:00";
 
 /* Orden de izquierda a derecha para el hemiciclo */
 const SEAT_ORDER = ["POD","AA","UPC","CFV","FA","BILDU","BNG","ERC","PSOE","PNV","CC","JUNTS","UPN","PP","SALF","VOX"];
 
 const PARTIES = {
-  PP:   {name:"Partido Popular", short:"PP", color:"#1F6FC5", leader:"Alberto Núñez Feijóo", role:"Candidato a la Presidencia (lema: «Por fin»)", r23:[33.06,137], scope:"Toda España"},
+  PP:   {name:"Partido Popular", short:"PP", color:"#1F6FC5", leader:"Alberto Núñez Feijóo", role:"Candidato a la Presidencia (lema: «Por fin»; «Contrato con España»)", r23:[33.06,137], scope:"Toda España"},
   PSOE: {name:"PSOE", short:"PSOE", color:"#E0251B", leader:"Pedro Sánchez", role:"Candidato (proclamado el 17 oct.) y presidente del Gobierno", r23:[31.68,121], scope:"Toda España"},
   VOX:  {name:"Vox", short:"Vox", color:"#5BB12F", leader:"Santiago Abascal", role:"Candidato a la Presidencia", r23:[12.38,33], scope:"Toda España"},
   FA:   {name:"Frente Amplio (Sumar)", short:"Sumar/FA", color:"#E0306E", leader:"Ada Colau", role:"Candidata a la Presidencia y cabeza de lista por Barcelona", r23:[12.33,31], scope:"Toda España salvo C. Valenciana", note:"Coalición de IU, Movimiento Sumar, Comuns, Más Madrid, CHA y otros. No se presenta en la C. Valenciana (allí va Compromís-Front Valencià) y en Canarias va dentro de Unidad del Pueblo Canario. El resultado de 2023 es el de Sumar, que entonces incluía a Podemos y Compromís."},
   POD:  {name:"Podemos", short:"Podemos", color:"#6E3A8E", leader:"Irene Montero", role:"Candidata y cabeza de lista por Madrid (primarias, 90%)", r23:null, scope:"Toda España salvo Cataluña", note:"En 2023 concurrió dentro de Sumar. No se presenta en Cataluña (apoya a ERC); en la C. Valenciana va en Compromís-Front Valencià y en Canarias en Unidad del Pueblo Canario."},
   SALF: {name:"Se Acabó La Fiesta", short:"SALF", color:"#8A6A4B", leader:"Alvise Pérez", role:"Fundador y cabeza de lista por Madrid", r23:null, scope:"Toda España", note:"No se presentó en 2023. Europeas 2024: 4,6% y 3 escaños."},
-  ERC:  {name:"Esquerra Republicana", short:"ERC", color:"#F2A900", leader:"Gabriel Rufián", role:"Cabeza de lista; Podemos apoya sus listas en Cataluña", r23:[1.89,7], scope:"Cataluña"},
+  ERC:  {name:"Esquerra Republicana", short:"ERC", color:"#F2A900", leader:"Gabriel Rufián", role:"Cabeza de lista por Barcelona; Podemos apoya sus listas en Cataluña", r23:[1.89,7], scope:"Cataluña"},
   JUNTS:{name:"Junts per Catalunya", short:"Junts", color:"#1FB5A6", leader:"Míriam Nogueras", role:"Cabeza de lista por Barcelona", r23:[1.60,7], scope:"Cataluña"},
-  BILDU:{name:"EH Bildu", short:"Bildu", color:"#9DB82A", leader:"Por anunciar", role:"Mertxe Aizpurua no repite como candidata", r23:[1.36,6], scope:"País Vasco y Navarra"},
+  BILDU:{name:"EH Bildu", short:"Bildu", color:"#9DB82A", leader:"Oskar Matute", role:"Cabeza de lista por Bizkaia (Mertxe Aizpurua no repite)", r23:[1.36,6], scope:"País Vasco y Navarra"},
   PNV:  {name:"PNV", short:"PNV", color:"#2F7A43", leader:"Maribel Vaquero", role:"Portavoz en el Congreso", r23:[1.12,5], scope:"País Vasco"},
   BNG:  {name:"BNG", short:"BNG", color:"#6FB3E0", leader:"Néstor Rego", role:"Diputado y cabeza de lista en 2023", r23:[0.62,1], scope:"Galicia"},
   CC:   {name:"Coalición Canaria", short:"CC", color:"#E8C100", leader:"Cristina Valido", role:"Diputada y cabeza de lista en 2023", r23:[0.47,1], scope:"Canarias", note:"Se presenta como Coalición Canarias-Municipalistas Primero."},
@@ -618,9 +638,13 @@ const ALL_ORDER = ["POD","AA","UPC","CFV","FA","BILDU","BNG","ERC","PSOE","ASG",
    Ningún partido había publicado su programa para el 29-N a 9 de octubre de 2026. */
 const PROGRAMS = {
   PP: {
-    pitch:"Vivienda con rebajas fiscales para jóvenes, ley antiokupación, inmigración por puntos, bajada de impuestos y regeneración institucional. Su programa para el 29-N lo redacta Alma Ezcurra y aún no se ha publicado.",
+    pitch:"Vivienda con rebajas fiscales para jóvenes, ley antiokupación, inmigración por puntos, bajada de impuestos y regeneración institucional. Feijóo ha firmado un «Contrato con España» de quince compromisos; el programa completo, que redacta Alma Ezcurra, aún no se ha publicado.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Anuncios de precampaña", date:"7–18 oct. 2026", url:"https://www.elprogreso.es/articulo/espana/directo-carrera-29-n/202610171251242006667.html", more:[["Propuestas económicas de PP y Vox (Moncloa.com, 16 oct.)","https://www.moncloa.com/2026/10/16/propuestas-economicas-vox-pp-29n-3449552/"],["Ezcurra y Muñoz (elDiario.es, 7 oct.)","https://www.eldiario.es/politica/ultima-hora-actualidad-politica-directo_6_13567873_1125658.html"],["Listas del PP (EFE/Infobae, 14 oct.)","https://www.infobae.com/espana/agencias/2026/10/14/el-pp-apuesta-por-la-discrecion-y-apurara-hasta-el-final-para-comunicar-sus-listas-del-29n/"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"«Contrato con España» y cabezas de lista", date:"19–21 oct. 2026", url:"https://www.elespanol.com/espana/politica/20261019/compromisos-feijoo-contrato-espana-garantizar-pensiones-ordenar-inmigracion/1003744426020_0.html", more:[["Cabezas de lista del PP (Libertad Digital, 19 oct.)","https://www.libertaddigital.com/espana/politica/2026-10-19/el-pp-desvela-parte-de-sus-cabezas-de-lista-del-29-n-tellado-por-la-coruna-ester-por-leon-y-alicia-garcia-por-avila-7478625/"],["Feijóo confirma la negociación con Vox para el Senado (RTVC, 20 oct.)","https://rtvc.es/el-pp-negocia-con-vox-las-listas-del-senado-20-octubre-2026/"],["Pensiones: lo que han dicho PP y Vox (Qué!, 19 oct.)","https://www.que.es/2026/10/19/recortes-pensiones-pp-vox-29n/"]], sections:[
+        {topic:"«Contrato con España» (Madrid, 19 oct.)", items:["Quince compromisos firmados por Feijóo en el Espacio Larra. Los únicos con cifra: un millón de viviendas y pensiones revalorizadas con el IPC.","Pensiones actuales y futuras garantizadas, dentro del Pacto de Toledo.","Bajar impuestos y revisar «más de cien» subidas fiscales; subir el salario medio (sin cifra).","Ordenar la inmigración («España decide quién entra, cómo y para qué»), más seguridad, más médicos, una educación «más exigente», trenes e infraestructuras hídricas."]},
+        {topic:"Listas", items:["Cabezas de lista conocidos: Miguel Tellado (A Coruña), Ester Muñoz (León), Cuca Gamarra (La Rioja), Elías Bendodo (Málaga), Juan Bravo (Sevilla), Carmen Fúnez (Ciudad Real), Xavier García Albiol (Barcelona) y Jon Echeverría (Gipuzkoa). La lista por Madrid aún no se ha anunciado.","Feijóo confirma conversaciones con Vox para el Senado y pide «discreción»."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Anuncios de precampaña", date:"7–18 oct. 2026", url:"https://www.elprogreso.es/articulo/espana/directo-carrera-29-n/202610171251242006667.html", more:[["Propuestas económicas de PP y Vox (Moncloa.com, 16 oct.)","https://www.moncloa.com/2026/10/16/propuestas-economicas-vox-pp-29n-3449552/"],["Ezcurra y Muñoz (elDiario.es, 7 oct.)","https://www.eldiario.es/politica/ultima-hora-actualidad-politica-directo_6_13567873_1125658.html"],["Listas del PP (EFE/Infobae, 14 oct.)","https://www.infobae.com/espana/agencias/2026/10/14/el-pp-apuesta-por-la-discrecion-y-apurara-hasta-el-final-para-comunicar-sus-listas-del-29n/"]], sections:[
         {topic:"Vivienda y seguridad", items:["Ley antiokupación para echar a los okupas en 48 horas, que redactará Xavier García Albiol, cabeza de lista por Barcelona (17–18 oct.).","«Tolerancia cero» con la delincuencia y la reincidencia."]},
         {topic:"Trabajo", items:["Ampliar el límite de horas extraordinarias.","Que las mutuas puedan dar altas médicas."]},
         {topic:"Campaña", items:["Alma Ezcurra redacta el programa; Ester Muñoz es la portavoz de campaña y Miguel Tellado la dirige.","Lema «Por fin». Feijóo promete un «cambio sereno, pero contundente» y dejar el Estado de bienestar «más fuerte».","El PP apurará hasta el 26 de octubre para anunciar sus listas."]}
@@ -686,7 +710,11 @@ const PROGRAMS = {
   PSOE: {
     pitch:"Hace campaña con su paquete de vivienda (regulación del alquiler, préstamos a coste cero para la primera compra y deducción por alquiler), el balance económico y el rechazo a un Gobierno con Vox. Está redactando su programa; su último documento programático es la ponencia de su congreso de 2024.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Mitin de Dos Hermanas y medidas del Gobierno", date:"10–18 oct. 2026", url:"https://es.euronews.com/2026/10/10/sanchez-abre-la-campana-electoral-del-29n-en-su-ciudad-talisman-con-la-vivienda-como-eje-p", more:[["Medidas del Gobierno en precampaña (Moncloa.com, 18 oct.)","https://www.moncloa.com/2026/10/18/sanchez-decretos-campana-29n-3450823"],["Dimisión de Montse Mínguez (Euronews, 16 oct.)","https://es.euronews.com/2026/10/16/dimite-portavoz-psoe-debido-negocios-inmobiliarios-pareja-plena-crisis"],["Marc Pons y el programa (Última Hora, 18 oct.)","https://www.ultimahora.es/noticias/elecciones-29n/2026/10/18/2731293/marc-pons-redactara-propuestas-transicion-ecologica-del-programa-electoral-del-psoe.html"],["Proclamación de Sánchez (El Progreso)","https://www.elprogreso.es/articulo/espana/directo-carrera-29-n/202610171251242006667.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Salario mínimo, aborto y decretos", date:"19–21 oct. 2026", url:"https://www.infobae.com/espana/2026/10/19/elecciones-generales-29-n-en-directo-ultima-hora-de-los-sondeos-la-ley-de-nietos-o-los-anuncios-sobre-pensiones/", more:[["Consejo de Ministros: 180 millones para zonas tensionadas (Moncloa.com, 20 oct.)","https://www.moncloa.com/2026/10/20/consejo-ministros-vivienda-180-millones-3452122/"],["Subida del 4,5% a funcionarios (El Español, 21 oct.)","https://elespanol.com/espana/20261020/elecciones-generales-ultima-hora-directo-consejo-ministros-pedro-sanchez-actos-listas-pp-psoe-vox-pactos-electorales-voto-correo/1003744426993_10.html"],["Listas al Congreso (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/el-comite-federal-del-psoe-proclama-por-unanimidad-candidato-a-pedro-sanchez-y-ratifica-unas-listas-al-congreso-con-mas-mujeres-que-hombres-en-las-candidaturas/"]], sections:[
+        {topic:"Propuestas", items:["Sánchez promete subir el salario mínimo «todos los años» que gobierne (Valladolid, 19 oct.).","Ana Redondo propone blindar el derecho al aborto en la Constitución.","Defiende las pensiones con revalorización según el IPC y rechaza las cuentas de capitalización."]},
+        {topic:"Gobierno en precampaña", items:["El Consejo de Ministros (20 oct.) aprueba 180 millones para vivienda en los 317 municipios declarados zona tensionada y 45 millones para residencias universitarias.","El Gobierno garantiza a los sindicatos una subida del 4,5% para los empleados públicos en 2027.","Las listas del PSOE al Congreso, ratificadas el 17 de octubre, llevan más mujeres que hombres; las ministras Milagros Tolón e Isabel Rodríguez encabezan Toledo y Ciudad Real."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Mitin de Dos Hermanas y medidas del Gobierno", date:"10–18 oct. 2026", url:"https://es.euronews.com/2026/10/10/sanchez-abre-la-campana-electoral-del-29n-en-su-ciudad-talisman-con-la-vivienda-como-eje-p", more:[["Medidas del Gobierno en precampaña (Moncloa.com, 18 oct.)","https://www.moncloa.com/2026/10/18/sanchez-decretos-campana-29n-3450823"],["Dimisión de Montse Mínguez (Euronews, 16 oct.)","https://es.euronews.com/2026/10/16/dimite-portavoz-psoe-debido-negocios-inmobiliarios-pareja-plena-crisis"],["Marc Pons y el programa (Última Hora, 18 oct.)","https://www.ultimahora.es/noticias/elecciones-29n/2026/10/18/2731293/marc-pons-redactara-propuestas-transicion-ecologica-del-programa-electoral-del-psoe.html"],["Proclamación de Sánchez (El Progreso)","https://www.elprogreso.es/articulo/espana/directo-carrera-29-n/202610171251242006667.html"]], sections:[
         {topic:"Vivienda (Dos Hermanas, 10 oct.)", items:["Préstamos «TU CASA» de hasta 50.000 € a coste cero para la primera vivienda: se devuelven al acabar la hipoteca, en 120 cuotas al 0%. Fondo de 10.000 millones del ICO.","Deducción del alquiler en la renta: casi 1.000 € al año con un alquiler de 800 € al mes.","Prórroga de hasta dos años de los alquileres para inquilinos al corriente de pago, con límite a las subidas.","280 millones en avales para construir vivienda industrializada y 400 millones para proveedores de vivienda social.","Casa 47 comprará inmuebles de la Seguridad Social para vivienda; limitar las compras de fondos, ligar las ventajas fiscales de las SOCIMI al alquiler asequible y que los pisos turísticos tributen como negocio."]},
         {topic:"Gobierno en precampaña", items:["Decreto de 45,3 millones para Ceuta, ligado a la atención a menores migrantes.","Anuncio de 500 plazas de jueces y 200 de fiscales para 2027.","Negociación de una nueva subida del salario mínimo (Yolanda Díaz) y posible revalorización de las pensiones aunque el Gobierno esté en funciones."]},
         {topic:"Candidatura y programa", items:["El Comité Federal proclamó a Sánchez candidato por unanimidad el 17 de octubre; las mujeres encabezan el 52% de las listas al Congreso.","Montse Mínguez dimitió como portavoz el 16 de octubre por los negocios inmobiliarios de su pareja; la sustituye Rebeca Torró.","Marc Pons redactará las propuestas de transición ecológica del programa."]}
@@ -728,7 +756,12 @@ const PROGRAMS = {
   VOX: {
     pitch:"Centra su oferta en la «prioridad nacional», la «remigración» y la desregulación, que plantea como condiciones para pactar con el PP. Su último programa completo es el del 23-J.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Ejes para el 29-N (Estepona)", date:"11–16 oct. 2026", url:"https://www.voxespana.es/abascal/abascal-reivindica-la-remigracion-la-desregulacion-y-la-prioridad-nacional-como-ejes-de-vox-para-el-29n-20261011", more:[["Propuestas económicas de PP y Vox (Moncloa.com, 16 oct.)","https://www.moncloa.com/2026/10/16/propuestas-economicas-vox-pp-29n-3449552/"],["Abascal reúne a la cúpula para el 29-N (The Objective, 14 oct.)","https://theobjective.com/espana/politica/2026-10-14/abascal-cupula-vox-29-n-elecciones/"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Oferta al PP para el Senado", date:"19–21 oct. 2026", url:"https://www.moncloa.com/2026/10/19/pacto-pp-vox-senado-listas-26o-3451726/", more:[["Feijóo confirma las conversaciones (RTVC, 20 oct.)","https://rtvc.es/el-pp-negocia-con-vox-las-listas-del-senado-20-octubre-2026/"],["Pensiones: lo que han dicho PP y Vox (Qué!, 19 oct.)","https://www.que.es/2026/10/19/recortes-pensiones-pp-vox-29n/"]], sections:[
+        {topic:"Senado", items:["Tras su Comité Ejecutivo (19 oct.), Abascal ofrece al PP «algún entendimiento» para el Senado, sin concretar: listas compartidas, reparto de provincias o no competir en las pequeñas.","El plazo de coaliciones cerró el 16 de octubre, así que solo cabe que Vox no presente lista en algunas provincias o que el PP incluya candidatos de Vox."]},
+        {topic:"Pensiones", items:["Defiende combinar el sistema de reparto con cuentas de capitalización individual. Su portavoz económico, José María Figaredo, llama al sistema actual «un zombi»."]},
+        {topic:"Campaña", items:["Abascal pide «no fiarse» de las encuestas y reclama un proceso electoral «limpio», en relación con el voto de los nacionalizados por la «ley de nietos».","Montse Lluís es la número dos por Madrid."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Ejes para el 29-N (Estepona)", date:"11–16 oct. 2026", url:"https://www.voxespana.es/abascal/abascal-reivindica-la-remigracion-la-desregulacion-y-la-prioridad-nacional-como-ejes-de-vox-para-el-29n-20261011", more:[["Propuestas económicas de PP y Vox (Moncloa.com, 16 oct.)","https://www.moncloa.com/2026/10/16/propuestas-economicas-vox-pp-29n-3449552/"],["Abascal reúne a la cúpula para el 29-N (The Objective, 14 oct.)","https://theobjective.com/espana/politica/2026-10-14/abascal-cupula-vox-29-n-elecciones/"]], sections:[
         {topic:"Inmigración", items:["«Remigración»: repatriar a quien entre ilegalmente, a los delincuentes y a quienes vivan de ayudas sociales.","«Prioridad nacional» como eje, sin medidas concretas nuevas."]},
         {topic:"Economía", items:["Desregulación: quitar trabas y leyes que encarecen la construcción de vivienda y la actividad de empresas, agricultores y autónomos.","Bajar la presión fiscal y recortar el «gasto ideológico».","IRPF de dos tramos."]},
         {topic:"Pensiones", items:["Garantizar su pago «como sea y al precio que sea».","Pasar a un modelo mixto de reparto y capitalización (José María Figaredo)."]}
@@ -757,7 +790,10 @@ const PROGRAMS = {
   FA: {
     pitch:"Coalición de IU, Movimiento Sumar, Comuns, Más Madrid, CHA y otros partidos, con Ada Colau como candidata a la Presidencia. Ejes: vivienda, salarios y pensiones. No hubo acuerdo con Podemos. Su último programa es el de Sumar en 2023, cuando aún incluía a Podemos y Compromís.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Presentación del Frente Amplio", date:"12–17 oct. 2026", url:"https://www.infobae.com/espana/agencias/2026/10/17/frente-amplio-defiende-que-intento-todo-por-un-pacto-de-unidad-pero-se-conjura-en-pasar-pagina-no-more-drama/", more:[["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"],["Listas a la izquierda del PSOE por comunidad (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Senado y campaña", date:"19–21 oct. 2026", url:"https://elespanol.com/espana/20261020/elecciones-generales-ultima-hora-directo-consejo-ministros-pedro-sanchez-actos-listas-pp-psoe-vox-pactos-electorales-voto-correo/1003744426993_10.html", sections:[
+        {topic:"Campaña", items:["Estados Unidos impide a Ada Colau entrar en Puerto Rico, donde iba a un acto sobre municipalismo, por su participación en la Flotilla Global Sumud (21 oct.).","En el «Senado de Progreso» el PSOE encabeza las listas; el Frente Amplio va tercero donde el PSOE sacó dos senadores en 2023."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Presentación del Frente Amplio", date:"12–17 oct. 2026", url:"https://www.infobae.com/espana/agencias/2026/10/17/frente-amplio-defiende-que-intento-todo-por-un-pacto-de-unidad-pero-se-conjura-en-pasar-pagina-no-more-drama/", more:[["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"],["Listas a la izquierda del PSOE por comunidad (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
         {topic:"Candidatura", items:["Ada Colau, candidata a la Presidencia y cabeza de lista por Barcelona; Emilio Delgado (Más Madrid), por Madrid. Presentación el 17 de octubre en Madrid.","Coalición registrada: IU, Movimiento Sumar, Catalunya en Comú, Más Madrid, Chunta Aragonesista, Izquierda Asturiana, Verdes Equo, Batzarre y otros.","No se presenta en la C. Valenciana (allí va Compromís-Front Valencià, con EUPV) y en Canarias va dentro de Unidad del Pueblo Canario."]},
         {topic:"Unidad con Podemos", items:["No hubo acuerdo antes del cierre de coaliciones (16 oct.). Colau: «Si alguien no se quiere sentar a una mesa, no se le puede obligar»."]},
         {topic:"Propuestas", items:["Subir el salario mínimo (Ernest Urtasun).","Defender el sistema público de pensiones (Pablo Bustinduy).","Pide al PSOE ser «mucho más valiente» y aspira a volver a ser «la llave del Gobierno»."]},
@@ -784,7 +820,7 @@ const PROGRAMS = {
   POD: {
     pitch:"Irene Montero, elegida en primarias con un 90%, encabeza la lista por Madrid con el lema «Paz, casa, trabajo». No hubo acuerdo con el Frente Amplio: en Cataluña apoya a ERC y va en coalición en la C. Valenciana (Compromís-Front Valencià) y en Canarias (Unidad del Pueblo Canario). En 2023 concurrió dentro de Sumar.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Primarias y alianzas", date:"12–17 oct. 2026", url:"https://www.eldebate.com/espana/20261016/irene-montero-gana-primarias-abiertas-podemos-candidata-90-apoyo_470500.html", more:[["Pacto con ERC (ESdiario, 13 oct.)","https://www.esdiario.com/nacional/261013/200074/rufian-e-irene-montero-pactan-29n-dejan-frente-amplio-pelota-picada.html"],["Compromís-Front Valencià (El Salto, 16 oct.)","https://www.elsaltodiario.com/pais-valenciano/izquierda-valenciana-concurrira-unida-generales-siglas-compromis-front-valencia"],["Listas a la izquierda del PSOE (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Primarias y alianzas", date:"12–17 oct. 2026", url:"https://www.eldebate.com/espana/20261016/irene-montero-gana-primarias-abiertas-podemos-candidata-90-apoyo_470500.html", more:[["Pacto con ERC (ESdiario, 13 oct.)","https://www.esdiario.com/nacional/261013/200074/rufian-e-irene-montero-pactan-29n-dejan-frente-amplio-pelota-picada.html"],["Compromís-Front Valencià (El Salto, 16 oct.)","https://www.elsaltodiario.com/pais-valenciano/izquierda-valenciana-concurrira-unida-generales-siglas-compromis-front-valencia"],["Listas a la izquierda del PSOE (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
         {topic:"Primarias (14–15 oct.)", items:["Irene Montero, única candidata, logra 24.136 de 26.590 votos (90%) y será cabeza de lista por Madrid.","Las listas de su equipo ganan en todas las circunscripciones salvo Badajoz (Congreso) y cinco del Senado.","El 87,7% de los inscritos respalda ir «en las candidaturas más fuertes y amplias posibles»."]},
         {topic:"Alianzas", items:["Sin acuerdo con el Frente Amplio.","Pacto con ERC: Podemos no presenta lista en Cataluña y apoya la de ERC; Rufián hará campaña con Montero fuera de Cataluña.","Coalición en la C. Valenciana (Compromís-Front Valencià; Podemos encabeza Alicante con María Teresa Pérez) y en Canarias (Unidad del Pueblo Canario)."]}
       ]},
@@ -802,7 +838,7 @@ const PROGRAMS = {
   SALF: {
     pitch:"Partido de Alvise Pérez, centrado en la lucha contra la corrupción y el rechazo a los partidos tradicionales. Alvise encabeza la lista por Madrid. No hemos encontrado un programa detallado publicado.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Candidatura al 29-N", date:"5–13 oct. 2026", url:"https://www.esdiario.com/nacional/261005/199492/ardillita-vuelve-comer-nueces-alvise-lanza-29n-encabezara-lista-salf-madrid.html", more:[["Avales en Córdoba (Cordópolis)","https://cordopolis.eldiario.es/cordoba-hoy/local/partido-alvise-supera-avales-exigidos-presentara-generales-cordoba_1_13590608.html"],["Avales en Zaragoza (Aragón Digital, 13 oct.)","https://www.aragondigital.es/articulo/politica/salf-llega-zaragoza-busca-avales-presentarse-elecciones-generales/202610131208431014946.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Candidatura al 29-N", date:"5–13 oct. 2026", url:"https://www.esdiario.com/nacional/261005/199492/ardillita-vuelve-comer-nueces-alvise-lanza-29n-encabezara-lista-salf-madrid.html", more:[["Avales en Córdoba (Cordópolis)","https://cordopolis.eldiario.es/cordoba-hoy/local/partido-alvise-supera-avales-exigidos-presentara-generales-cordoba_1_13590608.html"],["Avales en Zaragoza (Aragón Digital, 13 oct.)","https://www.aragondigital.es/articulo/politica/salf-llega-zaragoza-busca-avales-presentarse-elecciones-generales/202610131208431014946.html"]], sections:[
         {topic:"Candidatura", items:["Alvise Pérez será cabeza de lista por Madrid; es la primera vez que SALF se presenta al Congreso.","Recoge avales para presentarse en más provincias: los ha superado en Córdoba y los busca en Zaragoza."]}
       ]},
       {kind:"otro", label:"Ejes 2024–2025", title:"Ejes de Se Acabó La Fiesta", date:"2024 – 2025", url:"https://www.eldebate.com/espana/20240609/quien-alvise-perez-cual-programa-electoral-acabo-fiesta-cns_203773.html", sections:[
@@ -813,7 +849,10 @@ const PROGRAMS = {
   ERC: {
     pitch:"Independentismo de izquierdas. Apoyó la investidura de Sánchez en 2023. Gabriel Rufián repite como cabeza de lista y Podemos apoya sus listas en Cataluña. Al Senado va con EH Bildu.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Candidatura y alianzas", date:"11–17 oct. 2026", url:"https://www.articulo14.es/politica/gabriel-rufian-lista-erc-congreso-20261011.html", more:[["Pacto con Podemos (ESdiario, 13 oct.)","https://www.esdiario.com/nacional/261013/200074/rufian-e-irene-montero-pactan-29n-dejan-frente-amplio-pelota-picada.html"],["Rufián: «He fracasado» (Orain, 16 oct.)","https://orain.eus/es/politica/2026/10/16/rufian-se-disculpa-no-lograr-una-candidatura-unitaria-la-izquierda-he-fracasado/"],["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Listas aprobadas", date:"20–21 oct. 2026", url:"https://elespanol.com/espana/20261020/elecciones-generales-ultima-hora-directo-consejo-ministros-pedro-sanchez-actos-listas-pp-psoe-vox-pactos-electorales-voto-correo/1003744426993_10.html", more:[["El Supremo aplica la amnistía a Junqueras (Infobae, 20 oct.)","https://www.infobae.com/espana/2026/10/20/el-supremo-amnistia-a-junqueras-y-otros-tres-lideres-del-proces-tras-verse-obligado-a-asumir-la-doctrina-del-constitucional/"]], sections:[
+        {topic:"Candidatura", items:["Cabezas de lista: Gabriel Rufián (Barcelona), Teresa Jordà (Girona), Inés Granollers (Lleida) y Norma Pujol (Tarragona). Incluye a cuatro independientes de Podemos.","Oriol Junqueras va en el puesto 31 por Barcelona y Raül Romeva, como primer suplente, después de que el Supremo les aplicara la amnistía y levantara su inhabilitación (resolución del 19 oct.)."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Candidatura y alianzas", date:"11–17 oct. 2026", url:"https://www.articulo14.es/politica/gabriel-rufian-lista-erc-congreso-20261011.html", more:[["Pacto con Podemos (ESdiario, 13 oct.)","https://www.esdiario.com/nacional/261013/200074/rufian-e-irene-montero-pactan-29n-dejan-frente-amplio-pelota-picada.html"],["Rufián: «He fracasado» (Orain, 16 oct.)","https://orain.eus/es/politica/2026/10/16/rufian-se-disculpa-no-lograr-una-candidatura-unitaria-la-izquierda-he-fracasado/"],["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"]], sections:[
         {topic:"Candidatura", items:["Gabriel Rufián será el cabeza de lista; los órganos del partido aprueban las listas el 20 de octubre.","Rechazó integrarse en el Frente Amplio y pidió disculpas por no lograr una candidatura unitaria de la izquierda."]},
         {topic:"Alianzas", items:["Podemos no se presenta en Cataluña y apoya las listas de ERC; Rufián y Montero harán campaña juntos.","Coalición ERC-EH Bildu para el Senado en Cataluña, País Vasco y Navarra."]}
       ]},
@@ -828,7 +867,7 @@ const PROGRAMS = {
   JUNTS: {
     pitch:"Independentismo. Fue clave en la investidura de 2023, pero retiró su apoyo al Gobierno en octubre de 2025 y votó contra los decretos de vivienda en 2026. No hemos encontrado su programa completo de 2023.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Cabezas de lista", date:"8 oct. 2026", url:"https://www.diariodeleon.es/nacional/261008/2099696/junts-confirma-miriam-nogueras-candidata-29n.html", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Cabezas de lista", date:"8 oct. 2026", url:"https://www.diariodeleon.es/nacional/261008/2099696/junts-confirma-miriam-nogueras-candidata-29n.html", sections:[
         {topic:"Candidatura", items:["Míriam Nogueras repite como cabeza de lista por Barcelona; Marta Madrenas (Girona), Isidre Gavín (Lleida) y Josep Maria Cruset (Tarragona).","El partido destaca la cohesión de su grupo y la defensa de los intereses de Cataluña en el Congreso."]}
       ]},
       {kind:"2026", label:"Legislatura 2025–2026", title:"Propuestas durante la legislatura", date:"may. 2026", url:"https://www.elsaltodiario.com/vivienda/sumar-incluira-propuestas-junts-relanzar-prorroga-alquileres", sections:[
@@ -844,7 +883,10 @@ const PROGRAMS = {
   BILDU: {
     pitch:"Izquierda abertzale. Apoyó la investidura de 2023 y defiende prohibir los desahucios y prorrogar los alquileres. Renueva sus listas: Mertxe Aizpurua no repite. Al Senado va con ERC.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Renovación de candidaturas", date:"11–17 oct. 2026", url:"https://orain.eus/es/politica/2026/10/11/mertxe-aizpurua-no-sera-candidata-eh-bildu-al-congreso/", more:[["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Listas refrendadas", date:"16–19 oct. 2026", url:"https://www.pressdigital.es/articulo/politica/2026-10-19/6056791-97-bases-eh-bildu-refrendan-candidaturas-congreso-senado-lideradas-matute-bideguren", sections:[
+        {topic:"Candidatura", items:["Las bases refrendan las listas con un 97% de media (17–18 oct.).","Congreso: Oskar Matute (Bizkaia), Oihana Etxebarrieta (Gipuzkoa), Mikel Otero (Álava) y Eneka Maiz (Navarra).","Senado (con ERC): Idurre Bideguren (Bizkaia), Sonia Jacinto (Gipuzkoa), Josu Estarrona (Álava) y Floren Aoiz (Navarra)."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Renovación de candidaturas", date:"11–17 oct. 2026", url:"https://orain.eus/es/politica/2026/10/11/mertxe-aizpurua-no-sera-candidata-eh-bildu-al-congreso/", more:[["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"]], sections:[
         {topic:"Candidatura", items:["Mertxe Aizpurua no será candidata: considera que «ha terminado un ciclo». Bildu renueva sus listas en Álava, Bizkaia, Gipuzkoa y Navarra.","Coalición ERC-EH Bildu para el Senado."]}
       ]},
       {kind:"2023", label:"Compromiso 23-J", title:"Compromiso de Euskal Herria Bildu", date:"jul. 2023", url:"https://ehbildu.eus/dokumentuak/23J-COMPROMISO-DE-EUSKAL-HERRIA-BILDU.pdf", sections:[
@@ -872,7 +914,7 @@ const PROGRAMS = {
   BNG: {
     pitch:"Nacionalismo gallego de izquierdas. Apoyó la investidura de 2023 y pide más regulación del alquiler.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Mensajes de precampaña", date:"18 oct. 2026", url:"https://www.elprogreso.es/articulo/espana/directo-carrera-29-n/202610171251242006667.html", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Mensajes de precampaña", date:"18 oct. 2026", url:"https://www.elprogreso.es/articulo/espana/directo-carrera-29-n/202610171251242006667.html", sections:[
         {topic:"Galicia", items:["Néstor Rego pide llevar a las urnas el rechazo a la mina de Touro-O Pino y a la planta de Altri."]}
       ]},
       {kind:"2023", label:"Programa 23-J", title:"Programa electoral 2023", date:"jul. 2023", url:"https://www.bng.gal/media/bnggaliza/files/2023/07/05/23_bng_xerais_programa.pdf", sections:[
@@ -887,7 +929,7 @@ const PROGRAMS = {
   CC: {
     pitch:"Nacionalismo canario. Apoyó la investidura de 2023 a cambio de la «Agenda Canaria». Para el 29-N concurre como Coalición Canarias-Municipalistas Primero.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Coalición registrada", date:"16–17 oct. 2026", url:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Coalición registrada", date:"16–17 oct. 2026", url:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html", sections:[
         {topic:"Candidatura", items:["Coalición Canarias-Municipalistas Primero: Congreso por Canarias y Senado por Tenerife, Gran Canaria, Fuerteventura, Lanzarote, La Palma y La Gomera."]}
       ]},
       {kind:"2023", label:"Manifiesto 23-J", title:"52 compromisos con Canarias (manifiesto conjunto)", date:"26 jun. 2023", url:"https://www.redaccionmedica.com/contenido/images/00_COALICION%20POR%20CANARIAS.pdf", sections:[
@@ -901,7 +943,7 @@ const PROGRAMS = {
   CFV: {
     pitch:"Coalición de la izquierda valenciana: Compromís, Podemos, Esquerra Unida (IU) y ERPV. Es la única lista a la izquierda del PSOE en la C. Valenciana. En 2023 Compromís concurrió dentro de Sumar.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Coalición Compromís-Front Valencià", date:"16–17 oct. 2026", url:"https://www.elsaltodiario.com/pais-valenciano/izquierda-valenciana-concurrira-unida-generales-siglas-compromis-front-valencia", more:[["EUPV acepta la coalición (Alicante Plaza, 16 oct.)","https://alicanteplaza.es/alicanteplaza/comunitat-valenciana/reconciliacion-in-extremis-en-la-izquierda-eupv-acepta-la-ultima-oferta-de-compromis-e-iran-en-coalicion"],["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Coalición Compromís-Front Valencià", date:"16–17 oct. 2026", url:"https://www.elsaltodiario.com/pais-valenciano/izquierda-valenciana-concurrira-unida-generales-siglas-compromis-front-valencia", more:[["EUPV acepta la coalición (Alicante Plaza, 16 oct.)","https://alicanteplaza.es/alicanteplaza/comunitat-valenciana/reconciliacion-in-extremis-en-la-izquierda-eupv-acepta-la-ultima-oferta-de-compromis-e-iran-en-coalicion"],["Coaliciones registradas (El Debate, 17 oct.)","https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"]], sections:[
         {topic:"Candidatura", items:["Valencia: Àgueda Micó y Alberto Ibáñez (Compromís) en los dos primeros puestos; EUPV, el tercero.","Alicante: María Teresa Pérez (Podemos). Castellón: encabeza Compromís.","«Front» no supone integrarse en el Frente Amplio: la coalición es solo valenciana y solo para el Congreso."]},
         {topic:"Senado", items:["Las listas al Senado dependen de un posible pacto con el PSOE."]}
       ]}
@@ -910,7 +952,7 @@ const PROGRAMS = {
   UPC: {
     pitch:"Coalición canaria de Nueva Canarias-Bloque Canarista, Podemos, Movimiento Sumar e IU Canaria, para el Congreso y el Senado.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Coalición Unidad del Pueblo Canario", date:"16–17 oct. 2026", url:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html", more:[["Listas a la izquierda del PSOE (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Coalición Unidad del Pueblo Canario", date:"16–17 oct. 2026", url:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html", more:[["Listas a la izquierda del PSOE (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
         {topic:"Candidatura", items:["Registrada ante la Junta Electoral Central para el Congreso y el Senado.","Es el único territorio donde Podemos y los partidos del Frente Amplio van juntos."]}
       ]}
     ]
@@ -1023,7 +1065,7 @@ const SEN_PACTS = [
   {name:"Unidad del Pueblo Canario", parties:"NC-Bloque Canarista, Podemos, Movimiento Sumar e IU Canaria", scope:"Canarias (Congreso y Senado)", how:"En Canarias el PSOE va solo al Senado, salvo un pacto progresista en La Gomera.", src:"https://www.infobae.com/america/agencias/2026/10/17/registradas-en-la-jec-nueve-coaliciones-electorales-dos-para-el-congreso-tres-para-el-senado-y-cuatro-autonomicas/"},
   {name:"CC-Municipalistas Primero", parties:"Coalición Canaria y Municipalistas Primero", scope:"Tenerife, Gran Canaria, Fuerteventura, Lanzarote, La Palma y La Gomera", how:"No se presenta en El Hierro, donde AHI propone repetir con Javier Armas. En La Gomera, ASG presenta a Yaiza Castilla.", src:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"},
   {name:"UPN-PP", parties:"UPN y PP («Unión del Pueblo Navarro en coalición con el Partido Popular»)", scope:"Navarra (Congreso y Senado)", how:"Al Congreso, UPN encabeza con una mujer; el PP lleva el 2.º (Sergio Sayas), el 3.º y el 5.º, y UPN el 4.º. Al Senado, UPN pone el 1.º y el 3.º candidato y el PP el 2.º. En 2023 fueron por separado y sacaron un diputado cada uno. En Formentera el PP va con Compromís per Formentera («Sa Unió»).", src:"https://www.vozpopuli.com/espana/politica/elecciones-generales-del-29-n-en-directo-ultima-hora-de-las-listas-electorales-sanchez-y-feijoo.html"},
-  {name:"PP y Vox: en negociación", parties:"PP y Vox", scope:"Senado, en algunas provincias (sin cerrar)", how:"Tras el pacto PSOE–Frente Amplio, PP y Vox estudian que Vox no presente lista al Senado en algunas provincias o que incluya candidatos en las del PP, para no dividir el voto. No hay acuerdo: Vox lo decide en su Comité Ejecutivo del 19 de octubre. Se citan, entre otras, Valencia, Sevilla, Huelva, Badajoz y Cáceres; Vox mantendría lista propia donde tiene más opciones, como Murcia, Almería y Ceuta. Nuestra proyección supone listas separadas.", aim:"Llegar a los tres quintos del Senado (161 de 267), que permiten, entre otras cosas, designar magistrados del Tribunal Constitucional.", src:"https://www.elespanol.com/espana/politica/20261018/vox-dispuesto-demostrar-altura-miras-frente-popular-senado-lunes-decidira-pacta-pp/1003744424775_0.html"},
+  {name:"PP y Vox: en negociación", parties:"PP y Vox", scope:"Senado, en algunas provincias (sin cerrar)", how:"El 19 de octubre Abascal ofreció al PP «algún entendimiento» sin concretarlo, y el 20 Feijóo confirmó las conversaciones. Como el plazo de coaliciones cerró el 16 de octubre, ya no pueden ir en coalición: solo cabe que Vox no presente lista en algunas provincias o que el PP incluya candidatos de Vox. Se citan, entre otras, Valencia, Sevilla, Huelva, Badajoz y Cáceres. El plazo para presentar listas acaba el 26 de octubre. Nuestra proyección supone listas separadas.", aim:"Llegar a los tres quintos del Senado (161 de 267), que permiten, entre otras cosas, designar magistrados del Tribunal Constitucional.", src:"https://rtvc.es/el-pp-negocia-con-vox-las-listas-del-senado-20-octubre-2026/"},
   {name:"Coalición Existe", parties:"Teruel Existe y Aragón Existe", scope:"Aragón (Congreso y Senado)", how:"Teruel Existe tuvo un diputado y dos senadores en 2019; en 2023 no obtuvo escaño.", src:"https://www.infobae.com/america/agencias/2026/10/17/registradas-en-la-jec-nueve-coaliciones-electorales-dos-para-el-congreso-tres-para-el-senado-y-cuatro-autonomicas/"}
 ];
 
@@ -1041,7 +1083,7 @@ const OTHERS_BY_CCAA = {
   "País Vasco":[["PNV","solo"]],
   "Galicia":[["BNG","solo"]]
 };
-const RIGHT_NOTE = "PP y Vox negocian unir fuerzas en el Senado en algunas provincias (que Vox no presente lista o meta candidatos en las del PP), sin acuerdo cerrado: Vox lo decide el 19 de octubre.";
+const RIGHT_NOTE = "PP y Vox negocian unir fuerzas en el Senado en algunas provincias (que Vox no presente lista o meta candidatos en las del PP). Vox ofreció un «entendimiento» el 19 de octubre y Feijóo confirmó las conversaciones; no hay acuerdo cerrado. Las listas se presentan hasta el 26 de octubre.";
 
 /* ---------- Alianzas de la izquierda por comunidad (Congreso y Senado) ---------- */
 const LEFT_BY_CCAA = {
@@ -1059,7 +1101,7 @@ const LEFT_BY_CCAA = {
   "Galicia":{type:"sep", congreso:[["BNG",""],["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSdeG 1.º y FA 2.º"],["BNG","solo"]]},
   "Madrid":{type:"sep", congreso:[["Frente Amplio","Emilio Delgado (Más Madrid)"],["Podemos","Irene Montero"]], senado:[["Senado de Progreso","PSOE, Más Madrid, IU y Sumar"]]},
   "Murcia":{type:"sep", congreso:[["Frente Amplio","con IU-Verdes"],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSOE + FA"]]},
-  "Navarra":{type:"reg", congreso:[["Frente Amplio","con Batzarre"],["Podemos","lista propia"],["EH Bildu",""],["Geroa Bai",""]], senado:[["Senado de Progreso","PSN + IU y Batzarre"],["ERC-EH Bildu","Floren Aoiz"],["Geroa Bai","fuera del pacto"]]},
+  "Navarra":{type:"reg", congreso:[["Frente Amplio","con Batzarre"],["Podemos","lista propia"],["EH Bildu","Eneka Maiz"],["Geroa Bai",""]], senado:[["Senado de Progreso","PSN + IU y Batzarre"],["ERC-EH Bildu","Floren Aoiz"],["Geroa Bai","fuera del pacto"]]},
   "País Vasco":{type:"sep", congreso:[["EH Bildu","Oskar Matute, Mikel Otero, Oihana Etxebarrieta"],["Frente Amplio","Ezker Anitza-IU, Sumar…"],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSE + FA; en Álava el PSE pone los 3"],["ERC-EH Bildu",""],["PNV","solo"]]},
   "La Rioja":{type:"sep", congreso:[["Frente Amplio","IU"],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSOE + FA"]]},
   "Ceuta":{type:"sep", congreso:[["Frente Amplio y Podemos","sin detalles publicados"]], senado:[["Senado de Progreso","el reparto publicado incluía a Ceuta Ya, que lo niega"]]}
@@ -1076,9 +1118,51 @@ const STATEMENTS = [
   {q:"Hay que poder desalojar a okupas en 24–48 horas.", basis:"Moción del PP aprobada en sept. de 2026: el PSOE se abstuvo y Sumar votó en contra.", pos:{PP:1,VOX:1,PSOE:0,FA:-1,POD:null}}
 ];
 
+/* ---------- Voto por grupos ----------
+   CIS: voto + simpatía entre quienes nombran un partido (pregunta 19aR del barómetro de octubre), suma 100 por grupo.
+   GESOP: intención directa sobre todos los encuestados; solo publicó cuatro partidos.
+   Cada fila: [grupo, entrevistas (null si no se publica), ...un valor por partido de "parties"]. El resto hasta 100 es "otros". */
+const GROUPS = {
+  sources:[
+    {id:"cis", firm:"CIS", label:"CIS · 5.025 entrevistas", what:"Voto + simpatía entre quienes nombran un partido", d:"2026-10-14", field:"1–6 oct. · 5.025 entrevistas (4.075 nombran un partido)",
+     url:"https://www.cis.es/documents/d/guest/3582-multi_a-xlsx", page:"https://www.cis.es/en/w/avance-de-resultados-del-estudio-3582-bar%C3%B3metro-de-octubre-2026-",
+     rest:"Otros partidos", parties:["PSOE","PP","VOX","FA","POD","SALF"],
+     note:"Reparto entre las personas que dicen a qué partido votarían o por cuál sienten más simpatía (el 81% de la muestra). Suma 100 en cada grupo. No es la estimación de voto del CIS, que no se publica por grupos. «Sumar» es el nombre que usa el CIS para el Frente Amplio.",
+     total:["Todos",4075,35.4,20.9,15.1,7.4,3.0,1.5],
+     dims:[
+      {id:"sexo", label:"Sexo", rows:[["Hombres",2004,29.3,21.5,17.5,8.0,3.5,2.2],["Mujeres",2070,41.2,20.4,12.8,6.8,2.4,0.8]]},
+      {id:"edad", label:"Edad", rows:[["18–24 años",341,26.2,16.4,21.0,10.3,1.1,2.3],["25–34 años",496,21.4,17.6,21.5,11.4,3.6,2.7],["35–44 años",599,24.1,18.4,22.2,10.2,3.7,2.9],["45–54 años",794,30.3,25.5,18.0,7.2,3.2,1.8],["55–64 años",742,38.3,21.0,11.9,7.8,3.8,1.1],["65–74 años",548,46.0,23.1,8.2,5.3,3.1,0.2],["75 años y más",555,58.3,20.6,5.0,1.1,1.2,0.0]]},
+      {id:"ocup", label:"Profesión y situación", rows:[["Directivos y gerentes",136,27.4,32.8,15.3,4.9,0.6,0.7],["Profesionales y científicos",549,26.4,23.5,10.7,13.8,3.9,1.6],["Técnicos de nivel medio",338,28.0,19.5,10.9,10.9,5.1,1.9],["Administrativos",161,21.7,25.2,14.4,8.9,4.4,2.1],["Servicios y comercio",362,36.3,15.3,18.9,8.2,3.7,1.1],["Oficiales, operarios y artesanos",227,22.2,23.0,25.9,9.3,2.5,2.5],["Operadores de máquinas",146,28.8,16.8,27.7,7.2,1.0,1.4],["Ocupaciones elementales",138,29.5,12.9,31.0,4.5,0.9,7.1],["Jubilados y pensionistas",969,51.5,20.9,7.5,3.7,2.6,0.4],["Estudiantes",199,25.1,18.8,16.6,15.9,1.4,1.3],["Trabajo doméstico no remunerado",146,42.0,19.6,23.2,0.5,1.4,2.9],["En paro",364,36.2,18.5,18.6,5.2,2.4,1.9]], note:"Se omiten los grupos con menos de 100 entrevistas: agricultores (33), militares y policías (50) y otras ocupaciones."},
+      {id:"estudios", label:"Estudios", rows:[["Sin estudios",78,56.6,14.2,16.0,0.0,4.2,0.0],["Primaria",378,53.9,18.7,13.1,2.5,1.9,0.0],["Secundaria (1.ª etapa)",1129,39.2,21.3,17.4,4.5,2.8,1.8],["Secundaria (2.ª etapa)",646,31.9,20.4,14.7,8.5,2.8,1.6],["Formación Profesional",662,30.3,16.9,19.6,6.5,3.2,2.2],["Superiores",1149,28.5,24.2,11.2,12.6,3.5,1.4]], note:"«Sin estudios» tiene solo 78 entrevistas."},
+      {id:"clase", label:"Clase social", rows:[["Alta y media alta",129,23.0,27.8,18.0,8.1,2.4,0.4],["Media-media",1598,33.6,27.9,15.5,6.0,1.5,1.4],["Media-baja",519,35.6,19.5,14.7,6.8,2.8,2.1],["Trabajadora u obrera",705,38.9,7.2,9.7,16.2,6.9,0.8],["Baja o pobre",798,36.5,16.4,18.6,4.9,3.4,2.7]], note:"Clase con la que se identifica cada persona, tal como la publica el CIS."},
+      {id:"habitat", label:"Municipio", rows:[["Hasta 2.000 hab.",319,47.0,13.2,13.9,9.9,1.3,2.2],["2.001–10.000",648,36.4,18.0,14.4,5.4,4.1,1.7],["10.001–50.000",1150,33.4,20.2,17.0,6.8,3.1,1.6],["50.001–100.000",499,37.5,22.5,16.0,7.3,3.0,1.5],["100.001–400.000",837,36.1,22.2,14.3,6.6,2.4,1.5],["400.001–1.000.000",279,29.8,29.2,13.2,9.8,3.6,1.4],["Más de 1.000.000",344,28.6,24.0,13.5,11.3,2.9,0.5]]},
+      {id:"relig", label:"Religión", rows:[["Católicos practicantes",615,23.9,43.4,20.2,1.8,0.6,1.1],["Católicos no practicantes",1546,33.6,26.9,20.9,3.4,0.8,1.9],["Creyentes de otra religión",100,46.0,16.7,16.4,2.5,4.5,2.1],["Agnósticos",535,40.1,10.0,8.2,11.9,5.3,3.0],["Indiferentes o no creyentes",504,42.8,11.3,12.4,10.7,2.8,1.0],["Ateos",740,38.3,5.3,5.3,16.0,7.6,0.4]]},
+      {id:"ideo", label:"Ideología", rows:[["1 · Izquierda",902,61.3,1.0,1.0,11.5,7.0,0.0],["2",330,44.1,0.2,1.2,23.5,7.7,0.0],["3",514,51.5,1.4,0.7,17.2,4.8,0.1],["4",302,58.8,6.1,2.7,6.2,1.6,0.0],["5",653,26.4,35.1,15.6,1.1,0.2,3.0],["6",282,9.1,58.5,18.8,0.6,0.0,3.3],["7",342,9.0,46.5,28.1,0.1,0.0,3.5],["8",279,7.3,41.6,40.6,1.4,0.0,1.5],["9",72,8.4,41.0,38.6,0.0,0.6,3.3],["10 · Derecha",316,4.2,34.6,54.4,0.2,0.2,3.0]], note:"Autoubicación de 1 (izquierda) a 10 (derecha). El 9 tiene solo 72 entrevistas."}
+     ]},
+    {id:"gesop", firm:"GESOP (El Periódico)", label:"GESOP · 1.000 entrevistas", what:"Intención directa de voto sobre todos los encuestados", d:"2026-10-13", field:"6–8 oct. · 1.000 entrevistas (teléfono y online) · error ±3,1%",
+     url:"https://electomania.es/radiografia-de-la-intencion-directa-de-voto-segun-gesop/",
+     rest:"Otros, indecisos y no votarían", parties:["PSOE","PP","VOX","FA"],
+     note:"Intención directa sobre todos los encuestados, también indecisos y quienes no votarían: por eso los porcentajes son bajos y el resto es grande. Solo se publicaron estos cuatro partidos.",
+     total:["Todos",1000,22.1,17.9,14.9,6.3],
+     dims:[
+      {id:"sexo", label:"Sexo", rows:[["Hombres",null,19.1,17.7,16.3,7.5],["Mujeres",null,24.9,18.1,13.6,5.1]]},
+      {id:"edad", label:"Edad", rows:[["18–29 años",null,22.2,8.2,20.1,9.0],["30–44 años",null,18.6,13.7,19.6,9.7],["45–59 años",null,16.4,21.9,14.5,4.7],["60 años y más",null,28.6,21.1,10.4,4.5]]},
+      {id:"ocup", label:"Profesión y situación", rows:[["Trabaja",null,17.8,18.2,17.7,6.8],["En paro",null,25.1,10.9,14.2,8.5],["Jubilado/a",null,31.8,20.9,8.3,4.0],["Tareas del hogar",null,25.9,14.1,10.2,4.4],["Estudiante",null,30.2,14.1,10.8,10.7]]},
+      {id:"estudios", label:"Estudios", rows:[["Bajos",null,33.4,15.0,13.6,3.1],["Medios",null,21.5,13.9,17.4,5.4],["Altos",null,19.5,22.2,13.3,7.9]]},
+      {id:"habitat", label:"Municipio", rows:[["Hasta 10.000 hab.",null,22.1,21.8,14.5,6.8],["10.000–100.000",null,23.9,15.2,14.9,6.0],["100.000–500.000",null,22.0,19.0,14.8,5.3],["Más de 500.000",null,17.8,17.9,15.5,7.7]]},
+      {id:"ideo", label:"Ideología", rows:[["Izquierda",null,44.3,1.5,1.4,14.0],["Centro izquierda",null,45.6,2.2,1.1,7.2],["Centro",null,4.1,26.4,14.9,4.1],["Centro derecha",null,0.7,56.0,20.5,null],["Derecha",null,0.8,28.5,57.5,null],["No sabe / no contesta",null,12.8,9.1,27.6,7.5]], note:"GESOP no da el dato del Frente Amplio en el centro derecha ni en la derecha."}
+     ]}
+  ],
+  extra:[
+    {who:"Mayores de 65 años · Sigma Dos", src:"Sigma Dos para El Mundo (oct. 2026), citada por Heraldo de León", url:"https://www.heraldodeleon.es/leon/psoe-pp-situan-pensiones-centro-pugna-voto-senior/20261019200538113813.html", vals:{PP:38.4,PSOE:35.9,VOX:11.5}, note:"Intención de voto entre los jubilados. Es el único grupo de edad en el que el PSOE supera su media (25,3%)."},
+    {who:"Jóvenes · análisis de El País", src:"Kiko Llaneras (El País), sobre los barómetros del CIS", url:"https://x.com/kikollan/status/2107756212620243284", vals:null, note:"Vox sube 7–8 puntos entre los 18–24 años respecto a 2023 y es la primera fuerza entre los 18–24 y los 25–34 años. Sumar y Podemos son los que más voto joven pierden."}
+  ]
+};
+
 /* ---------- Encuestas recientes ----------
    d: fecha (fin de campo o publicación según el agregador). seats: escaños publicados por la propia encuestadora. */
 const POLLS = [
+  {firm:"Sigma Dos", media:"El Mundo", d:"2026-10-19", field:"1–14 oct. · 3.007", PP:31.5,PSOE:25.3,VOX:19.5,FA:7.2,POD:2.8,SALF:null, CFV:0.9, ERC:2.5,JUNTS:1.2,BILDU:1.2,PNV:0.9,BNG:0.8,CC:0.5,UPN:0.2,AA:0.8, seats:"PP 132–137 · PSOE 101–106 · Vox 65–68 · ERC 9 · FA 9–10 · Bildu 6–7 · Junts 6–7 · PNV 5–6 · Compromís 3–4 · BNG 2 · AA 1–2 · Podemos 1 · CC 1 · UPN 1"},
   {firm:"EM-Analytics", media:"Electomanía (ElectoPanel)", d:"2026-10-18", field:"15–17 oct. · 3.141", PP:31.8,PSOE:27.1,VOX:18.9,FA:4.9,POD:2.0,SALF:1.7, CFV:1.3, ERC:2.1,JUNTS:1.2,BILDU:1.4,PNV:1.0,BNG:1.0,CC:0.3,AA:1.1, seats:"PP 134 · PSOE 111 · Vox 62 · ERC 8 · FA 7 · Compromís 3 · AA 3 · Podemos 1"},
   {firm:"Opina 360", media:"El Plural", d:"2026-10-17", field:"Reestimación de los datos del CIS", out:true, PP:28.0,PSOE:28.0,VOX:17.8,FA:7.3,POD:3.5,SALF:1.6, seats:"PP 119 · PSOE 118 · Vox 67 · Sumar 13 · Podemos 1"},
   {firm:"CIS", media:"Barómetro de octubre", d:"2026-10-14", field:"1–6 oct. · 5.025", PP:22.2,PSOE:34.0,VOX:17.1,FA:6.1,POD:3.1,SALF:1.8, ERC:3.0,JUNTS:1.1,BILDU:1.6,PNV:0.6,BNG:0.9,CC:0.2,UPN:0.1, cis:true},
@@ -1127,7 +1211,7 @@ const TREND = [
  [8,32.3,25.7,19.0,6.4,3.6,2.0],[8,34.3,25.4,18.1,6.3,3.6,null],[8,33.1,25.4,17.9,6.6,2.8,null],[8,30.1,28.1,16.1,6.1,3.6,1.7],[8,32.0,26.1,19.0,6.4,3.5,2.0],[8,31.8,26.2,19.2,6.5,3.7,1.8],[8,32.1,26.2,19.1,6.2,3.9,1.9],[8,33.8,26.0,17.0,5.9,2.7,2.3],[8,34.2,25.2,18.0,5.9,3.5,null],[8,32.5,27.2,18.6,5.9,3.7,2.0],[8,28.7,27.0,20.3,6.6,3.6,2.3],
  [9,31.1,26.1,18.2,7.0,3.1,1.5],[9,34.5,24.9,18.3,5.7,3.4,null],[9,33.6,25.1,19.3,5.6,3.8,1.6],[9,31.5,25.6,18.9,6.9,2.8,2.5],[9,33.7,26.8,18.6,6.1,3.3,1.8],[9,34.7,26.3,17.3,4.5,3.7,1.0],[9,33.9,25.4,17.8,6.4,3.3,1.7],[9,33.9,25.7,18.0,5.7,3.3,2.0],[9,31.6,27.4,18.4,5.6,2.7,2.0],
  [10,33.2,27.5,19.2,7.0,3.3,null],[10,33.4,26.5,18.1,5.3,3.1,2.2],[10,31.3,26.9,19.4,6.3,3.4,1.7],
- [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7]
+ [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null]
 ];
 
 /* ---------- Calendario (RD 806/2026 y LOREG) ---------- */
@@ -1137,10 +1221,14 @@ const CALENDAR = [
   {d:"2026-10-14", t:"Primarias abiertas de Podemos (14–15 oct.): Irene Montero, candidata con el 90%", k:"hecho"},
   {d:"2026-10-16", t:"Cierre del plazo de coaliciones: nueve registradas, sin acuerdo entre Frente Amplio y Podemos", k:"hecho"},
   {d:"2026-10-17", t:"Presentación del Frente Amplio con Ada Colau; el PSOE proclama a Sánchez candidato", k:"hecho"},
-  {d:"2026-10-20", t:"ERC aprueba sus listas al Congreso y al Senado", k:"partidos"},
-  {d:"2026-10-21", t:"Se abre la presentación de candidaturas", k:"plazo"},
+  {d:"2026-10-19", t:"Feijóo firma su «Contrato con España»; Vox ofrece al PP un entendimiento para el Senado", k:"hecho"},
+  {d:"2026-10-20", t:"ERC aprueba sus listas al Congreso y al Senado", k:"hecho"},
+  {d:"2026-10-21", t:"Se abre la presentación de candidaturas", k:"hecho"},
+  {d:"2026-10-23", t:"Publicación definitiva del censo electoral", k:"plazo"},
   {d:"2026-10-26", t:"Último día para presentar las listas", k:"plazo"},
+  {d:"2026-10-28", t:"El BOE publica las candidaturas presentadas", k:"plazo"},
   {d:"2026-11-02", t:"La Junta Electoral publica las candidaturas proclamadas", k:"plazo"},
+  {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
   {d:"2026-11-13", t:"Empieza la campaña electoral (00:00 h)", k:"plazo"},
   {d:"2026-11-16", t:"Cara a cara Sánchez–Feijóo en Mediaset (aceptado por el PP)", k:"debate"},
   {d:"2026-11-19", t:"Último día para solicitar el voto por correo", k:"votante"},
@@ -1154,21 +1242,20 @@ const CALENDAR = [
   {d:"2026-12-23", t:"Sesión constitutiva de las nuevas Cortes (10:00 h)", k:"plazo"}
 ];
 
-/* ---------- Novedades desde la versión anterior (9 oct.) ---------- */
+/* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
+  ["21 oct.","Se abre el plazo para presentar candidaturas (hasta el 26 oct.). ERC confirma a Rufián y sitúa a Junqueras en el puesto 31 por Barcelona."],
+  ["21 oct.","El Gobierno garantiza a los sindicatos una subida del 4,5% para los empleados públicos en 2027. EE. UU. impide a Ada Colau entrar en Puerto Rico."],
+  ["20 oct.","Feijóo confirma que PP y Vox negocian para no dividir el voto en el Senado. El Consejo de Ministros aprueba 180 millones para vivienda en zonas tensionadas."],
+  ["20 oct.","El Supremo aplica la amnistía a Junqueras, Romeva, Turull y Bassa y levanta su inhabilitación."],
+  ["19 oct.","Sigma Dos (El Mundo): PP 31,5%, PSOE 25,3% y Vox 19,5%. PP y Vox sumarían entre 197 y 205 escaños."],
+  ["19 oct.","Feijóo firma un «Contrato con España» de quince compromisos: un millón de viviendas, pensiones con el IPC y bajada de impuestos. Sánchez promete subir el salario mínimo cada año."],
+  ["19 oct.","Vox ofrece al PP «algún entendimiento» en el Senado. EH Bildu refrenda sus listas, con Oskar Matute al Congreso."],
   ["18 oct.","Último ElectoPanel: PP 134 escaños, PSOE 111 y Vox 62; Podemos baja al 2% y el Frente Amplio, a 7 escaños."],
-  ["17 oct.","UPN y PP cierran su coalición en Navarra para el Congreso y el Senado. PP y Vox negocian unir listas al Senado en algunas provincias; Vox lo decide el 19 de octubre."],
-  ["17 oct.","PSOE y Frente Amplio pactan listas conjuntas al Senado («Senado de Progreso») en toda España salvo Cataluña, Baleares y Canarias, para disputar al PP la mayoría absoluta."],
-  ["17 oct.","Ada Colau es proclamada candidata del Frente Amplio a la Presidencia; Emilio Delgado encabeza la lista por Madrid. El PSOE proclama a Sánchez por unanimidad."],
-  ["16 oct.","Cierre de coaliciones: Frente Amplio y Podemos van por separado. Podemos apoya a ERC en Cataluña y va en coalición en la C. Valenciana (Compromís-Front Valencià) y en Canarias (Unidad del Pueblo Canario)."],
-  ["16 oct.","Irene Montero gana las primarias de Podemos con el 90% y será cabeza de lista por Madrid."],
-  ["16 oct.","Dimite la portavoz del PSOE, Montse Mínguez, por los negocios inmobiliarios de su pareja. La sustituye Rebeca Torró."],
-  ["14 oct.","El CIS de octubre sitúa al PSOE primero (34%) y al PP en el 22,2%. Dos reestimaciones de sus datos (Ateneo del Dato y Opina 360) los dejan empatados en torno al 28%. El resto de encuestas mantiene al PP en cabeza."],
-  ["8–12 oct.","Oleada de doce encuestas tras la convocatoria: todas las que publican escaños dan a PP y Vox más de 176."],
-  ["11 oct.","Abascal fija los ejes de Vox para el 29-N: remigración, desregulación y prioridad nacional."],
-  ["10 oct.","Arranque de precampaña: Feijóo en Ifema con el lema «Por fin» y Sánchez en Dos Hermanas, con la vivienda como eje. Miriam González presenta Democracia21."],
-  ["9 oct.","El PP acepta tres debates: cara a cara en Mediaset (16 nov.), portavoces en RTVE (23 nov.) y debate a varios en Atresmedia (26 nov.)."],
-  ["5 oct.","Aliança Catalana confirma que no se presentará a las generales."]
+  ["17 oct.","PSOE y Frente Amplio pactan listas conjuntas al Senado («Senado de Progreso»). UPN y PP cierran su coalición en Navarra."],
+  ["16 oct.","Cierre de coaliciones: Frente Amplio y Podemos van por separado. Irene Montero gana las primarias de Podemos."],
+  ["14 oct.","El CIS de octubre sitúa al PSOE primero (34%) y al PP en el 22,2%. Las reestimaciones de sus datos los dejan empatados en torno al 28%."],
+  ["12 oct.","El Supremo mantiene sin voto el 29-N a unos 163.000 nacionalizados por la «ley de nietos»."]
 ];
 
 
@@ -1180,7 +1267,8 @@ const CONTEXT = [
   ["23 sep. 2026","Desahucio de Maricarmen, de 87 años, en Madrid. Siguen protestas masivas por la vivienda."],
   ["2 oct. 2026","El Congreso tumba los dos decretos de vivienda del Gobierno con los votos de PP, Vox y Junts."],
   ["5–6 oct. 2026","Sánchez convoca elecciones para el 29 de noviembre y el Gobierno vuelve a aprobar los decretos, ahora con un fondo de 10.000 millones para la primera compra."],
-  ["16–17 oct. 2026","Cierre de coaliciones sin unidad entre Frente Amplio y Podemos. Colau, candidata del Frente Amplio; Montero, de Podemos."]
+  ["16–17 oct. 2026","Cierre de coaliciones sin unidad entre Frente Amplio y Podemos. Colau, candidata del Frente Amplio; Montero, de Podemos."],
+  ["19–20 oct. 2026","Feijóo presenta su «Contrato con España». PP y Vox negocian cómo no dividir el voto de la derecha en el Senado."]
 ];
 
 const SOURCES = [
@@ -1197,6 +1285,10 @@ const SOURCES = [
   ["Listas a la izquierda del PSOE por comunidad (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"],
   ["Encuestas de octubre (elecciones29noviembre.com)","https://elecciones29noviembre.com/encuestas/"],
   ["Barómetro del CIS de octubre (Electomanía)","https://electomania.es/barometro-del-cis-oct26-la-izquierda-se-dispara-con-el-psoe-en-el-34/"],
+  ["Cruces del CIS de octubre por grupos (Excel del CIS)","https://www.cis.es/en/w/avance-de-resultados-del-estudio-3582-bar%C3%B3metro-de-octubre-2026-"],
+  ["Intención directa por grupos de GESOP (Electomanía)","https://electomania.es/radiografia-de-la-intencion-directa-de-voto-segun-gesop/"],
+  ["Encuesta Sigma Dos del 19 oct. (Electográfica)","https://www.electografica.com/2026/10/encuesta-sigmados-261019.html"],
+  ["Negociación PP–Vox para el Senado (RTVC, 20 oct.)","https://rtvc.es/el-pp-negocia-con-vox-las-listas-del-senado-20-octubre-2026/"],
   ["Debates del 29-N (Infobae, 9 oct.)","https://www.infobae.com/espana/2026/10/09/los-tres-debates-de-las-elecciones-generales-del-29n-ya-tienen-fecha-y-el-ultimo-se-celebrara-tres-dias-antes-de-los-comicios/"],
   ["Aliança Catalana no se presenta (Ara, 5 oct.)","https://es.ara.cat/politica/alianca-catalana-no-presenta-elecciones-espanolas_1_5870081.html"],
   ["Democracia21 (El Español, 10 oct.)","https://www.elespanol.com/espana/20261010/democracia-presenta-elecciones-madrid-barcelona-liderados-miriam-gonzalez/1003744416434_0.html"],
@@ -1286,11 +1378,11 @@ const BLOCS = [
 ];
 
 /* ---------- Vistas ---------- */
-const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
+const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
 const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE; // versión web independiente: sin consulta a Claude
 const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
-const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
-const parentOf = id => id==="comparar" ? "partidos" : id==="encuestas" ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
+const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
+const parentOf = id => id==="comparar" ? "partidos" : (id==="encuestas"||id==="grupos") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
 function subnav(id){ const items = SUBNAV[parentOf(id)]; if (!items) return "";
   return `<nav class="subnav" aria-label="Apartados">${items.map(([v,l,mm])=>`<button class="subtab" data-go="${v}"${mm?` data-mapmode="${mm}"`:""} aria-pressed="${v===id}">${l}</button>`).join("")}</nav>`; }
 function markTab(id){ const p = parentOf(id); $$("#tabs .tab").forEach(b => b.setAttribute("aria-selected", b.dataset.v===p ? "true":"false")); }
@@ -1352,7 +1444,7 @@ function renderResumen(){
     <div class="panel stack">
       <span class="eyebrow">Estimación de voto · media desde el 1 de sept.</span>
       <div class="bars">${order.map(k=>`<div class="bar"><span class="nm"><i class="dot" style="background:${color(k)}"></i>${esc(sname(k))}</span><span class="tr"><i style="width:${(avg[k]/maxV*100).toFixed(1)}%;background:${color(k)}"></i></span><span class="v num">${fmt(avg[k])}%</span></div>`).join("")}</div>
-      <p class="small muted">Última encuesta de cada empresa publicada desde el 1 de septiembre. Datos a ${UPDATED}. <button class="linkbtn" data-go="encuestas">Ver todas las encuestas</button></p>
+      <p class="small muted">Última encuesta de cada empresa publicada desde el 1 de septiembre. Datos a ${UPDATED}. <button class="linkbtn" data-go="encuestas">Ver todas las encuestas</button> · <button class="linkbtn" data-go="grupos">Voto por edad, sexo y profesión</button></p>
     </div>
     <div class="panel stack">
       <span class="eyebrow">¿Quién suma 176? · con la proyección media</span>
@@ -1558,6 +1650,51 @@ function renderTrend(){
   $("#trend").innerHTML = s + "</svg>";
 }
 
+
+/* ---------- Voto por grupos ---------- */
+let groupSrc = "cis", groupDim = "sexo";
+function renderGrupos(){
+  const v = $("#v-grupos");
+  const S = GROUPS.sources.find(x=>x.id===groupSrc) || GROUPS.sources[0], ks = S.parties;
+  const dim = S.dims.find(d=>d.id===groupDim) || S.dims[0];
+  const lead = r => { let b=-1; ks.forEach((k,i)=>{ const x=r[i+2]; if (x!=null && (b<0 || x>r[b+2])) b=i; }); return b; };
+  const rest = r => Math.max(0, 100 - ks.reduce((a,k,i)=>a+(r[i+2]||0),0));
+  const bar = (r, isTot) => { const t = lead(r);
+    const segs = ks.map((k,i)=>{ const val = r[i+2]; if (!val) return ""; const d = isTot ? null : val - S.total[i+2];
+      const tip = `<b>${esc(r[0])}</b><br>${esc(sname(k))}: ${fmt(val)}%${d==null?"":` (${d>=0?"+":"−"}${fmt(Math.abs(d))} puntos sobre la media)`}`;
+      return `<i tabindex="0" style="width:${val}%;background:${color(k)};color:${isDark(color(k))?"#fff":"#15171C"}" data-tip="${esc(tip)}">${val>=7?`<span class="num">${fmt(val,0)}</span>`:""}</i>`; }).join("");
+    const o = rest(r);
+    return `<div class="sgrow${isTot?" sgtot":""}"><span class="gname">${esc(r[0])}<small>${r[1]?`${r[1].toLocaleString("es-ES")} entrevistas · `:""}primero: ${t<0?"—":esc(sname(ks[t]))}</small></span>
+      <span class="sgbar">${segs}${o>0.4?`<i class="sgrest" tabindex="0" style="width:${o.toFixed(1)}%" data-tip="<b>${esc(r[0])}</b><br>${esc(S.rest)}: ${fmt(o)}%">${o>=7?`<span class="num">${fmt(o,0)}</span>`:""}</i>`:""}</span></div>`; };
+  const leaders = S.dims.filter(d=>d.id!=="ideo").map(d=>{ const by = {}; d.rows.forEach(r=>{ const i = lead(r); if (i<0) return; (by[ks[i]] = by[ks[i]]||[]).push(r[0].replace(/ años$/,"")); }); return {d, by}; });
+  v.innerHTML = `${subnav("grupos")}
+  <div class="view-head"><span class="eyebrow">Congreso · Voto por grupos</span><h2>¿Quién vota a quién?</h2>
+  <p class="lead">Cómo se reparte el voto por sexo, edad, profesión, estudios, clase social, municipio, religión e ideología, según las encuestas que publican estos cruces.</p></div>
+  <div class="stack" style="gap:12px">
+    <div class="row"><span class="eyebrow" style="min-width:70px">Encuesta</span><div class="party-pick" id="g-src" role="group" aria-label="Encuesta">${GROUPS.sources.map(x=>`<button class="chip" data-src="${x.id}" aria-pressed="${x.id===S.id}">${esc(x.label)}</button>`).join("")}</div></div>
+    <div class="row"><span class="eyebrow" style="min-width:70px">Grupo</span><div class="party-pick" id="g-pick" role="group" aria-label="Grupo">${S.dims.map(d=>`<button class="chip" data-g="${d.id}" aria-pressed="${d.id===dim.id}">${esc(d.label)}</button>`).join("")}</div></div>
+  </div>
+  <section class="panel stack minw0">
+    <div class="row" style="justify-content:space-between; align-items:flex-start"><div><span class="eyebrow">${esc(S.firm)} · ${esc(S.what)}</span><h3 style="margin-top:6px">${esc(dim.label)}</h3></div>
+      <span class="small muted">Publicada el ${dateLabel(S.d)} · campo ${esc(S.field)}</span></div>
+    <div class="seat-legend">${ks.map(k=>`<span><i class="sq" style="background:${color(k)}"></i>${esc(S.id==="cis"&&k==="FA"?"Sumar/FA":sname(k))}</span>`).join("")}<span><i class="sq sgrest-sq"></i>${esc(S.rest)}</span></div>
+    <div class="sgtable">${bar(S.total, true)}${dim.rows.map(r=>bar(r,false)).join("")}</div>
+    <p class="small muted">${esc(S.note)}${dim.note?" "+esc(dim.note):""} Cuantas menos entrevistas tiene un grupo, mayor es su margen de error. Pasa el ratón o toca un tramo para ver la diferencia con la media. <a href="${esc(S.page||S.url)}" target="_blank" rel="noopener">Datos originales</a>.</p>
+  </section>
+  <section class="stack">
+    <h3>Quién va primero en cada grupo</h3>
+    <div class="grid3">${leaders.map(({d,by})=>`<div class="panel stack small"><span class="eyebrow">${esc(d.label)}</span>${ks.filter(k=>by[k]).map(k=>`<p><i class="dot" style="background:${color(k)}"></i> <b>${esc(sname(k))}</b>: ${esc(by[k].join(" · "))}</p>`).join("")}</div>`).join("")}</div>
+    <p class="small muted">Según ${S.id==="cis"?"el CIS":esc(S.firm)}. Con diferencias de uno o dos puntos el orden puede cambiar de una encuesta a otra.${S.id==="cis"?" El CIS sitúa al PSOE muy por encima del resto de encuestas en su estimación general, y eso se nota también aquí.":""}</p>
+  </section>
+  <section class="stack">
+    <h3>Otros datos por grupo</h3>
+    <div class="grid2">${GROUPS.extra.map(e=>`<div class="panel stack small"><span class="eyebrow">${esc(e.who)}</span>${e.vals?`<div class="bars">${Object.keys(e.vals).map(k=>`<div class="bar"><span class="nm"><i class="dot" style="background:${color(k)}"></i>${esc(sname(k))}</span><span class="tr"><i style="width:${(e.vals[k]/45*100).toFixed(1)}%;background:${color(k)}"></i></span><span class="v num">${fmt(e.vals[k])}%</span></div>`).join("")}</div>`:""}<p>${esc(e.note)}</p><p class="muted">Fuente: <a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.src)}</a></p></div>`).join("")}</div>
+    <p class="small muted">La mayoría de las encuestas privadas solo publican la estimación general, sin cruces por grupos.</p>
+  </section>`;
+  $$("#g-src .chip", v).forEach(b => b.addEventListener("click", ()=>{ groupSrc = b.dataset.src; renderGrupos(); }));
+  $$("#g-pick .chip", v).forEach(b => b.addEventListener("click", ()=>{ groupDim = b.dataset.g; renderGrupos(); }));
+  tipOn(v);
+}
 
 /* ---------- Encuestas: escaños en barra y barras por encuestadora ---------- */
 let seatRowsAll = false, pollParty = "PP";
@@ -2068,7 +2205,7 @@ function renderCalendario(){
 function goLinks(){ document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { if (g.dataset.mapmode) mapMode = g.dataset.mapmode; show(g.dataset.go, true); } }); }
 function boot(){
   renderTabs(); renderCount(); goLinks();
-  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
+  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderGrupos(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
   const h = (location.hash||"").replace("#","");
   show(h || "resumen", false);
   window.addEventListener("hashchange", ()=> show((location.hash||"").replace("#",""), false));
