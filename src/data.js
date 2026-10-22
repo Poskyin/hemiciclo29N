@@ -559,7 +559,19 @@ const MINOR_NOTE2 = {
   POD:"Irene Montero encabeza Madrid. Va sola salvo en la C. Valenciana y Canarias, y no se presenta en Cataluña. Su dirección en Aragón dimitió el 22 de octubre.",
   SALF:"Alvise Pérez encabeza Madrid. No se presentó en 2023; en las europeas de 2024 sacó el 4,6%. Varias encuestas no le dan dato propio."
 };
-const MINOR_LOCAL = {};
+const MINOR_LOCAL = {
+  ERC:{t:"CEO (Cataluña, generales):", x:"19,0% y 10–11 escaños en Cataluña (2023: 13,2% y 7). Campo del 1 sep. al 5 oct., antes del pacto con Podemos. Sigma Dos (19 oct.) le da 9: Barcelona 6, Girona, Lleida y Tarragona 1.", u:"https://conversesacatalunya.cat/enquesta-ceo-octubre-2026-illa-majoria-eleccions-29n/"},
+  JUNTS:{t:"CEO (Cataluña, generales):", x:"10,3% y 4–5 escaños en Cataluña (2023: 11,2% y 7). Sigma Dos (19 oct.) le da 6–7: Barcelona 3, Girona 1–2, Lleida y Tarragona 1.", u:"https://conversesacatalunya.cat/enquesta-ceo-octubre-2026-illa-majoria-eleccions-29n/"},
+  BILDU:{t:"Sigma Dos por provincias (19 oct.):", x:"Álava 1, Bizkaia 2–3, Gipuzkoa 2 y Navarra 1. Electodatos (21 oct.) le da 3 en Bizkaia, por delante del PNV.", u:"https://www.sigmados.com/noticia?id=rivzEnwHgHaatUC"},
+  PNV:{t:"Sigma Dos por provincias (19 oct.):", x:"Álava 1, Bizkaia 2–3 y Gipuzkoa 2. Electodatos (21 oct.) le da 2 en Bizkaia.", u:"https://www.sigmados.com/noticia?id=rivzEnwHgHaatUC"},
+  BNG:{t:"Sigma Dos por provincias (19 oct.):", x:"A Coruña 1 y Pontevedra 1, con opción a un tercero en Lugo. Sondaxe (La Voz de Galicia, sep.): 14,0% en Galicia y 2 escaños.", u:"https://www.galiciapress.es/articulo/politica-galicia/2026-10-20/6057761-sondeos-galicia-29-n-puede-bng-lograr-segundo-diputado-vox-conseguir-escano"},
+  CC:{t:"Sigma Dos por provincias (19 oct.):", x:"1 escaño en Santa Cruz de Tenerife.", u:"https://www.sigmados.com/noticia?id=rivzEnwHgHaatUC"},
+  UPN:{t:"Sigma Dos por provincias (19 oct.):", x:"La coalición PP-UPN saca 2 escaños en Navarra, sin separar cuántos son de cada partido.", u:"https://www.sigmados.com/noticia?id=rivzEnwHgHaatUC"},
+  CFV:{t:"Sigma Dos (C. Valenciana, 21 oct.):", x:"3–4 escaños: 2 en Valencia; en Alicante, 1–2 para la lista que la encuesta llama FA. Electodatos (22 oct.) le da 3.", u:"https://www.eldebate.com/espana/comunidad-valenciana/20261021/encuestas-electorales-29n-psoe-acerca-pp-vox-decanta-mayoria-absoluta-centro-derecha_471957.html"},
+  POD:{t:"Sigma Dos por provincias (19 oct.):", x:"1 escaño, en Madrid. El promedio de El Arjonauta (22 oct.) le da un 79% de probabilidad de sacar al menos uno.", u:"https://elarjonauta.substack.com/p/podemos-saca-escano-en-79-de-cada"},
+  AA:{t:"El Arjonauta (promedio, 22 oct.):", x:"0,8% en España y en torno al 4,8% en Cádiz, insuficiente para escaño: un 19% de probabilidad de sacar al menos uno.", u:"https://elarjonauta.substack.com/p/podemos-saca-escano-en-79-de-cada"},
+  SALF:{t:"El Arjonauta (promedio, 22 oct.):", x:"1,7% y un 8% de probabilidad de sacar escaño.", u:"https://elarjonauta.substack.com/p/podemos-saca-escano-en-79-de-cada"}
+};
 const OTHER_CANDS = [
   {n:"Democracia21", c:"#6B5CA5", w:"Madrid y Barcelona · con Ciudadanos y UCIN", x:"Partido nuevo de Miriam González. Ha publicado «España Limpia»: eliminar aforamientos, menos asesores, quitar impuestos de vivienda a menores de 35 años y límite de dos mandatos."},
   {n:"Coalición Existe", c:"#4E7D3A", w:"Aragón · Teruel Existe y Aragón Existe", x:"Teruel Existe tuvo un diputado y dos senadores en 2019; en 2023 no sacó escaño. CHA y Frente Amplio no presentan lista al Congreso por Teruel para no dividir el voto."},
@@ -704,6 +716,7 @@ const NEWS = [
   ["21 oct.","El Constitucional inadmite el recurso del Defensor del Pueblo: los nacionalizados por la «ley de nietos» no votarán salvo que acrediten descender de exiliados."],
   ["21 oct.","Se abre el plazo para presentar candidaturas (hasta el 26 oct.). ERC sitúa a Junqueras en el puesto 31 por Barcelona."],
   ["20 oct.","El Supremo aplica la amnistía a Junqueras, Romeva, Turull y Bassa. Puigdemont, que ya puede volver, hará campaña en Cataluña."],
+  ["20 oct.","Sigma Dos para el Senado: PP 128 escaños (125–130), Senado de Progreso 93, Vox 19, Bildu 7 y ERC, PNV y Junts 5 cada uno. PP y Vox quedarían a 6 de los tres quintos."],
   ["19 oct.","Sigma Dos (El Mundo): PP 31,5%, PSOE 25,3% y Vox 19,5%. PP y Vox sumarían entre 197 y 205 escaños."],
   ["19 oct.","Feijóo firma un «Contrato con España» de quince compromisos. Sánchez promete subir el salario mínimo cada año."],
   ["17 oct.","PSOE y Frente Amplio pactan listas conjuntas al Senado («Senado de Progreso»). UPN y PP cierran su coalición en Navarra."],
@@ -742,6 +755,10 @@ const SOURCES = [
   ["Encuesta Sigma Dos del 19 oct. (Electográfica)","https://www.electografica.com/2026/10/encuesta-sigmados-261019.html"],
   ["Negociación PP–Vox para el Senado (RTVC, 20 oct.)","https://rtvc.es/el-pp-negocia-con-vox-las-listas-del-senado-20-octubre-2026/"],
   ["Pacto PP–Vox para el Senado (Moncloa.com, 22 oct.)","https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557"],
+  ["Sigma Dos: escaños por provincia (19 oct.)","https://www.sigmados.com/noticia?id=rivzEnwHgHaatUC"],
+  ["CEO: generales en Cataluña (Converses a Catalunya)","https://conversesacatalunya.cat/enquesta-ceo-octubre-2026-illa-majoria-eleccions-29n/"],
+  ["Sigma Dos para el Senado (Electomanía, 20 oct.)","https://electomania.es/encuesta-al-senado-sigma-dos-20oct-pp-y-vox-a-6-escanos-del-control-total/"],
+  ["Probabilidad de escaño de los partidos pequeños (El Arjonauta, 22 oct.)","https://elarjonauta.substack.com/p/podemos-saca-escano-en-79-de-cada"],
   ["Debates: posturas de PSOE y PP (elDiario.es, 22 oct.)","https://www.eldiario.es/politica/sanchez-acepta-cara-cara-electoral-feijoo-16-noviembre_1_13607508.html"],
   ["Directo del 22 de octubre (Infobae)","https://www.infobae.com/espana/2026/10/22/elecciones-generales-29-n-en-directo-ultima-hora-de-los-sondeos-propuestas-de-los-partidos-y-actos-de-los-candidatos/"],
   ["Ley de nietos: el Constitucional inadmite el recurso (Diario de Avisos)","https://diariodeavisos.elespanol.com/2026/10/constitucional-voto-ley-nietos-elecciones-29-noviembre/"],
