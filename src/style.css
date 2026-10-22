@@ -339,3 +339,33 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
   .sgbar{height:22px}
   .sgbar i{font-size:11px}
 }
+
+/* ---------- Partidos minoritarios ---------- */
+.mrows{display:flex; flex-direction:column}
+.mrow{display:grid; grid-template-columns:150px minmax(0,1fr) 64px; gap:14px; align-items:center; padding:6px 0; border-top:1px solid var(--line)}
+.mrow.mhead{border-top:0; padding:0}
+.mname{display:flex; gap:8px; align-items:center; min-width:0}
+.mname > span{display:flex; flex-direction:column; line-height:1.2; min-width:0}
+.mname b{font-size:14px} .mname small{font-size:11px; color:var(--muted)}
+.mtrack{position:relative; height:40px}
+.mhead .mtrack{height:16px}
+.mhead em{position:absolute; transform:translateX(-50%); font-style:normal; font-size:11px; color:var(--muted)}
+.mgrid{position:absolute; top:0; bottom:0; width:1px; background:var(--line)}
+.mrange{position:absolute; top:50%; height:12px; margin-top:-6px; background:var(--pc); opacity:.18; border-radius:6px}
+.mtrack .mdot{position:absolute; width:10px; height:10px; margin:-5px 0 0 -5px; border-radius:50%; background:var(--card); border:2px solid var(--pc); z-index:2; outline-offset:2px}
+.mtrack .mdia{position:absolute; top:50%; width:14px; height:14px; margin:-7px 0 0 -7px; transform:rotate(45deg); background:var(--pc); border:2px solid var(--card); box-shadow:0 0 0 1px var(--ink); z-index:3}
+.mtrack .m23{position:absolute; top:6px; bottom:6px; width:0; border-left:2px dashed var(--muted); z-index:1}
+.seat-legend .mdot,.seat-legend .mdia,.seat-legend .m23{display:inline-block; vertical-align:-1px; margin-right:6px}
+.seat-legend .mdot{width:9px; height:9px; border-radius:50%; border:2px solid var(--ink)}
+.seat-legend .mdia{width:9px; height:9px; transform:rotate(45deg); background:var(--ink)}
+.seat-legend .m23{width:0; height:11px; border-left:2px dashed var(--muted)}
+.msum{display:flex; flex-direction:column; align-items:flex-end; line-height:1.1}
+.msum b{font-family:var(--display); font-size:24px; font-weight:800} .msum small{font-size:11px; color:var(--muted)}
+.mcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:12px}
+.mcard{display:flex; flex-direction:column; gap:8px; padding:14px; border-top:5px solid var(--pc)}
+.mcard h4{margin:0; font-size:15px}
+.mbig{font-family:var(--display); font-size:34px; font-weight:800; line-height:1; display:flex; flex-direction:column; align-items:flex-end}
+.mbig small{font-family:var(--body); font-size:11px; font-weight:600; color:var(--muted)}
+.mfacts{display:flex; gap:4px 16px; flex-wrap:wrap}
+.mloc{background:var(--soft); padding:8px 10px; border-radius:8px}
+@media (max-width:600px){ .mrow{grid-template-columns:84px minmax(0,1fr) 40px; gap:8px} .mname .dot{display:none} .msum b{font-size:20px} }

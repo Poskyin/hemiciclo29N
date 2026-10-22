@@ -73,11 +73,11 @@ const BLOCS = [
 ];
 
 /* ---------- Vistas ---------- */
-const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
+const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Partidos minoritarios"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
 const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE; // versión web independiente: sin consulta a Claude
 const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
-const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
-const parentOf = id => id==="comparar" ? "partidos" : (id==="encuestas"||id==="grupos") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
+const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Minoritarios"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
+const parentOf = id => id==="comparar" ? "partidos" : (id==="encuestas"||id==="grupos"||id==="minoritarios") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
 function subnav(id){ const items = SUBNAV[parentOf(id)]; if (!items) return "";
   return `<nav class="subnav" aria-label="Apartados">${items.map(([v,l,mm])=>`<button class="subtab" data-go="${v}"${mm?` data-mapmode="${mm}"`:""} aria-pressed="${v===id}">${l}</button>`).join("")}</nav>`; }
 function markTab(id){ const p = parentOf(id); $$("#tabs .tab").forEach(b => b.setAttribute("aria-selected", b.dataset.v===p ? "true":"false")); }
@@ -345,6 +345,63 @@ function renderTrend(){
   $("#trend").innerHTML = s + "</svg>";
 }
 
+
+/* ---------- Partidos minoritarios ---------- */
+const MINOR_VIEW = ["ERC","JUNTS","BILDU","PNV","BNG","CC","UPN","AA","CFV","UPC","POD","SALF"];
+const pollVal = (p, k) => k==="CFV" ? (p.CFV!=null ? p.CFV : null) : k==="UPC" ? null : p[k];
+function renderMinoritarios(){
+  const v = $("#v-minoritarios");
+  const A = average(false), res = simulate(A.avg), tot = res.totals;
+  const polls = latestPerFirm(false);
+  const perPoll = polls.map(p => ({p, t: simulate(pollTargets(p)).totals}));
+  const rows = MINOR_VIEW.map(k => {
+    const dots = perPoll.filter(x => pollVal(x.p,k)!=null).map(x => ({firm:x.p.firm, d:x.p.d, pct:pollVal(x.p,k), seats:x.t[k]||0}));
+    const provs = res.provinces.filter(pr => pr.alloc.seats[k]).map(pr => [pr.name, pr.alloc.seats[k]]);
+    const pcts = dots.map(d=>d.pct), avgPct = pcts.length ? pcts.reduce((a,b)=>a+b,0)/pcts.length : null;
+    const min = dots.length ? Math.min(...dots.map(d=>d.seats)) : null, max = dots.length ? Math.max(...dots.map(d=>d.seats)) : null;
+    return {k, dots, provs, seats: tot[k]||0, r23: P[k].r23 ? P[k].r23[1] : null, avgPct, min, max};
+  });
+  const XMAX = Math.max(12, ...rows.map(r => Math.max(r.max||0, r.seats, r.r23||0))) + 1;
+  const xp = n => (n/XMAX*100).toFixed(2) + "%";
+  const minorSum = MINOR_VIEW.filter(k=>!["POD","CFV","UPC","SALF"].includes(k)).reduce((a,k)=>a+(tot[k]||0),0);
+  const ppvox = (tot.PP||0)+(tot.VOX||0), izq = sumOf(tot, ["PSOE","FA","POD","CFV","UPC"]);
+  const needR = Math.max(0, 176-ppvox), needL = Math.max(0, 176-izq);
+  const scale = [0,2,4,6,8,10,12].filter(n=>n<XMAX);
+  v.innerHTML = `${subnav("minoritarios")}
+  <div class="view-head"><span class="eyebrow">Congreso · Partidos minoritarios</span><h2>Los partidos pequeños</h2>
+  <p class="lead">Partidos territoriales y nuevos: cuánto les dan las encuestas, cuántos escaños podrían sacar y dónde. Con un Congreso igualado, pueden decidir la mayoría.</p></div>
+  <section class="grid3">
+    <div class="panel stack"><span class="eyebrow">Escaños de los partidos territoriales</span><div class="sen-big"><span class="n num">${minorSum}</span><span class="muted">en nuestra proyección · ${MINOR_VIEW.filter(k=>P[k].r23&&!["POD","SALF"].includes(k)).reduce((a,k)=>a+P[k].r23[1],0)} en 2023</span></div><p class="small muted">ERC, Junts, Bildu, PNV, BNG, CC, UPN y Adelante Andalucía, con la media de ${A.n} encuestas.</p></div>
+    <div class="panel stack"><span class="eyebrow">PP + Vox</span><div class="sen-big"><span class="n num">${ppvox}</span><span class="muted">${needR?`les faltan ${needR} para 176`:"mayoría sin otros partidos"}</span></div><p class="small muted">${needR?`Necesitarían a partidos como UPN (${tot.UPN||0}) o CC (${tot.CC||0}).`:"Con la media de encuestas no dependerían de los partidos pequeños."}</p></div>
+    <div class="panel stack"><span class="eyebrow">PSOE + FA + Podemos y coaliciones</span><div class="sen-big"><span class="n num">${izq}</span><span class="muted">les faltan ${needL} para 176</span></div><p class="small muted">Los partidos territoriales suman ${minorSum}: ${izq+minorSum>=176?"con todos ellos llegarían":"ni con todos ellos llegarían"} a la mayoría.</p></div>
+  </section>
+  <section class="panel stack minw0">
+    <div><span class="eyebrow">Escaños en el Congreso</span><h3 style="margin-top:6px">Lo que da cada encuesta</h3></div>
+    <div class="seat-legend"><span><i class="mdot"></i>Una encuesta (escaños con nuestro modelo)</span><span><i class="mdia"></i>Media de encuestas</span><span><i class="m23"></i>Resultado de 2023</span></div>
+    <div class="mrows">
+      <div class="mrow mhead" aria-hidden="true"><span></span><span class="mtrack">${scale.map(n=>`<em style="left:${xp(n)}">${n}</em>`).join("")}</span><span></span></div>
+      ${rows.map(r=>`<div class="mrow"><span class="mname"><i class="dot" style="background:${color(r.k)}"></i><span><b>${esc(sname(r.k))}</b><small>${r.avgPct!=null?fmt(r.avgPct)+"% · ":""}${r.dots.length?`${r.dots.length} encuesta${r.dots.length>1?"s":""}`:"sin dato propio"}</small></span></span>
+        <span class="mtrack" style="--pc:${color(r.k)}">${scale.map(n=>`<b class="mgrid" style="left:${xp(n)}"></b>`).join("")}${r.dots.length>1?`<i class="mrange" style="left:${xp(r.min)};width:calc(${xp(r.max)} - ${xp(r.min)})"></i>`:""}${r.r23!=null?`<b class="m23" style="left:${xp(r.r23)}" title="2023: ${r.r23}"></b>`:""}${r.dots.map((d,i)=>`<i class="mdot" tabindex="0" style="left:${xp(d.seats)};top:${50 + ((i%3)-1)*22}%" data-tip="<b>${esc(d.firm)}</b> · ${dateLabel(d.d)}<br>${esc(sname(r.k))}: ${fmt(d.pct)}% → ${d.seats} escaño${d.seats===1?"":"s"}"></i>`).join("")}<i class="mdia" tabindex="0" style="left:${xp(r.seats)}" data-tip="<b>${esc(sname(r.k))}</b><br>Con la media de encuestas: ${r.seats} escaño${r.seats===1?"":"s"}${r.r23!=null?`<br>2023: ${r.r23}`:""}"></i></span>
+        <span class="msum num"><b>${r.seats}</b><small>${r.min!=null&&r.dots.length>1?`${r.min}–${r.max}`:r.r23!=null?`2023: ${r.r23}`:"nuevo"}</small></span></div>`).join("")}
+    </div>
+    <p class="small muted">Cada punto es la última encuesta de una empresa desde el 1 de septiembre (sin el CIS) que da dato propio de ese partido; sus escaños se calculan con nuestro modelo provincia a provincia, para compararlas con el mismo método. El rombo es la proyección con la media y la raya, el resultado de 2023. Compromís-Front Valencià y Unidad del Pueblo Canario heredan el voto del Frente Amplio y Podemos en su comunidad; Podemos no se presenta en Cataluña. Pasa el ratón o toca un punto para ver la encuesta.</p>
+  </section>
+  <section class="stack">
+    <h3>Partido a partido</h3>
+    <div class="mcards">${rows.map(r=>{ const pp = P[r.k], loc = MINOR_LOCAL[r.k];
+      return `<div class="panel mcard" style="--pc:${color(r.k)}"><div class="row" style="justify-content:space-between; align-items:flex-start"><div><h4>${esc(pp.name)}</h4><span class="small muted">${esc(pp.scope)} · ${esc(pp.leader)}</span></div><span class="mbig num">${r.seats}<small>escaños</small></span></div>
+        <div class="small mfacts"><span>Media: <b>${r.avgPct!=null?fmt(r.avgPct)+"%":"—"}</b></span><span>2023: <b>${pp.r23?fmt(pp.r23[0],2)+"% y "+pp.r23[1]+" escaño"+(pp.r23[1]>1?"s":""):"no se presentó"}</b></span></div>
+        <p class="small">${r.provs.length?`<b>Dónde saca escaño:</b> ${esc(r.provs.map(([n,s])=>s>1?`${n} (${s})`:n).join(", "))}.`:`<b>Sin escaño</b> en nuestra proyección con la media.`}</p>
+        ${loc?`<p class="small mloc"><b>${esc(loc.t)}</b> ${esc(loc.x)} <a href="${esc(loc.u)}" target="_blank" rel="noopener">Fuente</a></p>`:""}
+        <p class="small muted">${esc(MINOR_NOTE2[r.k] || (pp.note||pp.role))}</p></div>`; }).join("")}</div>
+  </section>
+  <section class="stack">
+    <h3>Otras candidaturas</h3>
+    <div class="terr">${OTHER_CANDS.map(c=>`<div class="panel"><h4><i class="dot" style="background:${c.c}"></i>${esc(c.n)}</h4><span class="small muted">${esc(c.w)}</span><p class="small">${esc(c.x)}</p></div>`).join("")}</div>
+    <p class="small muted">Estas candidaturas no aparecen en las encuestas nacionales, así que no entran en el modelo de escaños.</p>
+  </section>`;
+  tipOn(v);
+}
 
 /* ---------- Voto por grupos ---------- */
 let groupSrc = "cis", groupDim = "sexo";
@@ -900,7 +957,7 @@ function renderCalendario(){
 function goLinks(){ document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { if (g.dataset.mapmode) mapMode = g.dataset.mapmode; show(g.dataset.go, true); } }); }
 function boot(){
   renderTabs(); renderCount(); goLinks();
-  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderGrupos(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
+  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderGrupos(); renderMinoritarios(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
   const h = (location.hash||"").replace("#","");
   show(h || "resumen", false);
   window.addEventListener("hashchange", ()=> show((location.hash||"").replace("#",""), false));
