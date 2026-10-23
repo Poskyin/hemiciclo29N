@@ -640,6 +640,7 @@ const GROUPS = {
 /* ---------- Encuestas recientes ----------
    d: fecha (fin de campo o publicación según el agregador). seats: escaños publicados por la propia encuestadora. */
 const POLLS = [
+  {firm:"IMOP Insights", media:"El Confidencial", d:"2026-10-23", field:"13–16 oct. · 1.000", PP:28.5,PSOE:27.1,VOX:20.0,FA:8.9,POD:1.9,SALF:1.2, ERC:2.2,JUNTS:1.2,BILDU:1.3,PNV:1.0,BNG:1.1,CC:0.6, seats:"PP 123 · PSOE 113 · Vox 72 · FA 14 · ERC 8 · Bildu 6 · PNV 5 · Junts 4 · BNG 2 · Podemos 1 · AA 1 · CC 1"},
   {firm:"Sigma Dos", media:"El Mundo", d:"2026-10-19", field:"1–14 oct. · 3.007", PP:31.5,PSOE:25.3,VOX:19.5,FA:7.2,POD:2.8,SALF:null, CFV:0.9, ERC:2.5,JUNTS:1.2,BILDU:1.2,PNV:0.9,BNG:0.8,CC:0.5,UPN:0.2,AA:0.8, seats:"PP 132–137 · PSOE 101–106 · Vox 65–68 · ERC 9 · FA 9–10 · Bildu 6–7 · Junts 6–7 · PNV 5–6 · Compromís 3–4 · BNG 2 · AA 1–2 · Podemos 1 · CC 1 · UPN 1"},
   {firm:"EM-Analytics", media:"Electomanía (ElectoPanel)", d:"2026-10-18", field:"15–17 oct. · 3.141", PP:31.8,PSOE:27.1,VOX:18.9,FA:4.9,POD:2.0,SALF:1.7, CFV:1.3, ERC:2.1,JUNTS:1.2,BILDU:1.4,PNV:1.0,BNG:1.0,CC:0.3,AA:1.1, seats:"PP 134 · PSOE 111 · Vox 62 · ERC 8 · FA 7 · Compromís 3 · AA 3 · Podemos 1"},
   {firm:"Opina 360", media:"El Plural", d:"2026-10-17", field:"Reestimación de los datos del CIS", out:true, PP:28.0,PSOE:28.0,VOX:17.8,FA:7.3,POD:3.5,SALF:1.6, seats:"PP 119 · PSOE 118 · Vox 67 · Sumar 13 · Podemos 1"},
@@ -689,7 +690,8 @@ const TREND = [
  [8,32.3,25.7,19.0,6.4,3.6,2.0],[8,34.3,25.4,18.1,6.3,3.6,null],[8,33.1,25.4,17.9,6.6,2.8,null],[8,30.1,28.1,16.1,6.1,3.6,1.7],[8,32.0,26.1,19.0,6.4,3.5,2.0],[8,31.8,26.2,19.2,6.5,3.7,1.8],[8,32.1,26.2,19.1,6.2,3.9,1.9],[8,33.8,26.0,17.0,5.9,2.7,2.3],[8,34.2,25.2,18.0,5.9,3.5,null],[8,32.5,27.2,18.6,5.9,3.7,2.0],[8,28.7,27.0,20.3,6.6,3.6,2.3],
  [9,31.1,26.1,18.2,7.0,3.1,1.5],[9,34.5,24.9,18.3,5.7,3.4,null],[9,33.6,25.1,19.3,5.6,3.8,1.6],[9,31.5,25.6,18.9,6.9,2.8,2.5],[9,33.7,26.8,18.6,6.1,3.3,1.8],[9,34.7,26.3,17.3,4.5,3.7,1.0],[9,33.9,25.4,17.8,6.4,3.3,1.7],[9,33.9,25.7,18.0,5.7,3.3,2.0],[9,31.6,27.4,18.4,5.6,2.7,2.0],
  [10,33.2,27.5,19.2,7.0,3.3,null],[10,33.4,26.5,18.1,5.3,3.1,2.2],[10,31.3,26.9,19.4,6.3,3.4,1.7],
- [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null]
+ [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null],
+ [10,28.5,27.1,20.0,8.9,1.9,1.2]
 ];
 
 /* ---------- Calendario (RD 806/2026 y LOREG) ---------- */
@@ -723,6 +725,7 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
+  ["23 oct.","IMOP (El Confidencial): PP 28,5%, PSOE 27,1% y Vox 20%. PP 123 escaños, PSOE 113 y Vox 72; PP y Vox suman 195, cinco menos que en su encuesta del 9 de octubre."],
   ["23 oct.","Feijóo, en la SER: reformar la eutanasia, que los padres participen en la decisión de abortar de las menores de 16 y 17 años, integrar Igualdad en otro ministerio y pensiones con el IPC. No descarta gobernar con Vox."],
   ["23 oct.","PP y Vox siguen negociando el Senado: Feijóo ve «lógico» que Vox no se presente donde no tendría senadores. Aún no hay acuerdo."],
   ["23 oct.","El Supremo da al Gobierno hasta el 28 de octubre para entregar la lista de los 163.020 afectados por la «ley de nietos». Adelante Andalucía reúne 37.409 avales y concurrirá sola."],
@@ -733,8 +736,7 @@ const NEWS = [
   ["22 oct.","La Junta Electoral concluye que el CIS incumplió su deber de informar a los partidos del barómetro de octubre, pero no abre expediente."],
   ["22 oct.","Pablo Bustinduy, portavoz de campaña del Frente Amplio. CHA y el Frente Amplio no presentan lista al Congreso por Teruel. Dimite la dirección de Podemos Aragón."],
   ["21 oct.","El Constitucional inadmite el recurso del Defensor del Pueblo: los nacionalizados por la «ley de nietos» no votarán salvo que acrediten descender de exiliados."],
-  ["21 oct.","Se abre el plazo para presentar candidaturas (hasta el 26 oct.). ERC sitúa a Junqueras en el puesto 31 por Barcelona."],
-  ["20 oct.","El Supremo aplica la amnistía a Junqueras, Romeva, Turull y Bassa. Puigdemont, que ya puede volver, hará campaña en Cataluña."]
+  ["21 oct.","Se abre el plazo para presentar candidaturas (hasta el 26 oct.). ERC sitúa a Junqueras en el puesto 31 por Barcelona."]
 ];
 
 
@@ -788,7 +790,8 @@ const SOURCES = [
   ["PP y Vox ante el Senado (El Español, 18 oct.)","https://www.elespanol.com/espana/politica/20261018/vox-dispuesto-demostrar-altura-miras-frente-popular-senado-lunes-decidira-pacta-pp/1003744424775_0.html"],
   ["Coalición UPN-PP (Artículo14, 13 oct.)","https://www.articulo14.es/espana-por-la-igualdad/principio-de-acuerdo-entre-pp-y-upn-para-ir-en-coalicion-a-las-elecciones-del-29n-20261013.html"],
   ["Entrevista de Feijóo en la SER (Diario de Avisos, 23 oct.)","https://diariodeavisos.elespanol.com/2026/10/feijoo-reforma-eutanasia-subida-salario-minimo/"],
-  ["Novedades del 23 de octubre (Infobae)","https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/"]
+  ["Novedades del 23 de octubre (Infobae)","https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/"],
+  ["Encuesta IMOP Insights, 23 oct. (Electografica)","https://www.electografica.com/2026/10/encuesta-imop-insights-261023.html"]
 ];
 
 if (typeof module !== "undefined") module.exports = {POLLS, TREND, PARTIES, MINOR_DEFAULTS, STATEMENTS};
