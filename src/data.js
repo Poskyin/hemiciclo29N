@@ -41,7 +41,12 @@ const PROGRAMS = {
   PP: {
     pitch:"Vivienda con rebajas fiscales para jóvenes, ley antiokupación, inmigración por puntos, bajada de impuestos y regeneración institucional. Feijóo ha firmado un «Contrato con España» de quince compromisos; el programa completo, que redacta Alma Ezcurra, aún no se ha publicado.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Lista por Madrid y debates", date:"22 oct. 2026", url:"https://www.democrata.es/politica/feijoo-situa-a-alvarez-de-toledo-como-su-numero-dos-por-madrid-al-congreso/", more:[["El PP rechaza el debate a cuatro en RTVE (COPE)","https://www.cope.es/actualidad/espana/noticias/pp-rechaza-oferta-debate-electoral-cuatro-rtve-acusa-psoe-intento-boicot-cadenas-privadas-20261022_3461080.html"],["Negociación con Vox para el Senado (Moncloa.com)","https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Entrevista en la SER y alianzas", date:"17–23 oct. 2026", url:"https://diariodeavisos.elespanol.com/2026/10/feijoo-reforma-eutanasia-subida-salario-minimo/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Foro Asturias apoya al PP (Moncloa.com)","https://www.moncloa.com/2026/10/17/foro-asturias-apoyo-pp-29n-3450227/"],["PP y Vox negocian el Senado (EFE)","https://www.diaridetarragona.com/espana/273541/pp-negocia-vox-listas-senado-seria-error-dejar-control-sanchismo.html"]], sections:[
+        {topic:"Entrevista en la SER (23 oct.)", items:["Reformar la ley de eutanasia para dar más peso a los médicos y revisar los procedimientos en trámite.","Reabrir el debate para que los padres participen en la decisión de abortar de las menores de 16 y 17 años, y ayudas a las mujeres con dificultades económicas que quieran seguir con el embarazo.","No mantendrá el Ministerio de Igualdad como ministerio propio: sus competencias pasarían a otro.","Mantener la subida de las pensiones con el IPC y reactivar el Pacto de Toledo.","Salario mínimo: no concreta subida; lo pactaría con sindicatos y empresarios.","No descarta gobernar con Vox si hace falta para completar una mayoría."]},
+        {topic:"Senado", items:["Feijóo: «sería lógico» que Vox no se presente al Senado donde no tendría senadores. Cuca Gamarra dice que las conversaciones «avanzan bien», pero no hay acuerdo cerrado."]},
+        {topic:"Alianzas y listas", items:["Foro Asturias apoya las listas del PP el 29-N, sin coalición (17 oct.). Ángela Pumariega encabeza la lista por Asturias.","Ester Muñoz promete «todos los medios del Estado» para acelerar las devoluciones de inmigrantes en situación irregular."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Lista por Madrid y debates", date:"22 oct. 2026", url:"https://www.democrata.es/politica/feijoo-situa-a-alvarez-de-toledo-como-su-numero-dos-por-madrid-al-congreso/", more:[["El PP rechaza el debate a cuatro en RTVE (COPE)","https://www.cope.es/actualidad/espana/noticias/pp-rechaza-oferta-debate-electoral-cuatro-rtve-acusa-psoe-intento-boicot-cadenas-privadas-20261022_3461080.html"],["Negociación con Vox para el Senado (Moncloa.com)","https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557"]], sections:[
         {topic:"Listas", items:["Feijóo encabeza Madrid, con Cayetana Álvarez de Toledo de número dos y Borja Sémper de número tres. Alberto Nadal también va en la lista.","Pilar Miranda encabeza Huelva."]},
         {topic:"Debates", items:["Acepta el cara a cara con Sánchez el 16 de noviembre, pero en Mediaset, y un debate a cuatro en Atresmedia. Rechaza el debate a cuatro de RTVE y acusa al PSOE de querer «boicotear» a las cadenas privadas."]},
         {topic:"Senado", items:["Miguel Tellado negocia con Vox (Montse Lluís) cómo no dividir el voto de la derecha. Se habla de que Vox no se presente en una veintena de provincias; no hay acuerdo firmado y podría anunciarse el 26 de octubre."]}
@@ -116,7 +121,12 @@ const PROGRAMS = {
   PSOE: {
     pitch:"Hace campaña con su paquete de vivienda (regulación del alquiler, préstamos a coste cero para la primera compra y deducción por alquiler), el balance económico y el rechazo a un Gobierno con Vox. Está redactando su programa; su último documento programático es la ponencia de su congreso de 2024.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Debates", date:"22 oct. 2026", url:"https://www.eldiario.es/politica/sanchez-acepta-cara-cara-electoral-feijoo-16-noviembre_1_13607508.html", sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Listas y entrevista en La Revuelta", date:"14–23 oct. 2026", url:"https://www.moncloa.com/2026/10/15/listas-psoe-madrid-robles-marlaska-3448967/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Subvenciones de Senado de Progreso (El Español, 23 oct.)","https://www.elespanol.com/espana/20261023/elecciones-generales-directo-ultima-hora-adelanto-electoral-espana-pedro-sanchez-actos-psoe-pp-vox-encuestas-voto-correo-sondeos-2026-partidos-por/1003744431749_10.html"]], sections:[
+        {topic:"Listas", items:["Madrid: Pedro Sánchez, Margarita Robles, Félix Bolaños, Pilar Sánchez Acera y Fernando Grande-Marlaska en los cinco primeros puestos.","Jordi Hereu encabeza Barcelona; Óscar Puente y Ana Redondo, en Castilla y León."]},
+        {topic:"Entrevista en La Revuelta (22 oct.)", items:["Sánchez pide cuatro años más y reconoce errores: haber confiado en José Luis Ábalos y la gestión de la crisis de Ceuta. Fue el programa más visto de la historia de La Revuelta (4,39 millones de espectadores)."]},
+        {topic:"Senado", items:["El PSOE recibirá el 95% de las subvenciones de la coalición Senado de Progreso."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Debates", date:"22 oct. 2026", url:"https://www.eldiario.es/politica/sanchez-acepta-cara-cara-electoral-feijoo-16-noviembre_1_13607508.html", sections:[
         {topic:"Debates", items:["Sánchez acepta el cara a cara con Feijóo el 16 de noviembre y la invitación de RTVE a un debate a cuatro el 26. Pide a las cadenas que se pongan de acuerdo y emitan en abierto para todas."]},
         {topic:"Campaña", items:["Estudia acciones legales contra un vídeo del PP hecho con inteligencia artificial que usa imágenes de dirigentes socialistas.","Pilar Bernabé presenta la estrategia del PSOE en la C. Valenciana, centrada en la vivienda."]}
       ]},
@@ -166,7 +176,7 @@ const PROGRAMS = {
   VOX: {
     pitch:"Centra su oferta en la «prioridad nacional», la «remigración» y la desregulación, que plantea como condiciones para pactar con el PP. Su último programa completo es el del 23-J.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Listas y Senado", date:"21–22 oct. 2026", url:"https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Listas y Senado", date:"21–22 oct. 2026", url:"https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557", sections:[
         {topic:"Senado", items:["Montse Lluís negocia con el PP. La portavoz, Pepa Millán, dice que el acuerdo podría cerrarse el lunes 26 de octubre; Abascal solo comunicará el resultado final."]},
         {topic:"Campaña", items:["Presenta sus cabezas de lista en Galicia. Los actos de Abascal en A Coruña y Avilés tuvieron protestas y cordones policiales; Abascal culpa a Sánchez de la violencia contra Vox."]}
       ]},
@@ -204,7 +214,7 @@ const PROGRAMS = {
   FA: {
     pitch:"Coalición de IU, Movimiento Sumar, Comuns, Más Madrid, CHA y otros partidos, con Ada Colau como candidata a la Presidencia. Ejes: vivienda, salarios y pensiones. No hubo acuerdo con Podemos. Su último programa es el de Sumar en 2023, cuando aún incluía a Podemos y Compromís.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Portavoz y listas", date:"22 oct. 2026", url:"https://www.libertaddigital.com/espana/politica/2026-10-22/bustinduy-rechazo-liderar-el-frente-amplio-pero-ahora-sera-el-portavoz-de-colau-el-29n-7480327/", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Portavoz y listas", date:"22 oct. 2026", url:"https://www.libertaddigital.com/espana/politica/2026-10-22/bustinduy-rechazo-liderar-el-frente-amplio-pero-ahora-sera-el-portavoz-de-colau-el-29n-7480327/", sections:[
         {topic:"Campaña", items:["Pablo Bustinduy será el portavoz de campaña. Resume su programa en cuatro ejes: vivienda, salarios, pensiones y servicios públicos.","Juan Ponte (IU) encabeza Asturias. CHA y el Frente Amplio no presentan lista al Congreso por Teruel para no dividir el voto."]}
       ]},
       {kind:"2026", label:"Últimos anuncios", title:"Senado y campaña", date:"19–21 oct. 2026", url:"https://elespanol.com/espana/20261020/elecciones-generales-ultima-hora-directo-consejo-ministros-pedro-sanchez-actos-listas-pp-psoe-vox-pactos-electorales-voto-correo/1003744426993_10.html", sections:[
@@ -237,7 +247,11 @@ const PROGRAMS = {
   POD: {
     pitch:"Irene Montero, elegida en primarias con un 90%, encabeza la lista por Madrid con el lema «Paz, casa, trabajo». No hubo acuerdo con el Frente Amplio: en Cataluña apoya a ERC y va en coalición en la C. Valenciana (Compromís-Front Valencià) y en Canarias (Unidad del Pueblo Canario). En 2023 concurrió dentro de Sumar.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Debates y Aragón", date:"22 oct. 2026", url:"https://www.infobae.com/espana/2026/10/22/elecciones-generales-29-n-en-directo-ultima-hora-de-los-sondeos-propuestas-de-los-partidos-y-actos-de-los-candidatos/", sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Debates y Senado", date:"23 oct. 2026", url:"https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/", sections:[
+        {topic:"Debates", items:["Pedirá a la Junta Electoral Central estar en el debate a cuatro y en el de portavoces de RTVE, aunque comparta tiempo con el Frente Amplio."]},
+        {topic:"Críticas al Frente Amplio", items:["Le acusa de facilitar una «sobrerrepresentación» del PSOE con el pacto del Senado."]}
+      ]},
+      {kind:"2026", label:"Últimos anuncios", title:"Debates y Aragón", date:"22 oct. 2026", url:"https://www.infobae.com/espana/2026/10/22/elecciones-generales-29-n-en-directo-ultima-hora-de-los-sondeos-propuestas-de-los-partidos-y-actos-de-los-candidatos/", sections:[
         {topic:"Campaña", items:["Irene Montero pide que los debates incluyan a todas las candidaturas.","Dimite el coordinador de Podemos Aragón, Ricard Mitjana, por discrepancias con la dirección estatal."]}
       ]},
       {kind:"2026", label:"Últimos anuncios", title:"Primarias y alianzas", date:"12–17 oct. 2026", url:"https://www.eldebate.com/espana/20261016/irene-montero-gana-primarias-abiertas-podemos-candidata-90-apoyo_470500.html", more:[["Pacto con ERC (ESdiario, 13 oct.)","https://www.esdiario.com/nacional/261013/200074/rufian-e-irene-montero-pactan-29n-dejan-frente-amplio-pelota-picada.html"],["Compromís-Front Valencià (El Salto, 16 oct.)","https://www.elsaltodiario.com/pais-valenciano/izquierda-valenciana-concurrira-unida-generales-siglas-compromis-front-valencia"],["Listas a la izquierda del PSOE (Infobae, 17 oct.)","https://www.infobae.com/espana/2026/10/17/asi-quedan-los-acuerdos-de-la-izquierda-para-las-elecciones-generales-del-29-n-estas-son-las-listas-a-la-izquierda-del-psoe-en-cada-comunidad-autonoma/"]], sections:[
@@ -287,7 +301,7 @@ const PROGRAMS = {
   JUNTS: {
     pitch:"Independentismo. Fue clave en la investidura de 2023, pero retiró su apoyo al Gobierno en octubre de 2025 y votó contra los decretos de vivienda en 2026. No hemos encontrado su programa completo de 2023.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Cabezas de lista y Puigdemont", date:"20 oct. 2026", url:"https://www.infobae.com/espana/2026/10/20/puigdemont-entra-en-la-campana-para-el-29-n-el-lider-independentista-regresa-a-cataluna-para-salvar-a-junts-del-batacazo-que-preven-los-sondeos/", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Cabezas de lista y Puigdemont", date:"20 oct. 2026", url:"https://www.infobae.com/espana/2026/10/20/puigdemont-entra-en-la-campana-para-el-29-n-el-lider-independentista-regresa-a-cataluna-para-salvar-a-junts-del-batacazo-que-preven-los-sondeos/", sections:[
         {topic:"Candidatura", items:["Cabezas de lista: Míriam Nogueras (Barcelona), Marta Madrenas (Girona), Josep Maria Cruset (Tarragona) e Isidre Gavín (Lleida).","Puigdemont, que ya puede volver a España, entra en la campaña en Cataluña."]}
       ]},
       {kind:"2026", label:"Últimos anuncios", title:"Cabezas de lista", date:"8 oct. 2026", url:"https://www.diariodeleon.es/nacional/261008/2099696/junts-confirma-miriam-nogueras-candidata-29n.html", sections:[
@@ -325,7 +339,7 @@ const PROGRAMS = {
   PNV: {
     pitch:"Nacionalismo vasco de centroderecha. Apoyó la investidura de 2023 y se abstuvo en la ley de vivienda del PP en 2026.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Listas aprobadas", date:"17 oct. 2026", url:"https://www.eldiario.es/euskadi/pnv-confirma-maribel-vaquero-idoia-sagastizabal-gorka-urtaran-cabezas-lista-congreso_1_13594008.html", sections:[
+      {kind:"2026", label:"Últimos anuncios", title:"Listas aprobadas", date:"17 oct. 2026", url:"https://www.eldiario.es/euskadi/pnv-confirma-maribel-vaquero-idoia-sagastizabal-gorka-urtaran-cabezas-lista-congreso_1_13594008.html", sections:[
         {topic:"Candidatura", items:["Aprueba sus listas por unanimidad. Cabezas de lista al Congreso: Maribel Vaquero (Gipuzkoa), Idoia Sagastizabal (Bizkaia) y Gorka Urtaran (Álava)."]}
       ]},
       {kind:"2023", label:"Programa 23-J", title:"«Con voz propia»: programa electoral 2023", date:"jul. 2023", url:"https://eaj-pnv.eus/es/adjuntos-documentos/20945/pdf/con-voz-propia-programa-electoral-23-j", sections:[
@@ -498,7 +512,8 @@ const SEN_PACTS = [
 /* ---------- Alianzas de la derecha y de otros partidos por comunidad ---------- */
 const RIGHT_BY_CCAA = {
   "Navarra":{type:"coal", congreso:[["UPN-PP","UPN 1.º y 4.º; PP 2.º (Sergio Sayas), 3.º y 5.º"]], senado:[["UPN-PP","UPN 1.º y 3.º; PP 2.º"]]},
-  "Baleares":{type:"part", congreso:[], senado:[["Sa Unió (Formentera)","PP con Compromís per Formentera"]]}
+  "Baleares":{type:"part", congreso:[], senado:[["Sa Unió (Formentera)","PP con Compromís per Formentera"]]},
+  "Asturias":{type:"part", congreso:[["PP con apoyo de Foro Asturias","Foro no se presenta y pide el voto para el PP; no es una coalición. Encabeza Ángela Pumariega"]], senado:[]}
 };
 const OTHERS_BY_CCAA = {
   "Canarias":[["CC-Municipalistas Primero","Congreso por Canarias; Senado en todas las islas salvo El Hierro"],["ASG","Senado por La Gomera (Yaiza Castilla)"],["AHI","Senado por El Hierro (Javier Armas)"]],
@@ -509,7 +524,7 @@ const OTHERS_BY_CCAA = {
   "País Vasco":[["PNV","solo"]],
   "Galicia":[["BNG","solo"]]
 };
-const RIGHT_NOTE = "PP y Vox negocian que Vox no presente lista al Senado en una veintena de provincias para no dividir el voto. No hay acuerdo firmado; Vox dice que podría anunciarse el 26 de octubre, último día para presentar listas.";
+const RIGHT_NOTE = "PP y Vox negocian que Vox no presente lista al Senado en una veintena de provincias para no dividir el voto. No hay acuerdo firmado: Feijóo ve «lógico» que Vox no vaya donde no tendría senadores y el PP dice que las conversaciones «avanzan bien». Podría anunciarse el 26 de octubre, último día para presentar listas.";
 
 /* ---------- Alianzas de la izquierda por comunidad (Congreso y Senado) ---------- */
 const LEFT_BY_CCAA = {
@@ -553,7 +568,7 @@ const MINOR_NOTE2 = {
   BNG:"Néstor Rego repite como candidato. Va solo en las cuatro provincias gallegas.",
   CC:"Cristina Valido encabeza la lista por Santa Cruz de Tenerife. Va como Coalición Canaria-Municipalistas Primero.",
   UPN:"Va en coalición con el PP en Navarra: UPN pone el 1.º y el 4.º de la lista al Congreso y el PP, el 2.º (Sergio Sayas), el 3.º y el 5.º. En 2023 sacaron un diputado cada uno.",
-  AA:"Izquierda andalucista. Va sola en las ocho provincias andaluzas y rechazó integrarse en el Frente Amplio.",
+  AA:"Izquierda andalucista. Va sola en las ocho provincias andaluzas, tras reunir 37.409 avales (le pedían 6.514), y rechazó integrarse en el Frente Amplio. María Alcantud encabeza Granada.",
   CFV:"Compromís, Podemos, EUPV (IU) y ERPV. Àgueda Micó encabeza Valencia y María Teresa Pérez (Podemos), Alicante. Es la única comunidad donde el Frente Amplio no presenta lista propia.",
   UPC:"NC-Bloque Canarista, Podemos, Movimiento Sumar e IU Canaria, en las dos provincias canarias.",
   POD:"Irene Montero encabeza Madrid. Va sola salvo en la C. Valenciana y Canarias, y no se presenta en Cataluña. Su dirección en Aragón dimitió el 22 de octubre.",
@@ -690,16 +705,16 @@ const CALENDAR = [
   {d:"2026-10-22", t:"El PSOE acepta el cara a cara del 16 de noviembre; el PP cierra su lista por Madrid", k:"hecho"},
   {d:"2026-10-23", t:"Publicación definitiva del censo electoral", k:"plazo"},
   {d:"2026-10-26", t:"Último día para presentar las listas", k:"plazo"},
-  {d:"2026-10-28", t:"El BOE publica las candidaturas presentadas", k:"plazo"},
+  {d:"2026-10-28", t:"El BOE publica las candidaturas presentadas. Acaba el plazo del Supremo para que el Gobierno entregue la lista de afectados por la «ley de nietos»", k:"plazo"},
   {d:"2026-11-02", t:"La Junta Electoral publica las candidaturas proclamadas", k:"plazo"},
   {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
   {d:"2026-11-13", t:"Empieza la campaña electoral (00:00 h)", k:"plazo"},
-  {d:"2026-11-16", t:"Cara a cara Sánchez–Feijóo (lo aceptan PP y PSOE; el PP lo quiere en Mediaset)", k:"debate"},
+  {d:"2026-11-16", t:"Cara a cara Sánchez–Feijóo en Mediaset", k:"debate"},
   {d:"2026-11-19", t:"Último día para solicitar el voto por correo", k:"votante"},
   {d:"2026-11-23", t:"Último día en que pueden publicarse encuestas", k:"plazo"},
-  {d:"2026-11-23", t:"Debate de portavoces (propuesto por el PP)", k:"debate"},
+  {d:"2026-11-23", t:"Debate de portavoces en TVE", k:"debate"},
   {d:"2026-11-25", t:"Último día para depositar el voto por correo en Correos", k:"votante"},
-  {d:"2026-11-26", t:"Debate a cuatro: el PSOE acepta el de RTVE y el PP, el de Atresmedia", k:"debate"},
+  {d:"2026-11-26", t:"Debate a cuatro, sin confirmar: el PSOE acepta el de RTVE y el PP, el de Atresmedia. Podemos pide estar", k:"debate"},
   {d:"2026-11-27", t:"Termina la campaña (24:00 h)", k:"plazo"},
   {d:"2026-11-28", t:"Jornada de reflexión", k:"plazo"},
   {d:"2026-11-29", t:"Elecciones generales: Congreso y Senado", k:"votante"},
@@ -708,6 +723,10 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
+  ["23 oct.","Feijóo, en la SER: reformar la eutanasia, que los padres participen en la decisión de abortar de las menores de 16 y 17 años, integrar Igualdad en otro ministerio y pensiones con el IPC. No descarta gobernar con Vox."],
+  ["23 oct.","PP y Vox siguen negociando el Senado: Feijóo ve «lógico» que Vox no se presente donde no tendría senadores. Aún no hay acuerdo."],
+  ["23 oct.","El Supremo da al Gobierno hasta el 28 de octubre para entregar la lista de los 163.020 afectados por la «ley de nietos». Adelante Andalucía reúne 37.409 avales y concurrirá sola."],
+  ["22 oct.","Sánchez, en La Revuelta: pide cuatro años más y reconoce errores con Ábalos y en Ceuta. Récord de audiencia del programa."],
   ["22 oct.","El PSOE acepta el cara a cara Sánchez–Feijóo del 16 de noviembre y el debate a cuatro de RTVE del 26. El PP rechaza el de RTVE y prefiere Mediaset y Atresmedia."],
   ["22 oct.","Feijóo encabeza Madrid con Cayetana Álvarez de Toledo de número dos y Borja Sémper de número tres."],
   ["22 oct.","PP y Vox negocian que Vox no presente lista al Senado en una veintena de provincias; podría anunciarse el 26 de octubre."],
@@ -715,12 +734,7 @@ const NEWS = [
   ["22 oct.","Pablo Bustinduy, portavoz de campaña del Frente Amplio. CHA y el Frente Amplio no presentan lista al Congreso por Teruel. Dimite la dirección de Podemos Aragón."],
   ["21 oct.","El Constitucional inadmite el recurso del Defensor del Pueblo: los nacionalizados por la «ley de nietos» no votarán salvo que acrediten descender de exiliados."],
   ["21 oct.","Se abre el plazo para presentar candidaturas (hasta el 26 oct.). ERC sitúa a Junqueras en el puesto 31 por Barcelona."],
-  ["20 oct.","El Supremo aplica la amnistía a Junqueras, Romeva, Turull y Bassa. Puigdemont, que ya puede volver, hará campaña en Cataluña."],
-  ["20 oct.","Sigma Dos para el Senado: PP 128 escaños (125–130), Senado de Progreso 93, Vox 19, Bildu 7 y ERC, PNV y Junts 5 cada uno. PP y Vox quedarían a 6 de los tres quintos."],
-  ["19 oct.","Sigma Dos (El Mundo): PP 31,5%, PSOE 25,3% y Vox 19,5%. PP y Vox sumarían entre 197 y 205 escaños."],
-  ["19 oct.","Feijóo firma un «Contrato con España» de quince compromisos. Sánchez promete subir el salario mínimo cada año."],
-  ["17 oct.","PSOE y Frente Amplio pactan listas conjuntas al Senado («Senado de Progreso»). UPN y PP cierran su coalición en Navarra."],
-  ["14 oct.","El CIS de octubre sitúa al PSOE primero (34%) y al PP en el 22,2%."]
+  ["20 oct.","El Supremo aplica la amnistía a Junqueras, Romeva, Turull y Bassa. Puigdemont, que ya puede volver, hará campaña en Cataluña."]
 ];
 
 
@@ -772,7 +786,9 @@ const SOURCES = [
   ["Designados por partido (Europa Press/Infobae, 10 oct.)","https://www.infobae.com/espana/agencias/2026/10/10/el-senado-ya-tiene-casi-60-escanos-asignados-al-margen-de-las-elecciones-23-para-el-pp-y-19-para-el-psoe/"],
   ["Resultados del Senado 2023 (Última Hora)","https://www.ultimahora.es/elecciones/23j/senado/total-estatal.html"],
   ["PP y Vox ante el Senado (El Español, 18 oct.)","https://www.elespanol.com/espana/politica/20261018/vox-dispuesto-demostrar-altura-miras-frente-popular-senado-lunes-decidira-pacta-pp/1003744424775_0.html"],
-  ["Coalición UPN-PP (Artículo14, 13 oct.)","https://www.articulo14.es/espana-por-la-igualdad/principio-de-acuerdo-entre-pp-y-upn-para-ir-en-coalicion-a-las-elecciones-del-29n-20261013.html"]
+  ["Coalición UPN-PP (Artículo14, 13 oct.)","https://www.articulo14.es/espana-por-la-igualdad/principio-de-acuerdo-entre-pp-y-upn-para-ir-en-coalicion-a-las-elecciones-del-29n-20261013.html"],
+  ["Entrevista de Feijóo en la SER (Diario de Avisos, 23 oct.)","https://diariodeavisos.elespanol.com/2026/10/feijoo-reforma-eutanasia-subida-salario-minimo/"],
+  ["Novedades del 23 de octubre (Infobae)","https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/"]
 ];
 
 if (typeof module !== "undefined") module.exports = {POLLS, TREND, PARTIES, MINOR_DEFAULTS, STATEMENTS};
