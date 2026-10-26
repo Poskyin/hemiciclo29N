@@ -109,6 +109,7 @@ function simulate(targets, opts){
     ["ERC","JUNTS","BILDU","PNV","BNG","CC","UPN"].forEach(k => { raw[k] = (b.extra[k]||0) * T[k] / NAT2023[k]; });
     raw.AA = AA_IDX[name] ? T.AA / AND_SHARE * AA_IDX[name] : 0;
     raw.CFV = 0; raw.UPC = 0;
+    if (opts.jitter) MODEL_PARTIES.forEach(k => { if (raw[k] > 0) raw[k] *= opts.jitter(name, k); }); // ruido provincial (solo en la simulación de probabilidades)
     const pieces = {FA: raw.FA, POD: raw.POD}; // antes de fusionar, para el Senado
     if (!opts.pacts2023) {
       if (CFV_PROV.includes(name)) { raw.CFV = (cfvOwn ? b.sumar * T.CFV / SUMAR_CV_NAT : raw.FA) + raw.POD; raw.FA = 0; raw.POD = 0; }
@@ -223,6 +224,24 @@ function senateProjection(res, opts){
   return {totals, circs: out};
 }
 
+/* ===== Probabilidades: muchas elecciones simuladas alrededor de un escenario =====
+   En cada simulación, el voto nacional de cada partido se mueve con un error normal (sd, en puntos; los territoriales, en proporción)
+   y, además, cada partido se mueve en cada provincia con un ruido del PROV_SD (relativo). Semilla fija: mismo resultado en cada visita. */
+const PROV_SD = 0.06;
+const BLOC_W = {PP:0.6, VOX:0.4, PSOE:-0.6, FA:-0.25, POD:-0.15};
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function gauss(r){ let u = 0, v = 0; while (u === 0) u = r(); v = r(); return Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v); }
+function monteCarlo(base, sd, n, seed){
+  const r = rng(seed || 29112026), runs = [];
+  for (let i = 0; i < n; i++) {
+    const t = {}, z = gauss(r) * (sd.__bloc || 0); // error común: lo que gana la derecha lo pierde la izquierda
+    Object.keys(base).forEach(k => { const b = +base[k] || 0; if (b <= 0) { t[k] = 0; return; } t[k] = Math.max(0, b + gauss(r) * (sd[k] != null ? sd[k] : b * 0.12) + z * (BLOC_W[k] || 0)); });
+    const res = simulate(t, {jitter: () => Math.exp(gauss(r) * PROV_SD)});
+    runs.push(res.totals);
+  }
+  return runs;
+}
+
 /* D'Hondt con barrera (% del voto válido de la circunscripción) */
 function dhondt(share, seats, barrier){
   const eligible = Object.keys(share).filter(k => share[k] >= barrier);
@@ -236,4 +255,4 @@ function dhondt(share, seats, barrier){
   return {seats:res, eligible, last, next, quotients: quotients.slice(0, seats + 4)};
 }
 
-if (typeof module !== "undefined") module.exports = {simulate, dhondt, senateProjection, PROVINCES, MODEL_PARTIES, NAT2023, SEN_CIRCS, SEN_VOX_ONE, SEN_VOX_OUT};
+if (typeof module !== "undefined") module.exports = {simulate, dhondt, senateProjection, PROVINCES, MODEL_PARTIES, NAT2023, SEN_CIRCS, SEN_VOX_ONE, SEN_VOX_OUT, monteCarlo};

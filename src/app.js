@@ -144,6 +144,7 @@ function renderResumen(){
     <div class="panel stack">
       <span class="eyebrow">¿Quién suma 176? · con la proyección media</span>
       <div class="blocs">${BLOCS.slice(0,4).map(b=>{ const s = sumOf(sim,b.ks); return `<div class="bloc"><span class="lbl">${esc(b.name)}</span><span class="n num">${s}</span><div class="meter"><i style="width:${(s/350*100).toFixed(1)}%"></i><span class="maj"></span></div><span class="state ${s>=176?"ok":"no"}">${s>=176?"Mayoría absoluta":"Le faltan "+(176-s)}</span></div>`; }).join("")}</div>
+      <p class="small" id="res-prob"><span class="muted">Calculando la probabilidad de mayoría…</span></p>
     </div>
   </section>
 
@@ -167,6 +168,7 @@ function renderResumen(){
       </div>
     </div>
   </section>`;
+  runProb(avg, s => { const el = $("#res-prob"); if (el) el.innerHTML = `Simulando ${s.n.toLocaleString("es-ES")} elecciones con el margen de error de las encuestas, PP y Vox suman mayoría absoluta en <b>${pct(s.pRight).toLowerCase()}</b> de los casos y el bloque de la investidura de 2023, en <b>${pct(s.pInv).toLowerCase()}</b>. <button class="linkbtn" data-go="escanos">Cómo se calcula</button>`; });
 }
 
 /* ---------- PARTIDOS ---------- */
@@ -531,14 +533,20 @@ function renderEscanos(){
       </div>
     </div>
   </div>
+  <section class="stack" id="air"></section>
+  <section class="stack">
+    <h3>¿Qué probabilidad hay de mayoría?</h3>
+    <p class="small muted">Las encuestas fallan. Simulamos 1.000 elecciones alrededor del escenario, moviendo el voto de cada partido dentro de un margen de error realista, y contamos en cuántas sale cada resultado.</p>
+    <div class="panel stack" id="prob"></div>
+  </section>
   <section class="stack">
     <h3>Provincia a provincia</h3>
     <p class="small muted">Cuadraditos = escaños de cada circunscripción en este escenario. Pulsa una para ver el reparto D'Hondt y quién se queda cerca del último escaño.</p>
     <div class="grid2" style="align-items:start"><div class="prov-list" id="prov-list"></div><div class="panel stack" id="prov-detail" style="position:sticky; top:120px"></div></div>
   </section>
   <p class="note">Cómo calculamos: partimos del resultado de 2023 en cada provincia y multiplicamos el voto de cada partido por la variación nacional que marca el escenario (Frente Amplio y Podemos heredan la distribución de Sumar; SALF, la de Vox suavizada; Adelante Andalucía se reparte solo en Andalucía). Aplicamos las alianzas registradas para el 29-N: en la C. Valenciana el voto de FA y Podemos pasa a Compromís-Front Valencià; en Canarias, a Unidad del Pueblo Canario; en Cataluña, Podemos no se presenta (apoya a ERC) y repartimos su voto a medias entre ERC y FA; en Baleares, Podemos va dentro de Ara MÉS-Front Ampli y su voto pasa al FA. Aliança Catalana no se presenta. Con los votos y las listas de 2023 el modelo reproduce exactamente los 350 escaños de entonces. No recoge cambios locales ni partidos que solo se presentan en una provincia, como Democracia21.</p>`;
-  $("#preset").addEventListener("change", e => { loadPreset(e.target.value); syncSliders(); updateSim(); });
-  $$(".sl input", v).forEach(inp => inp.addEventListener("input", ()=>{ simT[inp.dataset.k] = +inp.value; simT.__key = "custom"; $("#o-"+inp.dataset.k).textContent = fmt(+inp.value, inp.step==="0.05"?2:1)+"%"; simLabel = "Escenario modificado por ti"; updateSim(); }));
+  $("#preset").addEventListener("change", e => { loadPreset(e.target.value); probOn = "avg"; syncSliders(); updateSim(); });
+  $$(".sl input", v).forEach(inp => inp.addEventListener("input", ()=>{ simT[inp.dataset.k] = +inp.value; simT.__key = "custom"; $("#o-"+inp.dataset.k).textContent = fmt(+inp.value, inp.step==="0.05"?2:1)+"%"; simLabel = "Escenario modificado por ti"; probOn = "avg"; updateSim(); }));
   $$("#pact-presets .chip").forEach(b => b.addEventListener("click", ()=>{ const id=b.dataset.b; coalition = id==="clear" ? new Set() : new Set(BLOCS.find(x=>x.id===id).ks); updatePact(); }));
   updateSim();
 }
@@ -558,7 +566,7 @@ function updateSim(){
   const ref = {PP:137,PSOE:121,VOX:33,FA:31,ERC:7,JUNTS:7,BILDU:6,PNV:5,BNG:1,CC:1,UPN:1};
   $("#sim-table").innerHTML = SEAT_ORDER.slice().sort((a,b)=>(t[b]-t[a])||((simT[b]||0)-(simT[a]||0))).filter(k=>t[k]>0||(simT[k]||0)>=1)
     .map(k=>{ const d = (t[k]||0) - (ref[k]||0); return `<tr><td><i class="dot" style="background:${color(k)}"></i>${esc(P[k].name)}</td><td>${DERIVED.includes(k)&&!(simT[k]>0)?'<span class="muted" title="Hereda el voto de FA y Podemos en su comunidad">en FA+Pod.</span>':fmt(simT[k]||0)+"%"}</td><td><b>${t[k]||0}</b></td><td class="delta ${d>0?"up":d<0?"down":""}">${k==="FA"?`<span title="En 2023 Sumar incluía a Podemos y Compromís">${d>0?"+":""}${d}*</span>`:DERIVED.includes(k)?'<span class="muted">nuevo</span>':(d>0?"+":"")+d}</td></tr>`; }).join("");
-  updatePact(); renderProvList();
+  updatePact(); renderProvList(); renderAir(); renderProb();
 }
 function updatePact(){
   if (!lastSim) return; const t = lastSim.totals;
@@ -595,6 +603,126 @@ function renderProvDetail(){
     <p class="small muted">Cocientes en % de voto válido. En amarillo, los ${pr.seats} cocientes más altos, que se llevan escaño${pr.seats>12?" (se muestran los 12 primeros divisores)":""}.</p>`;
 }
 
+
+/* ---------- Escaños en el aire: el último escaño de cada provincia ---------- */
+const RIGHT_KS = ["PP","VOX","UPN","SALF"];
+let airAll = false;
+function airSeats(res){
+  return res.provinces.map(pr => {
+    const last = pr.alloc.last; if (!last) return null;
+    const qs = pr.alloc.quotients.slice(pr.seats);
+    const nx = qs.find(q => q.party !== last.party); if (!nx) return null;
+    const need = Math.max(0, last.q * nx.d - pr.share[nx.party]);
+    return {name: pr.name, seats: pr.seats, last: last.party, next: nx.party, need, labels: pr.labels};
+  }).filter(Boolean).sort((a,b) => a.need - b.need);
+}
+function renderAir(){
+  const box = $("#air"); if (!box || !lastSim) return;
+  const rows = airSeats(lastSim), close = rows.filter(r => r.need < 1), t = lastSim.totals;
+  const lab = (r,k) => (r.labels && r.labels[k]) || sname(k);
+  const inR = k => RIGHT_KS.includes(k);
+  const right = sumOf(t, ["PP","VOX","UPN"]);
+  const up = close.filter(r => inR(r.next) && !inR(r.last)).length, down = close.filter(r => inR(r.last) && !inR(r.next)).length;
+  const shown = airAll ? rows : rows.slice(0, 10);
+  const chip = (r,k) => `<span class="air-p"><i class="dot" style="background:${color(k)}"></i>${esc(lab(r,k))}</span>`;
+  box.innerHTML = `<h3>Los escaños en el aire</h3>
+    <p class="small muted">En cada provincia, el último escaño que se reparte y el partido que se queda más cerca de quitárselo. Pulsa una fila para ver su reparto.</p>
+    <div class="panel stack">
+      <div class="tiles">
+        <div class="tile" style="--pc:var(--mark)"><div class="n num">${close.length}</div><div class="d">escaños se deciden por menos de 1 punto</div></div>
+        <div class="tile" style="--pc:var(--ink)"><div class="n num">${rows.filter(r=>r.need<0.5).length}</div><div class="d">por menos de medio punto</div></div>
+        <div class="tile" style="--pc:${color("PP")}"><div class="n num">${right-down}–${right+up}</div><div class="d">PP + Vox + UPN si cambian de manos los escaños a menos de 1 punto (ahora ${right})</div></div>
+      </div>
+      <div class="air-list">
+        <div class="air-row air-head"><span>Provincia</span><span>Último escaño → aspirante</span><span>Le faltan</span></div>
+        ${shown.map(r=>`<button class="air-row" data-pv="${esc(r.name)}"><span><b>${esc(r.name)}</b> <span class="muted small">${r.seats}</span></span><span class="air-pair">${chip(r,r.last)}<span class="muted">→</span>${chip(r,r.next)}</span><span class="num air-need ${r.need<1?"hot":""}">${fmt(r.need,2)} pt</span></button>`).join("")}
+      </div>
+      ${rows.length > 10 ? `<button class="linkbtn" id="air-more">${airAll ? "Ver solo las 10 más reñidas" : `Ver las ${rows.length} circunscripciones`}</button>` : ""}
+      <p class="small muted">«Le faltan»: puntos de voto que tendría que ganar el aspirante en esa provincia, si los demás no se mueven, para llevarse el último escaño. El último escaño puede cambiar a la vez en provincias cercanas, así que el rango de PP + Vox + UPN es un máximo y un mínimo, no una predicción.</p>
+    </div>`;
+  $$("#air .air-row[data-pv]").forEach(b => b.addEventListener("click", () => { currentProv = b.dataset.pv; renderProvList(); const d = $("#prov-detail"); if (d) d.scrollIntoView({behavior:"smooth", block:"start"}); }));
+  const m = $("#air-more"); if (m) m.addEventListener("click", () => { airAll = !airAll; renderAir(); });
+}
+
+/* ---------- Probabilidad de mayoría (simulación) ---------- */
+const MC_RUNS = 1000, MC_CHUNK = 100;
+const MC_S0 = {PP:1.5, PSOE:1.5, VOX:1.0, FA:0.8, POD:0.5, SALF:0.5}; // error común a todas las encuestas (puntos)
+const MC_BLOC = 1.5;                                                  // error compartido derecha/izquierda (puntos)
+const mcCache = new Map(), mcPending = new Map(); let mcCurrent = null;
+function mcSD(){
+  const set = latestPerFirm(false), out = {__bloc: MC_BLOC};
+  MAIN6.forEach(k => {
+    const v = set.map(p => k==="FA" && p.FA!=null ? p.FA + (p.CFV||0) : p[k]).filter(x => x!=null);
+    const m = v.reduce((a,b)=>a+b,0) / (v.length||1);
+    const sdF = v.length > 2 ? Math.sqrt(v.reduce((a,x)=>a+(x-m)*(x-m),0)/(v.length-1)) : 1;
+    out[k] = Math.sqrt(sdF*sdF + MC_S0[k]*MC_S0[k]);
+  });
+  return out;
+}
+function mcBase(t){ const b = {}; MODEL_PARTIES.forEach(k => { if (t[k] != null && !(k==="CFV" && !(t.CFV>0)) && k !== "UPC") b[k] = +t[k]; }); return b; }
+function mcSummary(runs){
+  const n = runs.length, fr = f => runs.filter(f).length / n;
+  const inv = BLOCS.find(b=>b.id==="inv23").ks;
+  const q = (arr, p) => { const a = arr.slice().sort((x,y)=>x-y); return a[Math.floor(p*(a.length-1))]; };
+  const ser = {PP: runs.map(t=>t.PP), PSOE: runs.map(t=>t.PSOE), VOX: runs.map(t=>t.VOX), FA: runs.map(t=>(t.FA||0)+(t.CFV||0)+(t.UPC||0)), POD: runs.map(t=>t.POD||0), RIGHT: runs.map(t=>t.PP+t.VOX+(t.UPN||0))};
+  const iv = {}; Object.entries(ser).forEach(([k,a]) => iv[k] = [q(a,.1), q(a,.5), q(a,.9)]);
+  const hist = {}; ser.RIGHT.forEach(v => hist[v] = (hist[v]||0) + 1);
+  return {n, pRight: fr(t=>t.PP+t.VOX>=176), pRightU: fr(t=>t.PP+t.VOX+(t.UPN||0)>=176), pPP: fr(t=>t.PP>=176), pFirst: fr(t=>t.PP>t.PSOE), pInv: fr(t=>sumOf(t,inv)>=176), iv, hist};
+}
+function runProb(t, cb){
+  const base = mcBase(t), key = JSON.stringify(base);
+  if (mcCache.has(key)) { cb(mcCache.get(key)); return; }
+  if (mcPending.has(key)) { mcPending.get(key).push(cb); return; }
+  mcPending.set(key, [cb]);
+  const keep = key === JSON.stringify(mcBase(average(false).avg)); // la media no se cancela nunca
+  if (!keep) mcCurrent = key;
+  const sd = mcSD(), runs = []; let i = 0;
+  const step = () => {
+    if (!keep && mcCurrent !== key) { mcPending.delete(key); return; } // el usuario ha cambiado de escenario
+    runs.push(...monteCarlo(base, sd, MC_CHUNK, 29112026 + i)); i++;
+    if (i * MC_CHUNK < MC_RUNS) { setTimeout(step, 0); return; }
+    const s = mcSummary(runs); s.sd = sd; mcCache.set(key, s);
+    const cbs = mcPending.get(key) || []; mcPending.delete(key); cbs.forEach(f => f(s));
+  };
+  setTimeout(step, 20);
+}
+const pct = p => p > 0.99 ? "Más del 99%" : p < 0.01 ? "Menos del 1%" : Math.round(p*100) + "%";
+const pctS = p => p > 0.99 ? ">99%" : p < 0.01 ? "<1%" : Math.round(p*100) + "%";
+let probOn = "avg";
+function renderProb(){
+  const box = $("#prob"); if (!box) return;
+  const isAvg = !simT || simT.__key === "avg", is23 = simT && simT.__key === "2023";
+  if (!isAvg && probOn !== "sim") { probOn = "avg"; }
+  const target = probOn === "sim" && !isAvg && !is23 ? simT : average(false).avg;
+  const lbl = target === simT ? `Escenario del simulador (${simLabel})` : "Media de encuestas (sin CIS)";
+  box.innerHTML = `<div class="row" style="justify-content:space-between"><span class="eyebrow">${esc(lbl)}</span>${!isAvg && !is23 ? `<button class="linkbtn" id="prob-sw">${probOn==="sim" ? "Volver a la media de encuestas" : "Calcular con el escenario de arriba"}</button>` : ""}</div><p class="small muted">Calculando…</p>`;
+  const sw = $("#prob-sw"); if (sw) sw.addEventListener("click", () => { probOn = probOn === "sim" ? "avg" : "sim"; renderProb(); });
+  runProb(target, s => { if ($("#prob") === box) box.innerHTML = probHTML(s, lbl, isAvg, is23); const sw2 = $("#prob-sw"); if (sw2) sw2.addEventListener("click", () => { probOn = probOn === "sim" ? "avg" : "sim"; renderProb(); }); });
+}
+function probHTML(s, lbl, isAvg, is23){
+  const tiles = [
+    ["PP + Vox suman 176 o más", s.pRight, color("PP")],
+    ["El PP gana en escaños al PSOE", s.pFirst, color("PP")],
+    ["El PP llega solo a 176", s.pPP, color("PP")],
+    ["El bloque de la investidura de 2023 suma 176", s.pInv, color("PSOE")]
+  ];
+  const keys = Object.keys(s.hist).map(Number), lo = Math.min(...keys, 170), hi = Math.max(...keys, 182);
+  const W = 600, H = 140, nb = hi - lo + 1, bw = W / nb, mx = Math.max(...Object.values(s.hist));
+  const bars = [];
+  for (let v = lo; v <= hi; v++) { const c = s.hist[v] || 0; if (!c) continue; const h = (H - 6) * c / mx; bars.push(`<rect x="${((v-lo)*bw).toFixed(2)}" y="${(H - h).toFixed(1)}" width="${Math.max(0.5, bw*0.82).toFixed(2)}" height="${h.toFixed(1)}" fill="${v>=176 ? color("PP") : "var(--muted)"}" opacity="${v>=176?1:.55}"><title>${v} escaños: ${c} de ${s.n} simulaciones</title></rect>`); }
+  const xp = v => ((v - lo + 0.41) / nb * 100).toFixed(2);
+  const ticks = []; for (let v = Math.ceil(lo/10)*10; v <= hi; v += 10) ticks.push(`<span style="left:${xp(v)}%">${v}</span>`);
+  const ivRow = (k, name, c) => `<tr><td><i class="dot" style="background:${c}"></i>${esc(name)}</td><td class="num"><b>${s.iv[k][1]}</b></td><td class="num">${s.iv[k][0]}–${s.iv[k][2]}</td></tr>`;
+  return `<div class="row" style="justify-content:space-between"><span class="eyebrow">${esc(lbl)}</span>${!isAvg && !is23 ? `<button class="linkbtn" id="prob-sw">${probOn==="sim" ? "Volver a la media de encuestas" : "Calcular con el escenario de arriba"}</button>` : ""}</div>
+    <div class="tiles">${tiles.map(([t,p,c]) => `<div class="tile" style="--pc:${c}"><div class="n num">${pctS(p)}</div><div class="d">${esc(t)}</div></div>`).join("")}</div>
+    <div class="stack" style="gap:6px"><span class="eyebrow">Escaños de PP + Vox + UPN en las ${s.n.toLocaleString("es-ES")} simulaciones</span>
+      <div class="prob-hist"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Distribución de escaños de PP, Vox y UPN; en azul, los casos con mayoría absoluta">${bars.join("")}</svg><i class="maj176" style="left:${(((176 - lo) / nb) * 100).toFixed(2)}%"><b>176</b></i><div class="hist-axis">${ticks.join("")}</div></div>
+    </div>
+    <div class="table-wrap"><table class="prob-table"><thead><tr><th>Partido</th><th>Mediana</th><th>8 de cada 10</th></tr></thead><tbody>
+      ${ivRow("PP","PP",color("PP"))}${ivRow("PSOE","PSOE",color("PSOE"))}${ivRow("VOX","Vox",color("VOX"))}${ivRow("FA","FA + Compromís + UPC",color("FA"))}${ivRow("POD","Podemos",color("POD"))}${ivRow("RIGHT","PP + Vox + UPN",color("PP"))}
+    </tbody></table></div>
+    <p class="note">Cómo calculamos: en cada simulación movemos el voto nacional de cada partido con un error al azar. Su tamaño suma lo que discrepan entre sí las encuestas (la desviación entre la última de cada empresa) y un error común a todas, porque pueden fallar a la vez (en 2023 casi todas se quedaron cortas con el PSOE): de ±1,5 puntos para PP y PSOE, ±1 para Vox, ±0,8 para FA y ±0,5 para Podemos y SALF. Añadimos un error compartido de ±1,5 puntos que pasa voto de la derecha a la izquierda o al revés, y un ruido de cada partido en cada provincia (±6%). Luego repartimos los escaños con el mismo modelo. Desviaciones usadas ahora: ${MAIN6.map(k=>`${esc(sname(k))} ±${fmt(s.sd[k])}`).join(", ")}. No es una predicción: solo dice cuánto pesa el margen de error de las encuestas.</p>`;
+}
 
 /* ---------- SENADO ---------- */
 function senListName(l, c){
@@ -841,13 +969,14 @@ function dossier(){
   L.push(`DATOS RECOPILADOS EL ${UPDATED.toUpperCase()}. Elecciones generales en España el domingo 29 de noviembre de 2026 (Congreso y Senado), convocadas por el Real Decreto 806/2026 tras el rechazo en el Congreso de los decretos de vivienda.`);
   L.push("\nCALENDARIO:\n" + CALENDAR.map(c=>`- ${c.d}: ${c.t}`).join("\n"));
   L.push("\nCONTEXTO:\n" + CONTEXT.map(([d,t])=>`- ${d}: ${t}`).join("\n"));
-  L.push("\nREGLAS: 350 diputados en 52 circunscripciones (Madrid 38, Barcelona 32, Valencia 16; Madrid gana un escaño y Cádiz pierde uno respecto a 2023). Barrera del 3% por provincia y ley D'Hondt. Investidura (art. 99 CE): 176 votos en primera votación o mayoría simple 48 h después; si en dos meses no hay presidente, nuevas elecciones. Mesas abiertas de 9:00 a 20:00. ALIANZAS 29-N (cierre de coaliciones el 16 oct.): Frente Amplio y Podemos van por separado salvo en Canarias (Unidad del Pueblo Canario, con NC-BC, IU y Sumar); en la C. Valenciana la única lista a la izquierda del PSOE es Compromís-Front Valencià (Compromís, Podemos, EUPV y ERPV); en Cataluña Podemos no se presenta y apoya a ERC. Al Senado: «Senado de Progreso» (PSOE, IU, Sumar, Más Madrid, Compromís, CHA, Batzarre) y ERC-EH Bildu. Aliança Catalana no se presenta. Democracia21 (Miriam González, con Cs y UCIN) solo se presenta en Madrid y Barcelona. El modelo de escaños de esta web aplica esas alianzas. Voto por correo: solicitarlo en Correos (presencial con DNI o en línea con certificado digital) hasta el 19 de noviembre y depositarlo hasta el 25. SENADO: el 29-N se eligen 209 senadores (4 por provincia peninsular; Mallorca, Gran Canaria y Tenerife 3; Menorca, Ibiza, Formentera, Lanzarote, Fuerteventura, La Palma, La Gomera y El Hierro 1; Ceuta y Melilla 2). Formentera elige senador propio por primera vez (reforma del art. 69 CE, 2026). Otros 58 son designados por los parlamentos autonómicos (PP 23, PSOE 19, Vox 5, Junts 3 y 1 cada uno ERC, Bildu, PNV, BNG, CC, Compromís, Más Madrid y Geroa Bai). Total 267, mayoría absoluta 134. Al disolverse, el PP tenía 143 de 266. En 2023 se eligieron: PP 120, PSOE 72, Bildu 4, PNV 4, ERC 3, Junts 1, UPN 1, ASG 1, AHI 1 y la coalición progresista de Ibiza-Formentera 1. Voto limitado: en las de 4 escaños se marcan hasta 3, por lo que la lista más votada suele lograr 3 y la segunda 1.");
+  L.push("\nREGLAS: 350 diputados en 52 circunscripciones (Madrid 38, Barcelona 32, Valencia 16; Madrid gana un escaño y Cádiz pierde uno respecto a 2023). Barrera del 3% por provincia y ley D'Hondt. Investidura (art. 99 CE): 176 votos en primera votación o mayoría simple 48 h después; si en dos meses no hay presidente, nuevas elecciones. Mesas abiertas de 9:00 a 20:00. ALIANZAS 29-N (cierre de coaliciones el 16 oct.): Frente Amplio y Podemos van por separado salvo en Canarias (Unidad del Pueblo Canario, con NC-BC, IU y Sumar) y Baleares (Ara MÉS-Front Ampli); en la C. Valenciana la única lista a la izquierda del PSOE es Compromís-Front Valencià (Compromís, Podemos, EUPV y ERPV); en Cataluña Podemos no se presenta y apoya a ERC. Al Senado: «Senado de Progreso» (PSOE, IU, Sumar, Más Madrid, Compromís, CHA, Batzarre) y ERC-EH Bildu. Aliança Catalana no se presenta. Democracia21 (Miriam González, con Cs y UCIN) solo se presenta en Madrid y Barcelona. El modelo de escaños de esta web aplica esas alianzas. Voto por correo: solicitarlo en Correos (presencial con DNI o en línea con certificado digital) hasta el 19 de noviembre y depositarlo hasta el 25. SENADO: el 29-N se eligen 209 senadores (4 por provincia peninsular; Mallorca, Gran Canaria y Tenerife 3; Menorca, Ibiza, Formentera, Lanzarote, Fuerteventura, La Palma, La Gomera y El Hierro 1; Ceuta y Melilla 2). Formentera elige senador propio por primera vez (reforma del art. 69 CE, 2026). Otros 58 son designados por los parlamentos autonómicos (PP 23, PSOE 19, Vox 5, Junts 3 y 1 cada uno ERC, Bildu, PNV, BNG, CC, Compromís, Más Madrid y Geroa Bai). Total 267, mayoría absoluta 134. Al disolverse, el PP tenía 143 de 266. En 2023 se eligieron: PP 120, PSOE 72, Bildu 4, PNV 4, ERC 3, Junts 1, UPN 1, ASG 1, AHI 1 y la coalición progresista de Ibiza-Formentera 1. Voto limitado: en las de 4 escaños se marcan hasta 3, por lo que la lista más votada suele lograr 3 y la segunda 1.");
   L.push("\nPROGRAMAS Y DOCUMENTOS DE CADA PARTIDO. Ningún partido ha publicado aún su programa para el 29-N (el del PP lo redacta Alma Ezcurra; el PSOE también lo está redactando). Cada documento indica tipo, fecha y enlace: «Precampaña 2026» = propuestas anunciadas en 2025-2026; congreso/legislatura = documentos de partido; «23-J» = programa de las generales de 2023.");
   PROGRAM_PARTIES.forEach(k=>{ const p=P[k], g=PROGRAMS[k]; L.push(`\n## ${p.name} (${p.scope}) — ${p.leader} (${p.role}). 2023: ${p.r23?p.r23[0]+"% y "+p.r23[1]+" escaños":"no concurrió solo"}. ${p.note||""}\nResumen: ${g.pitch}` + g.docs.map(d=>`\n### ${d.label}: ${d.title} (${d.date}) <${d.url}>\n` + d.sections.map(s=>`- ${s.topic}: ` + s.items.join(" | ")).join("\n")).join("")); });
   L.push("\nOTROS PARTIDOS:\n" + OTHER_P.map(k=>`- ${P[k].name} (${P[k].scope}; ${P[k].leader}). ${P[k].r23?"2023: "+P[k].r23[0]+"%, "+P[k].r23[1]+" escaños. ":""}${MINOR_NOTES[k]}`).join("\n"));
   L.push("\nCOMPARADOR POR TEMAS (etiqueta = año del documento o «voto» = cómo votó):\n" + TOPICS.map(t=>`* ${t.name}: ` + MAIN6.map(k=>`${sname(k)}: ${(t.rows[k]||[]).length?t.rows[k].map(([g,x])=>`[${g}] ${x}`).join(" "):"sin propuesta localizada"}`).join(" / ")).join("\n"));
   L.push("\nENCUESTAS (fecha; PP, PSOE, Vox, Sumar/FA, Podemos, SALF; escaños publicados):\n" + POLLS.map(p=>`- ${p.firm}${p.media?" / "+p.media:""} (${p.d}${p.cis?", CIS, fuera de la media":""}${p.out?", reestimación de datos del CIS, fuera de la media":""}): ${MAIN6.map(k=>`${sname(k)} ${p[k]==null?"—":p[k]}`).join(", ")}${p.CFV?", Compromís "+p.CFV:""}${p.seats?"; escaños: "+p.seats:""}`).join("\n"));
   L.push(`\nMEDIA (última encuesta de ${A.n} empresas desde el 1 sept., sin CIS): ` + MAIN6.map(k=>`${sname(k)} ${A.avg[k].toFixed(1)}%`).join(", "));
+  const MCk = JSON.stringify(mcBase(A.avg)); if (mcCache.has(MCk)) { const S = mcCache.get(MCk); L.push(`PROBABILIDADES DE ESTA WEB (${S.n} elecciones simuladas con el margen de error de las encuestas alrededor de la media): PP+Vox ≥176 en ${pct(S.pRight)}; PP más escaños que el PSOE en ${pct(S.pFirst)}; PP solo ≥176 en ${pct(S.pPP)}; bloque de la investidura de 2023 ≥176 en ${pct(S.pInv)}. Rangos del 80%: PP ${S.iv.PP[0]}–${S.iv.PP[2]}, PSOE ${S.iv.PSOE[0]}–${S.iv.PSOE[2]}, Vox ${S.iv.VOX[0]}–${S.iv.VOX[2]}, PP+Vox+UPN ${S.iv.RIGHT[0]}–${S.iv.RIGHT[2]}. Es un cálculo sobre el error de las encuestas, no una predicción.`); }
   L.push("PROYECCIÓN DE ESCAÑOS DE ESTA WEB CON LA MEDIA (modelo: resultados 2023 por provincia + swing proporcional + D'Hondt): " + SEAT_ORDER.filter(k=>sAvg[k]).map(k=>`${sname(k)} ${sAvg[k]}`).join(", ") + `. PP+Vox = ${sAvg.PP+sAvg.VOX}.`);
   try { const SP = senateProjection(simulate(A.avg)).totals; L.push("PROYECCIÓN ORIENTATIVA DEL SENADO DE ESTA WEB (209 electos, con la media de encuestas y las listas al Senado de 2026): " + ALL_ORDER.filter(k=>SP[k]).map(k=>`${sname(k)} ${SP[k]}`).join(", ") + `. Con los designados: PP ${(SP.PP||0)+DESIGNATED.by.PP} de 267.`); } catch(e){}
   L.push("\nPACTOS AL SENADO 2026:\n" + SEN_PACTS.map(p=>`- ${p.name} (${p.parties}). Dónde: ${p.scope}. ${p.how}`).join("\n"));
