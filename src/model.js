@@ -5,8 +5,10 @@ const MODEL_PARTIES = ["PP","PSOE","VOX","FA","POD","SALF","ERC","JUNTS","BILDU"
    - C. Valenciana: Compromís-Front Valencià (Compromís, Podemos, EUPV, ERPV). El Frente Amplio no presenta lista propia: el voto estimado de FA y Podemos allí pasa a CFV.
    - Canarias: Unidad del Pueblo Canario (NC-BC, Podemos, IU, Sumar): el voto estimado de FA y Podemos allí pasa a UPC.
    - Cataluña: Podemos no se presenta y apoya a ERC. Su base allí (la de Sumar 2023) es sobre todo de los Comuns, así que repartimos su voto estimado a medias entre ERC y FA.
+   - Baleares: Podemos va dentro de Ara MÉS-Front Ampli (acuerdo del 24 oct.): su voto estimado allí pasa al FA.
    Aliança Catalana no se presenta. */
 const CFV_PROV = ["Alicante","Castellón","Valencia"];
+const POD_IN_FA = ["Baleares"];
 const UPC_PROV = ["Las Palmas","S. C. de Tenerife"];
 /* Si una encuesta da Compromís aparte (targets.CFV > 0), se reparte solo en la C. Valenciana con la geografía de Sumar 2023
    y el FA se reparte en el resto de España. SUMAR_CV_NAT: aportación aproximada de la C. Valenciana al 12,33% de Sumar en 2023. */
@@ -112,6 +114,7 @@ function simulate(targets, opts){
       if (CFV_PROV.includes(name)) { raw.CFV = (cfvOwn ? b.sumar * T.CFV / SUMAR_CV_NAT : raw.FA) + raw.POD; raw.FA = 0; raw.POD = 0; }
       else if (UPC_PROV.includes(name)) { raw.UPC = raw.FA + raw.POD; raw.FA = 0; raw.POD = 0; }
       else if (p[1] === "Cataluña") { raw.ERC += raw.POD/2; raw.FA += raw.POD/2; raw.POD = 0; }
+      else if (POD_IN_FA.includes(name)) { raw.FA += raw.POD; raw.POD = 0; }
     }
     const listed2023 = b.pp + b.psoe + (opts.vox2023 ? p[6] : b.vox) + b.sumar + Object.values(b.extra).reduce((a,v)=>a+v,0);
     const others2023 = Math.max(0.5, 100 - listed2023);
@@ -146,6 +149,14 @@ PROVINCES.forEach(p => {
 });
 const SEN_LOCAL = {"La Gomera":"ASG", "El Hierro":"AHI"}; // partidos insulares que no recoge el modelo: se mantiene su resultado de 2023
 const SDP_PSOE3 = ["Álava","Sevilla"];                   // el PSOE pone los 3 candidatos de Senado de Progreso
+/* Acuerdo PP–Vox para el Senado (26 oct. 2026), por provincia:
+   - SEN_VOX_OUT: Vox no presenta lista y el PP lleva a un independiente propuesto por Vox → se suma el voto de los dos en la lista del PP.
+   - SEN_VOX_ONE: Vox presenta un solo candidato → sus votantes marcan a ese candidato y a dos del PP. Se calcula candidato a candidato:
+     los dos primeros del PP reciben el voto de PP + Vox; el tercero, solo el del PP; el de Vox, el de Vox.
+   - SEN_PP_OUT: el PP no se presenta → quitamos su lista y no trasladamos su voto (no hay dato de adónde iría). */
+const SEN_VOX_OUT = ["Cádiz","Valencia","Castellón","Baleares","Las Palmas","S. C. de Tenerife"];
+const SEN_VOX_ONE = ["Sevilla","Huelva","Asturias","Badajoz","Álava","Navarra","Cáceres","Huesca","Zaragoza","Alicante","Granada","Cuenca","Pontevedra","Jaén"];
+const SEN_PP_OUT = ["Gipuzkoa","Girona","Tarragona"];
 function senateLists(pr, circ, y2023){
   const s = pr.share, c = pr.ccaa, L = {}, add = (k,v) => { if (v > 0.05) L[k] = (L[k]||0) + v; };
   ["PP","VOX","SALF","AA","JUNTS","PNV","BNG"].forEach(k => add(k, s[k]||0));
@@ -156,10 +167,12 @@ function senateLists(pr, circ, y2023){
   else {
     const val = CFV_PROV.includes(pr.name);
     add("SDP", s.PSOE + (val ? pr.parts.FA : s.FA));
-    add("POD", val ? pr.parts.POD : s.POD);
+    if (!val) add("POD", s.POD); // en la C. Valenciana Podemos no se presenta al Senado
     add("BILDU", s.BILDU);
     if (pr.name === "Navarra") { L.UPNPP = pr.upnpp ? pr.upnpp.PP + pr.upnpp.UPN : (L.PP||0) + (s.UPN||0); delete L.PP; }
   }
+  if (SEN_VOX_OUT.includes(pr.name) && L.VOX) { L.PP = (L.PP||0) + L.VOX; delete L.VOX; }
+  if (SEN_PP_OUT.includes(pr.name)) delete L.PP;
   return L;
 }
 /* Reparto de los escaños de una lista entre partidos (orden de candidatos publicado) */
@@ -181,9 +194,23 @@ function senateProjection(res, opts){
     const pr = res.provinces.find(p => p.name === prov);
     const lists = senateLists(pr, name, y2023);
     const ord = Object.keys(lists).sort((a,b) => lists[b] - lists[a]);
-    const [a, b] = ord, gap = lists[a] - (lists[b]||0);
+    const [a, b] = ord;
+    let gap = lists[a] - (lists[b]||0);
     const win = {};
-    if (seats === 4) { if (gap < 1) { win[a] = 2; win[b] = 2; } else { win[a] = 3; win[b] = 1; } }
+    const rk = lists.UPNPP != null ? "UPNPP" : "PP";
+    if (!y2023 && seats === 4 && SEN_VOX_ONE.includes(prov) && lists.VOX && lists[rk] != null) {
+      /* Vox con un solo candidato: reparto candidato a candidato */
+      const cands = [];
+      Object.entries(lists).forEach(([l,v]) => {
+        if (l === "VOX") cands.push([l, v]);
+        else if (l === rk) cands.push([l, v + lists.VOX], [l, v + lists.VOX], [l, v]);
+        else for (let i=0;i<3;i++) cands.push([l, v]);
+      });
+      cands.sort((x,y) => y[1] - x[1]);
+      cands.slice(0, 4).forEach(([l]) => win[l] = (win[l]||0) + 1);
+      gap = cands[3][1] - (cands[4] ? cands[4][1] : 0);
+    }
+    else if (seats === 4) { if (gap < 1) { win[a] = 2; win[b] = 2; } else { win[a] = 3; win[b] = 1; } }
     else if (seats === 3) { win[a] = 2; win[b] = 1; }
     else if (seats === 2) { if (gap > 3) win[a] = 2; else { win[a] = 1; win[b] = 1; } }
     else win[a] = 1;
@@ -209,4 +236,4 @@ function dhondt(share, seats, barrier){
   return {seats:res, eligible, last, next, quotients: quotients.slice(0, seats + 4)};
 }
 
-if (typeof module !== "undefined") module.exports = {simulate, dhondt, senateProjection, PROVINCES, MODEL_PARTIES, NAT2023, SEN_CIRCS};
+if (typeof module !== "undefined") module.exports = {simulate, dhondt, senateProjection, PROVINCES, MODEL_PARTIES, NAT2023, SEN_CIRCS, SEN_VOX_ONE, SEN_VOX_OUT};

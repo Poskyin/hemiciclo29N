@@ -536,7 +536,7 @@ function renderEscanos(){
     <p class="small muted">Cuadraditos = escaños de cada circunscripción en este escenario. Pulsa una para ver el reparto D'Hondt y quién se queda cerca del último escaño.</p>
     <div class="grid2" style="align-items:start"><div class="prov-list" id="prov-list"></div><div class="panel stack" id="prov-detail" style="position:sticky; top:120px"></div></div>
   </section>
-  <p class="note">Cómo calculamos: partimos del resultado de 2023 en cada provincia y multiplicamos el voto de cada partido por la variación nacional que marca el escenario (Frente Amplio y Podemos heredan la distribución de Sumar; SALF, la de Vox suavizada; Adelante Andalucía se reparte solo en Andalucía). Aplicamos las alianzas registradas para el 29-N: en la C. Valenciana el voto de FA y Podemos pasa a Compromís-Front Valencià; en Canarias, a Unidad del Pueblo Canario; en Cataluña, Podemos no se presenta (apoya a ERC) y repartimos su voto a medias entre ERC y FA. Aliança Catalana no se presenta. Con los votos y las listas de 2023 el modelo reproduce exactamente los 350 escaños de entonces. No recoge cambios locales ni partidos que solo se presentan en una provincia, como Democracia21.</p>`;
+  <p class="note">Cómo calculamos: partimos del resultado de 2023 en cada provincia y multiplicamos el voto de cada partido por la variación nacional que marca el escenario (Frente Amplio y Podemos heredan la distribución de Sumar; SALF, la de Vox suavizada; Adelante Andalucía se reparte solo en Andalucía). Aplicamos las alianzas registradas para el 29-N: en la C. Valenciana el voto de FA y Podemos pasa a Compromís-Front Valencià; en Canarias, a Unidad del Pueblo Canario; en Cataluña, Podemos no se presenta (apoya a ERC) y repartimos su voto a medias entre ERC y FA; en Baleares, Podemos va dentro de Ara MÉS-Front Ampli y su voto pasa al FA. Aliança Catalana no se presenta. Con los votos y las listas de 2023 el modelo reproduce exactamente los 350 escaños de entonces. No recoge cambios locales ni partidos que solo se presentan en una provincia, como Democracia21.</p>`;
   $("#preset").addEventListener("change", e => { loadPreset(e.target.value); syncSliders(); updateSim(); });
   $$(".sl input", v).forEach(inp => inp.addEventListener("input", ()=>{ simT[inp.dataset.k] = +inp.value; simT.__key = "custom"; $("#o-"+inp.dataset.k).textContent = fmt(+inp.value, inp.step==="0.05"?2:1)+"%"; simLabel = "Escenario modificado por ti"; updateSim(); }));
   $$("#pact-presets .chip").forEach(b => b.addEventListener("click", ()=>{ const id=b.dataset.b; coalition = id==="clear" ? new Set() : new Set(BLOCS.find(x=>x.id===id).ks); updatePact(); }));
@@ -653,7 +653,7 @@ function renderSenado(){
     <div class="table-wrap" style="margin-top:10px"><table class="mini"><thead><tr><th>Circunscripción</th><th>Comunidad</th><th>Escaños</th><th>Proyección</th><th>2023</th><th>Las dos primeras listas</th></tr></thead>
     <tbody>${S.circs.map(c=>`<tr><td>${esc(c.name)}${c.close?' <span class="flag tdoc" title="Menos de 2 puntos entre las dos primeras listas">reñida</span>':""}${c.local?' <span class="flag tdoc" title="Partido insular: mantenemos su resultado de 2023">insular</span>':""}</td><td style="text-align:left">${esc(c.ccaa)}</td><td>${c.seats}</td><td style="text-align:left">${seatStrip(c.alloc)}</td><td style="text-align:left">${c.r23?seatStrip(c.r23):'<span class="muted small">nueva</span>'}</td><td style="text-align:left" class="small">${c.order.slice(0,2).map(l=>`${esc(senListName(l,c))} ${fmt(c.lists[l])}%`).join(" · ")}</td></tr>`).join("")}</tbody></table></div></details>
   </section>
-  <p class="note">Cómo calculamos: tomamos el voto estimado de cada provincia en el modelo del Congreso, lo agrupamos en las listas al Senado de 2026 (Senado de Progreso, ERC-EH Bildu, UPN-PP, pactos de Baleares…) y aplicamos el patrón habitual: en las circunscripciones de 4, la lista más votada gana 3 y la segunda 1 (2 y 2 si las separa menos de 1 punto). Las islas usan el voto de su provincia; en La Gomera y El Hierro mantenemos a ASG y AHI, que ganaron en 2023 y no están en las encuestas. Con los votos y las listas de 2023, el método acierta 201 de los 208 escaños. En el Senado se vota a personas, así que el resultado real puede desviarse, sobre todo en las circunscripciones reñidas.</p>`;
+  <p class="note">Cómo calculamos: tomamos el voto estimado de cada provincia en el modelo del Congreso, lo agrupamos en las listas al Senado de 2026 (Senado de Progreso, ERC-EH Bildu, UPN-PP, pactos de Baleares…) y aplicamos el patrón habitual: en las circunscripciones de 4, la lista más votada gana 3 y la segunda 1 (2 y 2 si las separa menos de 1 punto). Acuerdo PP–Vox: donde Vox no se presenta (Cádiz, Valencia, Castellón, Baleares y Canarias) sumamos su voto al del PP; donde presenta un solo candidato (14 provincias) suponemos que sus votantes marcan a ese candidato y a dos del PP, y contamos los votos candidato a candidato; donde el PP no se presenta (Gipuzkoa, Girona y Tarragona) quitamos su lista sin trasladar su voto. En la C. Valenciana, Podemos no presenta lista al Senado. Las islas usan el voto de su provincia; en La Gomera y El Hierro mantenemos a ASG y AHI, que ganaron en 2023 y no están en las encuestas. Con los votos y las listas de 2023, el método acierta 201 de los 208 escaños. En el Senado se vota a personas, así que el resultado real puede desviarse, sobre todo en las circunscripciones reñidas.</p>`;
   $("#sen-map").addEventListener("click", ()=>{ mapMode = "senado"; show("mapa", true); });
   $("#sen-ally").addEventListener("click", ()=>{ mapMode = "alianzas"; show("mapa", true); });
 }
@@ -686,7 +686,8 @@ function senateBy(level){
 }
 const RIGHT_TYPES = {
   sep:{label:"PP y Vox por separado", color:"#9AA3AE"},
-  part:{label:"PP en coalición en parte del territorio", color:"#8DB6E6"},
+  sen:{label:"Por separado al Congreso; acuerdo PP–Vox en el Senado", color:"#5B7FA8"},
+  part:{label:"Acuerdo PP–Vox en el Senado y PP en coalición en parte del territorio", color:"#8DB6E6"},
   coal:{label:"PP en coalición con un partido regional", color:"#1F6FC5"}
 };
 const rightOf = n => RIGHT_BY_CCAA[n] || {type:"sep", congreso:[], senado:[]};
@@ -758,7 +759,7 @@ function renderMapa(){
     <div class="panel stack minw0">
       <div class="map-wrap">${svg}</div>
       <div class="map-legend">${legend}</div>
-      <p class="small muted">${mapMode==="alianzas" ? (allySide==="dcha" ? esc(RIGHT_NOTE) : "Listas al Congreso a la izquierda del PSOE en cada comunidad, tras el cierre de coaliciones del 16 de octubre. Al Senado, el PSOE va con el Frente Amplio en casi toda España.") : gradInfo ? `Gradiente: cuanto más intenso, mayor porcentaje de voto estimado ${gradParty==="lead"?"del partido más votado en cada territorio":"de "+esc(sname(gradParty))} (${esc(scen)}).${mapMode==="senado"?" Voto por listas al Senado.":""}${level==="ccaa"?" En las comunidades, media de sus provincias ponderada por escaños.":""}` : `Color: partido con más ${mapMode==="senado"?"senadores":"escaños"} en este escenario; a rayas, si hay empate (${esc(scen)}). ${mapMode==="senado"?"En las provincias de las islas se suman las circunscripciones insulares.":"Cambia el escenario en Congreso › Escaños y pactos."}`}</p>
+      <p class="small muted">${mapMode==="alianzas" ? (allySide==="dcha" ? esc(RIGHT_NOTE) : "Listas al Congreso a la izquierda del PSOE en cada comunidad, tras el cierre de candidaturas del 26 de octubre. Al Senado, el PSOE va con el Frente Amplio en casi toda España.") : gradInfo ? `Gradiente: cuanto más intenso, mayor porcentaje de voto estimado ${gradParty==="lead"?"del partido más votado en cada territorio":"de "+esc(sname(gradParty))} (${esc(scen)}).${mapMode==="senado"?" Voto por listas al Senado.":""}${level==="ccaa"?" En las comunidades, media de sus provincias ponderada por escaños.":""}` : `Color: partido con más ${mapMode==="senado"?"senadores":"escaños"} en este escenario; a rayas, si hay empate (${esc(scen)}). ${mapMode==="senado"?"En las provincias de las islas se suman las circunscripciones insulares.":"Cambia el escenario en Congreso › Escaños y pactos."}`}</p>
     </div>
     <div class="panel stack minw0" id="map-detail"></div>
   </div>
@@ -808,7 +809,7 @@ function allyCard(n){
   const L = LEFT_BY_CCAA[n], R = rightOf(n), O = OTHERS_BY_CCAA[n] || [];
   const side = allySide === "dcha" ? RIGHT_TYPES[R.type] : (L ? ALLY_TYPES[L.type] : null);
   const rC = R.congreso.length ? R.congreso : [["PP y Vox","por separado"]];
-  const rS = R.senado.length ? R.senado : [["PP y Vox","por separado (negocian en algunas provincias)"]];
+  const rS = R.senado.length ? R.senado : [["PP y Vox","por separado: el acuerdo del Senado no afecta a esta comunidad"]];
   return `<div class="row" style="justify-content:space-between"><h3>${esc(n)}</h3>${side?`<span class="small"><i class="sq" style="background:${side.color}"></i>${esc(side.label)}</span>`:""}</div>
     <div class="ally-blk${allySide==="izq"?" on":""}"><span class="eyebrow">Izquierda</span>${L?`<span class="small muted">Congreso</span><ul class="ally">${allyList(L.congreso)}</ul><span class="small muted">Senado</span><ul class="ally">${allyList(L.senado)}</ul>${L.note?`<p class="small muted">${esc(L.note)}</p>`:""}`:`<p class="small muted">Sin información publicada.</p>`}</div>
     <div class="ally-blk${allySide==="dcha"?" on":""}"><span class="eyebrow">Derecha</span><span class="small muted">Congreso</span><ul class="ally">${allyList(rC)}</ul><span class="small muted">Senado</span><ul class="ally">${allyList(rS)}</ul></div>
@@ -821,7 +822,7 @@ function allyTable(){
   <div class="table-wrap"><table class="ally-table"><thead><tr><th>Comunidad</th><th>Izquierda al Congreso</th><th>Izquierda al Senado</th><th>Derecha y otros</th></tr></thead><tbody>${CCAA_LIST.map(c=>{ const L=LEFT_BY_CCAA[c], R=rightOf(c), O=OTHERS_BY_CCAA[c]||[];
     const rt = R.congreso.concat(R.senado.map(x=>[x[0]+" (Senado)", x[1]]));
     return `<tr><td><i class="sq" style="background:${allySide==="dcha"?RIGHT_TYPES[R.type].color:(L?ALLY_TYPES[L.type].color:"var(--soft)")}"></i><b>${esc(c)}</b></td><td>${L?cell(L.congreso):"—"}</td><td>${L?cell(L.senado):"—"}</td><td>${rt.length?cell(rt):`<div class="muted">PP y Vox, por separado</div>`}${O.length?cell(O):""}</td></tr>`; }).join("")}</tbody></table></div>
-  <p class="small muted">Fuentes: coaliciones registradas ante la Junta Electoral Central y acuerdos publicados hasta el ${UPDATED}. Las listas definitivas se presentan entre el 21 y el 26 de octubre.</p></section>`;
+  <p class="small muted">Fuentes: coaliciones registradas ante la Junta Electoral Central y acuerdos publicados hasta el ${UPDATED}. Las candidaturas presentadas se publican en el BOE el 28 de octubre y la Junta Electoral las proclama el 2 de noviembre.</p></section>`;
 }
 
 /* ---------- PREGÚNTALE A CLAUDE ---------- */

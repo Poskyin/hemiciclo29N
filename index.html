@@ -409,7 +409,7 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
   <section class="view" id="v-calendario" role="tabpanel" aria-labelledby="tab-calendario" hidden></section>
 </main>
 <footer>
-  <span><b>Two-Hemiciclo 29N</b> · Web informativa independiente sobre las elecciones generales del 29 de noviembre de 2026. Datos actualizados el 23 de octubre de 2026.</span>
+  <span><b>Two-Hemiciclo 29N</b> · Web informativa independiente sobre las elecciones generales del 29 de noviembre de 2026. Datos actualizados el 26 de octubre de 2026.</span>
   <span>Las proyecciones de escaños son un cálculo propio a partir de encuestas publicadas; no son una encuesta ni una predicción.</span>
 </footer>
 <script>
@@ -423,8 +423,10 @@ const MODEL_PARTIES = ["PP","PSOE","VOX","FA","POD","SALF","ERC","JUNTS","BILDU"
    - C. Valenciana: Compromís-Front Valencià (Compromís, Podemos, EUPV, ERPV). El Frente Amplio no presenta lista propia: el voto estimado de FA y Podemos allí pasa a CFV.
    - Canarias: Unidad del Pueblo Canario (NC-BC, Podemos, IU, Sumar): el voto estimado de FA y Podemos allí pasa a UPC.
    - Cataluña: Podemos no se presenta y apoya a ERC. Su base allí (la de Sumar 2023) es sobre todo de los Comuns, así que repartimos su voto estimado a medias entre ERC y FA.
+   - Baleares: Podemos va dentro de Ara MÉS-Front Ampli (acuerdo del 24 oct.): su voto estimado allí pasa al FA.
    Aliança Catalana no se presenta. */
 const CFV_PROV = ["Alicante","Castellón","Valencia"];
+const POD_IN_FA = ["Baleares"];
 const UPC_PROV = ["Las Palmas","S. C. de Tenerife"];
 /* Si una encuesta da Compromís aparte (targets.CFV > 0), se reparte solo en la C. Valenciana con la geografía de Sumar 2023
    y el FA se reparte en el resto de España. SUMAR_CV_NAT: aportación aproximada de la C. Valenciana al 12,33% de Sumar en 2023. */
@@ -530,6 +532,7 @@ function simulate(targets, opts){
       if (CFV_PROV.includes(name)) { raw.CFV = (cfvOwn ? b.sumar * T.CFV / SUMAR_CV_NAT : raw.FA) + raw.POD; raw.FA = 0; raw.POD = 0; }
       else if (UPC_PROV.includes(name)) { raw.UPC = raw.FA + raw.POD; raw.FA = 0; raw.POD = 0; }
       else if (p[1] === "Cataluña") { raw.ERC += raw.POD/2; raw.FA += raw.POD/2; raw.POD = 0; }
+      else if (POD_IN_FA.includes(name)) { raw.FA += raw.POD; raw.POD = 0; }
     }
     const listed2023 = b.pp + b.psoe + (opts.vox2023 ? p[6] : b.vox) + b.sumar + Object.values(b.extra).reduce((a,v)=>a+v,0);
     const others2023 = Math.max(0.5, 100 - listed2023);
@@ -564,6 +567,14 @@ PROVINCES.forEach(p => {
 });
 const SEN_LOCAL = {"La Gomera":"ASG", "El Hierro":"AHI"}; // partidos insulares que no recoge el modelo: se mantiene su resultado de 2023
 const SDP_PSOE3 = ["Álava","Sevilla"];                   // el PSOE pone los 3 candidatos de Senado de Progreso
+/* Acuerdo PP–Vox para el Senado (26 oct. 2026), por provincia:
+   - SEN_VOX_OUT: Vox no presenta lista y el PP lleva a un independiente propuesto por Vox → se suma el voto de los dos en la lista del PP.
+   - SEN_VOX_ONE: Vox presenta un solo candidato → sus votantes marcan a ese candidato y a dos del PP. Se calcula candidato a candidato:
+     los dos primeros del PP reciben el voto de PP + Vox; el tercero, solo el del PP; el de Vox, el de Vox.
+   - SEN_PP_OUT: el PP no se presenta → quitamos su lista y no trasladamos su voto (no hay dato de adónde iría). */
+const SEN_VOX_OUT = ["Cádiz","Valencia","Castellón","Baleares","Las Palmas","S. C. de Tenerife"];
+const SEN_VOX_ONE = ["Sevilla","Huelva","Asturias","Badajoz","Álava","Navarra","Cáceres","Huesca","Zaragoza","Alicante","Granada","Cuenca","Pontevedra","Jaén"];
+const SEN_PP_OUT = ["Gipuzkoa","Girona","Tarragona"];
 function senateLists(pr, circ, y2023){
   const s = pr.share, c = pr.ccaa, L = {}, add = (k,v) => { if (v > 0.05) L[k] = (L[k]||0) + v; };
   ["PP","VOX","SALF","AA","JUNTS","PNV","BNG"].forEach(k => add(k, s[k]||0));
@@ -574,10 +585,12 @@ function senateLists(pr, circ, y2023){
   else {
     const val = CFV_PROV.includes(pr.name);
     add("SDP", s.PSOE + (val ? pr.parts.FA : s.FA));
-    add("POD", val ? pr.parts.POD : s.POD);
+    if (!val) add("POD", s.POD); // en la C. Valenciana Podemos no se presenta al Senado
     add("BILDU", s.BILDU);
     if (pr.name === "Navarra") { L.UPNPP = pr.upnpp ? pr.upnpp.PP + pr.upnpp.UPN : (L.PP||0) + (s.UPN||0); delete L.PP; }
   }
+  if (SEN_VOX_OUT.includes(pr.name) && L.VOX) { L.PP = (L.PP||0) + L.VOX; delete L.VOX; }
+  if (SEN_PP_OUT.includes(pr.name)) delete L.PP;
   return L;
 }
 /* Reparto de los escaños de una lista entre partidos (orden de candidatos publicado) */
@@ -599,9 +612,23 @@ function senateProjection(res, opts){
     const pr = res.provinces.find(p => p.name === prov);
     const lists = senateLists(pr, name, y2023);
     const ord = Object.keys(lists).sort((a,b) => lists[b] - lists[a]);
-    const [a, b] = ord, gap = lists[a] - (lists[b]||0);
+    const [a, b] = ord;
+    let gap = lists[a] - (lists[b]||0);
     const win = {};
-    if (seats === 4) { if (gap < 1) { win[a] = 2; win[b] = 2; } else { win[a] = 3; win[b] = 1; } }
+    const rk = lists.UPNPP != null ? "UPNPP" : "PP";
+    if (!y2023 && seats === 4 && SEN_VOX_ONE.includes(prov) && lists.VOX && lists[rk] != null) {
+      /* Vox con un solo candidato: reparto candidato a candidato */
+      const cands = [];
+      Object.entries(lists).forEach(([l,v]) => {
+        if (l === "VOX") cands.push([l, v]);
+        else if (l === rk) cands.push([l, v + lists.VOX], [l, v + lists.VOX], [l, v]);
+        else for (let i=0;i<3;i++) cands.push([l, v]);
+      });
+      cands.sort((x,y) => y[1] - x[1]);
+      cands.slice(0, 4).forEach(([l]) => win[l] = (win[l]||0) + 1);
+      gap = cands[3][1] - (cands[4] ? cands[4][1] : 0);
+    }
+    else if (seats === 4) { if (gap < 1) { win[a] = 2; win[b] = 2; } else { win[a] = 3; win[b] = 1; } }
     else if (seats === 3) { win[a] = 2; win[b] = 1; }
     else if (seats === 2) { if (gap > 3) win[a] = 2; else { win[a] = 1; win[b] = 1; } }
     else win[a] = 1;
@@ -628,8 +655,8 @@ function dhondt(share, seats, barrier){
 }
 
 
-/* ===== Datos de la plataforma (actualizados el 23 de octubre de 2026) ===== */
-const UPDATED = "23 de octubre de 2026";
+/* ===== Datos de la plataforma (actualizados el 26 de octubre de 2026) ===== */
+const UPDATED = "26 de octubre de 2026";
 const ELECTION_DATE = "2026-11-29T09:00:00+01:00";
 
 /* Orden de izquierda a derecha para el hemiciclo */
@@ -640,7 +667,7 @@ const PARTIES = {
   PSOE: {name:"PSOE", short:"PSOE", color:"#E0251B", leader:"Pedro Sánchez", role:"Candidato (proclamado el 17 oct.) y presidente del Gobierno", r23:[31.68,121], scope:"Toda España"},
   VOX:  {name:"Vox", short:"Vox", color:"#5BB12F", leader:"Santiago Abascal", role:"Candidato a la Presidencia", r23:[12.38,33], scope:"Toda España"},
   FA:   {name:"Frente Amplio (Sumar)", short:"Sumar/FA", color:"#E0306E", leader:"Ada Colau", role:"Candidata a la Presidencia y cabeza de lista por Barcelona", r23:[12.33,31], scope:"Toda España salvo C. Valenciana", note:"Coalición de IU, Movimiento Sumar, Comuns, Más Madrid, CHA y otros. No se presenta en la C. Valenciana (allí va Compromís-Front Valencià) y en Canarias va dentro de Unidad del Pueblo Canario. El resultado de 2023 es el de Sumar, que entonces incluía a Podemos y Compromís."},
-  POD:  {name:"Podemos", short:"Podemos", color:"#6E3A8E", leader:"Irene Montero", role:"Candidata y cabeza de lista por Madrid (primarias, 90%)", r23:null, scope:"Toda España salvo Cataluña", note:"En 2023 concurrió dentro de Sumar. No se presenta en Cataluña (apoya a ERC); en la C. Valenciana va en Compromís-Front Valencià y en Canarias en Unidad del Pueblo Canario."},
+  POD:  {name:"Podemos", short:"Podemos", color:"#6E3A8E", leader:"Irene Montero", role:"Candidata y cabeza de lista por Madrid (primarias, 90%)", r23:null, scope:"Toda España salvo Cataluña", note:"En 2023 concurrió dentro de Sumar. No se presenta en Cataluña (apoya a ERC); en la C. Valenciana va en Compromís-Front Valencià, en Canarias en Unidad del Pueblo Canario y en Baleares en Ara MÉS-Front Ampli."},
   SALF: {name:"Se Acabó La Fiesta", short:"SALF", color:"#8A6A4B", leader:"Alvise Pérez", role:"Fundador y cabeza de lista por Madrid", r23:null, scope:"Toda España", note:"No se presentó en 2023. Europeas 2024: 4,6% y 3 escaños."},
   ERC:  {name:"Esquerra Republicana", short:"ERC", color:"#F2A900", leader:"Gabriel Rufián", role:"Cabeza de lista por Barcelona; Podemos apoya sus listas en Cataluña", r23:[1.89,7], scope:"Cataluña"},
   JUNTS:{name:"Junts per Catalunya", short:"Junts", color:"#1FB5A6", leader:"Míriam Nogueras", role:"Cabeza de lista por Barcelona", r23:[1.60,7], scope:"Cataluña"},
@@ -651,7 +678,7 @@ const PARTIES = {
   UPN:  {name:"UPN", short:"UPN", color:"#4F6FD8", leader:"Alberto Catalán", role:"Diputado en 2023", r23:[0.21,1], scope:"Navarra"},
   AA:   {name:"Adelante Andalucía", short:"AA", color:"#3BA67A", leader:"José Ignacio García", role:"Portavoz; lista propia en las 8 provincias andaluzas", r23:null, scope:"Andalucía"},
   CFV:  {name:"Compromís-Front Valencià", short:"Compromís", color:"#E8730C", leader:"Àgueda Micó", role:"Cabeza de lista por Valencia", r23:null, scope:"C. Valenciana", note:"Coalición de Compromís, Podemos, EUPV (IU) y ERPV. En 2023 Compromís fue dentro de Sumar."},
-  UPC:  {name:"Unidad del Pueblo Canario", short:"UPC", color:"#0E7FA6", leader:"Por anunciar", role:"Coalición de NC-Bloque Canarista, Podemos, IU y Sumar", r23:null, scope:"Canarias"},
+  UPC:  {name:"Unidad del Pueblo Canario", short:"UPC", color:"#0E7FA6", leader:"Luis Campos", role:"Cabeza de lista por Las Palmas (Marisol Collado, por S. C. de Tenerife). Coalición de NC-Bloque Canarista, Podemos, IU y Sumar", r23:null, scope:"Canarias"},
   D21:  {name:"Democracia21", short:"D21", color:"#6B5CA5", leader:"Miriam González", role:"Candidata; solo Madrid y Barcelona", r23:null, scope:"Madrid y Barcelona"},
   ASG:  {name:"Agrupación Socialista Gomera", short:"ASG", color:"#5E4FA2", leader:"Yaiza Castilla", role:"Candidata al Senado por La Gomera", r23:null, scope:"La Gomera"},
   AHI:  {name:"Agrupación Herreña Independiente", short:"AHI", color:"#4C9F38", leader:"Javier Armas", role:"Senador y candidato por El Hierro", r23:null, scope:"El Hierro"},
@@ -671,7 +698,8 @@ const PROGRAMS = {
   PP: {
     pitch:"Vivienda con rebajas fiscales para jóvenes, ley antiokupación, inmigración por puntos, bajada de impuestos y regeneración institucional. Feijóo ha firmado un «Contrato con España» de quince compromisos; el programa completo, que redacta Alma Ezcurra, aún no se ha publicado.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Entrevista en la SER y alianzas", date:"17–23 oct. 2026", url:"https://diariodeavisos.elespanol.com/2026/10/feijoo-reforma-eutanasia-subida-salario-minimo/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Foro Asturias apoya al PP (Moncloa.com)","https://www.moncloa.com/2026/10/17/foro-asturias-apoyo-pp-29n-3450227/"],["PP y Vox negocian el Senado (EFE)","https://www.diaridetarragona.com/espana/273541/pp-negocia-vox-listas-senado-seria-error-dejar-control-sanchismo.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Vivienda y pacto del Senado", date:"24–26 oct. 2026", url:"https://www.vozpopuli.com/espana/politica/feijoo-elevara-la-vivienda-a-una-vicepresidencia-estrategica-y-nombrara-un-mando-unico-si-gobierna.html", more:[["Acuerdo PP–Vox para el Senado (El Español)","https://www.elespanol.com/espana/politica/20261026/pp-vox-llegan-acuerdo-listas-senado-abascal-retiran-provincias-feijoo/1003744434759_0.html"]], sections:[{topic:"Vivienda (26 oct.)", items:["La vivienda dependería de una vicepresidencia transversal, con un «mando único» que coordine a todos los ministerios.","Un millón de viviendas en la legislatura; la primera Conferencia de Presidentes trataría la vivienda, con la FEMP.","En los primeros 100 días: nueva ley del suelo (silencio positivo a los 90 días en algunos trámites), ley antiokupación con desalojo en 48 horas y reforma de la Ley de Propiedad Horizontal.","Menores de 40: avales públicos de hasta el 100% del precio, impuestos de la primera vivienda un 60% más bajos y una «Hucha Hogar Joven» con ventajas fiscales.","Deducciones para caseros e inquilinos que prorroguen el contrato hasta tres años con subidas por debajo del IPC, y suelo público para viviendas hasta un 30% más baratas."]},{topic:"Senado (26 oct.)", items:["Acuerdo con Vox: el PP no se presenta en Gipuzkoa, Girona y Tarragona, e incluye a un independiente propuesto por Vox en Cádiz, Valencia, Castellón, Baleares y Canarias, donde Vox no presenta lista."]}]},
+      {kind:"2026", label:"Últimos anuncios", title:"Entrevista en la SER y alianzas", date:"17–23 oct. 2026", url:"https://diariodeavisos.elespanol.com/2026/10/feijoo-reforma-eutanasia-subida-salario-minimo/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Foro Asturias apoya al PP (Moncloa.com)","https://www.moncloa.com/2026/10/17/foro-asturias-apoyo-pp-29n-3450227/"],["PP y Vox negocian el Senado (EFE)","https://www.diaridetarragona.com/espana/273541/pp-negocia-vox-listas-senado-seria-error-dejar-control-sanchismo.html"]], sections:[
         {topic:"Entrevista en la SER (23 oct.)", items:["Reformar la ley de eutanasia para dar más peso a los médicos y revisar los procedimientos en trámite.","Reabrir el debate para que los padres participen en la decisión de abortar de las menores de 16 y 17 años, y ayudas a las mujeres con dificultades económicas que quieran seguir con el embarazo.","No mantendrá el Ministerio de Igualdad como ministerio propio: sus competencias pasarían a otro.","Mantener la subida de las pensiones con el IPC y reactivar el Pacto de Toledo.","Salario mínimo: no concreta subida; lo pactaría con sindicatos y empresarios.","No descarta gobernar con Vox si hace falta para completar una mayoría."]},
         {topic:"Senado", items:["Feijóo: «sería lógico» que Vox no se presente al Senado donde no tendría senadores. Cuca Gamarra dice que las conversaciones «avanzan bien», pero no hay acuerdo cerrado."]},
         {topic:"Alianzas y listas", items:["Foro Asturias apoya las listas del PP el 29-N, sin coalición (17 oct.). Ángela Pumariega encabeza la lista por Asturias.","Ester Muñoz promete «todos los medios del Estado» para acelerar las devoluciones de inmigrantes en situación irregular."]}
@@ -751,7 +779,8 @@ const PROGRAMS = {
   PSOE: {
     pitch:"Hace campaña con su paquete de vivienda (regulación del alquiler, préstamos a coste cero para la primera compra y deducción por alquiler), el balance económico y el rechazo a un Gobierno con Vox. Está redactando su programa; su último documento programático es la ponencia de su congreso de 2024.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Listas y entrevista en La Revuelta", date:"14–23 oct. 2026", url:"https://www.moncloa.com/2026/10/15/listas-psoe-madrid-robles-marlaska-3448967/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Subvenciones de Senado de Progreso (El Español, 23 oct.)","https://www.elespanol.com/espana/20261023/elecciones-generales-directo-ultima-hora-adelanto-electoral-espana-pedro-sanchez-actos-psoe-pp-vox-encuestas-voto-correo-sondeos-2026-partidos-por/1003744431749_10.html"]], sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Mitin de Granada", date:"24 oct. 2026", url:"https://espaciodiario.com/pedro-sanchez-promete-en-granada-blindar-el-aborto-en-la-constitucion-y-subir-el-salario-minimo/", more:[["Sánchez promete blindar el aborto (RTVC)","https://rtvc.es/sanchez-promete-blindar-derecho-aborto-constitucion-sigue-moncloa-24-octubre-2026/"]], sections:[{topic:"Derechos", items:["Reformar la Constitución para proteger el derecho al aborto en la próxima legislatura.","Mantener la ley de eutanasia."]},{topic:"Trabajo", items:["Subir el salario mínimo «con o sin acuerdo con la patronal»."]},{topic:"Vivienda", items:["La ministra Isabel Rodríguez anuncia que el programa llevará nueve medidas de vivienda; se publicará en las próximas semanas."]},{topic:"Listas", items:["Dimite el delegado del Gobierno en Madrid, Francisco Martín, tras quedar fuera de las listas al Congreso y al Senado."]}]},
+      {kind:"2026", label:"Últimos anuncios", title:"Listas y entrevista en La Revuelta", date:"14–23 oct. 2026", url:"https://www.moncloa.com/2026/10/15/listas-psoe-madrid-robles-marlaska-3448967/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Subvenciones de Senado de Progreso (El Español, 23 oct.)","https://www.elespanol.com/espana/20261023/elecciones-generales-directo-ultima-hora-adelanto-electoral-espana-pedro-sanchez-actos-psoe-pp-vox-encuestas-voto-correo-sondeos-2026-partidos-por/1003744431749_10.html"]], sections:[
         {topic:"Listas", items:["Madrid: Pedro Sánchez, Margarita Robles, Félix Bolaños, Pilar Sánchez Acera y Fernando Grande-Marlaska en los cinco primeros puestos.","Jordi Hereu encabeza Barcelona; Óscar Puente y Ana Redondo, en Castilla y León."]},
         {topic:"Entrevista en La Revuelta (22 oct.)", items:["Sánchez pide cuatro años más y reconoce errores: haber confiado en José Luis Ábalos y la gestión de la crisis de Ceuta. Fue el programa más visto de la historia de La Revuelta (4,39 millones de espectadores)."]},
         {topic:"Senado", items:["El PSOE recibirá el 95% de las subvenciones de la coalición Senado de Progreso."]}
@@ -806,6 +835,7 @@ const PROGRAMS = {
   VOX: {
     pitch:"Centra su oferta en la «prioridad nacional», la «remigración» y la desregulación, que plantea como condiciones para pactar con el PP. Su último programa completo es el del 23-J.",
     docs:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Precampaña y pacto del Senado", date:"24–26 oct. 2026", url:"https://www.elindependiente.com/espana/2026/10/26/pp-y-vox-llegan-a-un-acuerdo-para-concurrir-juntos-al-senado/", more:[["Mitin de Abascal en Ibiza y propuestas (Vozpópuli)","https://www.vozpopuli.com/espana/politica/elecciones-generales-del-29-n-en-directo-sanchez-feijoo-y-abascal-protagonizan-los-actos-de-campana-este-sabado.html"]], sections:[{topic:"Senado (26 oct.)", items:["Acuerdo con el PP: Vox no presenta lista en Cádiz, Valencia, Castellón, Baleares y Canarias (el PP lleva a un independiente propuesto por Vox) y presenta un solo candidato en otras 14 provincias. En las 23 restantes va con normalidad.","Al Congreso se presenta en solitario en todas las provincias."]},{topic:"Propuestas (24 oct.)", items:["Abascal promete «recuperar Ceuta» y expulsar con rapidez a los delincuentes extranjeros.","Defiende la «prioridad nacional» en las ayudas públicas y endurecer el acceso de los inmigrantes."]},{topic:"Listas", items:["Presenta a sus candidatos el 26 de octubre en Talavera de la Reina. Renueva una veintena de cabezas de lista; quedan fuera, entre otros, Javier Ortega Smith (Madrid)."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Listas y Senado", date:"21–22 oct. 2026", url:"https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557", sections:[
         {topic:"Senado", items:["Montse Lluís negocia con el PP. La portavoz, Pepa Millán, dice que el acuerdo podría cerrarse el lunes 26 de octubre; Abascal solo comunicará el resultado final."]},
         {topic:"Campaña", items:["Presenta sus cabezas de lista en Galicia. Los actos de Abascal en A Coruña y Avilés tuvieron protestas y cordones policiales; Abascal culpa a Sánchez de la violencia contra Vox."]}
@@ -844,6 +874,7 @@ const PROGRAMS = {
   FA: {
     pitch:"Coalición de IU, Movimiento Sumar, Comuns, Más Madrid, CHA y otros partidos, con Ada Colau como candidata a la Presidencia. Ejes: vivienda, salarios y pensiones. No hubo acuerdo con Podemos. Su último programa es el de Sumar en 2023, cuando aún incluía a Podemos y Compromís.",
     docs:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Pensiones y listas", date:"24–26 oct. 2026", url:"https://www.infobae.com/espana/agencias/2026/10/24/frente-amplio-plantea-jubilarse-con-65-anos-y-que-ninguna-pension-baje-del-salario-minimo/", more:[["Listas en todas las provincias salvo Teruel (Demócrata)","https://www.democrata.es/politica/ampliacion-frente-amplio-presentara-listas-al-congreso-en-casi-toda-espana-y-solo-deja-vacante-teruel"]], sections:[{topic:"Pensiones (24 oct.)", items:["Jubilación como máximo a los 65 años.","Ninguna pensión por debajo del salario mínimo (1.221 € al mes).","Lo pagaría con una tributación mínima efectiva para grandes empresas, un impuesto del 2% a patrimonios de más de un millón, eliminar poco a poco el tope de cotización y una aportación de las empresas más automatizadas. Calcula unos 10.000 millones al año por cada medida."]},{topic:"Vivienda", items:["Ada Colau sitúa la regulación del alquiler y la vivienda asequible entre sus prioridades."]},{topic:"Listas", items:["Se presenta al Congreso en 51 de las 52 circunscripciones; no en Teruel, donde CHA retiró la candidatura.","En Baleares, Podemos se suma a la lista de Ara MÉS-Front Ampli."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Portavoz y listas", date:"22 oct. 2026", url:"https://www.libertaddigital.com/espana/politica/2026-10-22/bustinduy-rechazo-liderar-el-frente-amplio-pero-ahora-sera-el-portavoz-de-colau-el-29n-7480327/", sections:[
         {topic:"Campaña", items:["Pablo Bustinduy será el portavoz de campaña. Resume su programa en cuatro ejes: vivienda, salarios, pensiones y servicios públicos.","Juan Ponte (IU) encabeza Asturias. CHA y el Frente Amplio no presentan lista al Congreso por Teruel para no dividir el voto."]}
       ]},
@@ -875,9 +906,10 @@ const PROGRAMS = {
     ]
   },
   POD: {
-    pitch:"Irene Montero, elegida en primarias con un 90%, encabeza la lista por Madrid con el lema «Paz, casa, trabajo». No hubo acuerdo con el Frente Amplio: en Cataluña apoya a ERC y va en coalición en la C. Valenciana (Compromís-Front Valencià) y en Canarias (Unidad del Pueblo Canario). En 2023 concurrió dentro de Sumar.",
+    pitch:"Irene Montero, elegida en primarias con un 90%, encabeza la lista por Madrid con el lema «Paz, casa, trabajo». No hubo acuerdo con el Frente Amplio: en Cataluña apoya a ERC y va en coalición en la C. Valenciana (Compromís-Front Valencià), en Canarias (Unidad del Pueblo Canario) y en Baleares (Ara MÉS-Front Ampli). En 2023 concurrió dentro de Sumar.",
     docs:[
-      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Debates y Senado", date:"23 oct. 2026", url:"https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/", sections:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Baleares, Senado y acto con ERC", date:"24–25 oct. 2026", url:"https://www.infobae.com/espana/agencias/2026/10/26/pp-y-vox-cierran-un-acuerdo-para-el-senado-mientras-las-izquierdas-ultiman-sus-listas/", more:[["Podemos no se presenta al Senado en la C. Valenciana (Moncloa.com)","https://www.moncloa.com/2026/10/25/podemos-senado-valencia-confluencia-rota-3455097"]], sections:[{topic:"Listas", items:["En Baleares va dentro de Ara MÉS-Front Ampli, con Lucía Muñoz de número tres como independiente.","No presenta listas al Senado en la C. Valenciana.","Primer acto conjunto de Irene Montero con Gabriel Rufián (ERC) en Barcelona."]},{topic:"Igualdad", items:["Montero rechaza que Feijóo suprima el Ministerio de Igualdad y que se informe a los padres del aborto de las menores de 16 y 17 años."]}]},
+      {kind:"2026", label:"Últimos anuncios", title:"Debates y Senado", date:"23 oct. 2026", url:"https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/", sections:[
         {topic:"Debates", items:["Pedirá a la Junta Electoral Central estar en el debate a cuatro y en el de portavoces de RTVE, aunque comparta tiempo con el Frente Amplio."]},
         {topic:"Críticas al Frente Amplio", items:["Le acusa de facilitar una «sobrerrepresentación» del PSOE con el pacto del Senado."]}
       ]},
@@ -1050,7 +1082,7 @@ const MINOR_NOTES = {
 /* ---------- Comparador por temas: [etiqueta, texto] ---------- */
 const TOPICS = [
   {id:"vivienda", name:"Vivienda", rows:{
-    PP:[["2026","Suelo para 1 millón de viviendas en 4 años, impuestos de compra un 60% más bajos para jóvenes, avales del 95–100%, derogar la Ley de Vivienda y las zonas tensionadas, y ley antiokupación con desalojo en 48 h."],["2023","Pacto de Estado, avales hasta 35 años y desalojo de okupas en 24 h."]],
+    PP:[["2026","Vicepresidencia con «mando único» de vivienda. Suelo para 1 millón de viviendas en 4 años, impuestos de compra un 60% más bajos para jóvenes, avales del 95–100%, derogar la Ley de Vivienda y las zonas tensionadas, y ley antiokupación con desalojo en 48 h."],["2023","Pacto de Estado, avales hasta 35 años y desalojo de okupas en 24 h."]],
     PSOE:[["2026","Prórroga de alquileres, tope del 2%, sin desahucios de vulnerables hasta 2030, veto a compras especulativas, préstamos de hasta 50.000 € a coste cero para la entrada y deducción del alquiler en la renta."],["2024","Parque público de al menos el 6% y 1,5 millones de viviendas rehabilitadas en 2030."],["2023","183.000 viviendas públicas de alquiler."]],
     VOX:[["2026","Prioridad nacional en vivienda protegida y ayudas, eliminar o rebajar mucho los impuestos de compra y quitar trabas para construir."],["2023","Sin IVA en la primera vivienda, deducción por vivienda y derogar la ley de vivienda y el control de rentas."]],
     FA:[["2026","Alquiler indefinido, congelación de rentas, moratoria de desahucios y 150.000 viviendas públicas al año."],["2023","2 millones de viviendas sociales en 10 años y alquiler social obligatorio para grandes tenedores."]],
@@ -1071,10 +1103,10 @@ const TOPICS = [
     POD:[["2026","Salario mínimo de 1.800 € y jornada hacia 35 h sin bajar sueldos."]],
     SALF:[]}},
   {id:"pensiones", name:"Pensiones y familias", rows:{
-    PP:[["2025","Garantizar la actualización de las pensiones y su viabilidad; apoyo a la natalidad."]],
+    PP:[["2026","Mantener la subida de las pensiones con el IPC y reactivar el Pacto de Toledo."],["2025","Garantizar la actualización de las pensiones y su viabilidad; apoyo a la natalidad."]],
     PSOE:[["2023","Pensiones con el IPC por ley y 5.000 millones al año al fondo de reserva; permisos de nacimiento de 20 semanas."]],
     VOX:[["2026","Garantizar su pago y pasar a un modelo mixto de reparto y capitalización."],["2023","Pensiones contributivas sin IRPF y deducción por nacimiento de 1.200 a 2.750 €."]],
-    FA:[["2026","Defender el sistema público de pensiones."],["2023","Pensiones mínimas por encima del umbral de pobreza y 200 € al mes por hijo."]],
+    FA:[["2026","Jubilación como máximo a los 65 años y ninguna pensión por debajo del salario mínimo (1.221 €), pagado con impuestos a grandes empresas y patrimonios y quitando el tope de cotización."],["2023","Pensiones mínimas por encima del umbral de pobreza y 200 € al mes por hijo."]],
     POD:[],
     SALF:[]}},
   {id:"sanidad", name:"Sanidad y educación", rows:{
@@ -1128,22 +1160,31 @@ const DESIGNATED = {total:58, by:{PP:23,PSOE:19,VOX:5,JUNTS:3,ERC:1,BILDU:1,PNV:
 const SENATE_FACTS = {elected:209, total:267, majority:134, elected23:208, total23:266, now:{PP:143,PSOE:91,BILDU:5,PNV:5,VOX:5,ERC:4,JUNTS:4,UPN:1,BNG:1,CC:1,CFV:1,FA:1,GBAI:1,ASG:1,AHI:1,IND:1}};
 const SEN_2023_TOTALS = {PP:120,PSOE:72,BILDU:4,PNV:4,ERC:3,JUNTS:1,UPN:1,IBIZA:1,ASG:1,AHI:1};
 const SEN_PACTS = [
-  {name:"Senado de Progreso", parties:"PSOE, IU, Movimiento Sumar, Más Madrid, Compromís, Chunta Aragonesista y Batzarre", scope:"Toda España salvo Cataluña, Baleares y Canarias (también País Vasco, Navarra, Ceuta y Melilla)", how:"Sustituye a las listas del PSOE al Senado. Reparto general: el PSOE pone el 1.º y el 3.º candidato y los socios el 2.º. En Badajoz, Cáceres, Huelva y Valencia el PSOE pone el 1.º y el 2.º; en Álava y Sevilla, los tres. En Galicia el PSdeG encabeza y el Frente Amplio va 2.º; en Aragón el 2.º es de IU (Huesca) o de CHA (Zaragoza y Teruel). Alicante y Castellón, pendientes.", aim:"Disputar al PP la mayoría absoluta que tiene en el Senado.", src:"https://www.nuevatribuna.es/articulo/actualidad/senadoras-senadores-democracia-celebra-que-hayan-conseguido-listas-unitarias-izquierda-senado/20261017090815255307.html"},
+  {name:"Senado de Progreso", parties:"PSOE, IU, Movimiento Sumar, Más Madrid, Compromís, Chunta Aragonesista y Batzarre", scope:"Toda España salvo Cataluña, Baleares y Canarias (también País Vasco, Navarra, Ceuta y Melilla)", how:"Sustituye a las listas del PSOE al Senado. Reparto general: el PSOE pone el 1.º y el 3.º candidato y los socios el 2.º. En Badajoz, Cáceres y Huelva el PSOE pone el 1.º y el 2.º; en Álava y Sevilla, los tres. En Galicia el PSdeG encabeza y el Frente Amplio va 2.º; en Aragón el 2.º es de IU (Huesca) o de CHA (Zaragoza y Teruel); en Castilla y León, del Frente Amplio en las nueve provincias. C. Valenciana: el PSPV pone el 1.º y el 3.º; el 2.º es de Compromís en Valencia (Isaura Navarro) y Alicante (Inmaculada Orozco) y de EU en Castellón (David Lluch). El PSOE encabeza todas las listas y el Frente Amplio tiene en torno al 30% de los puestos.", aim:"Disputar al PP la mayoría absoluta que tiene en el Senado.", src:"https://www.nuevatribuna.es/articulo/actualidad/senadoras-senadores-democracia-celebra-que-hayan-conseguido-listas-unitarias-izquierda-senado/20261017090815255307.html"},
   {name:"Pactos insulares en Baleares", parties:"PSIB-PSOE con MÉS, Sumar, EU y otros partidos de cada isla", scope:"Mallorca, Menorca, Ibiza y Formentera", how:"Mallorca: «Acord de Progrés per Mallorca» (PSIB, MÉS, Sumar y EU), con Catalina Cladera. Ibiza: el independiente Juanjo Ferrer, con PSOE, Ara Eivissa, IU y Podemos. Formentera: «Formentera al Senat» (PSOE, Gent per Formentera y Sumar). Menorca: acuerdo PSOE–Més, sin cerrar.", src:"https://canal4diario.com/29n/2026/10/18/psib-mes-sumar-y-esquerra-unida-concurriran-juntos-al-senado-bajo-la-marca-acord-de-progres-per-mallorca/"},
   {name:"ERC-EH Bildu", parties:"ERC y EH Bildu", scope:"Cataluña, País Vasco y Navarra", how:"Repiten la lista conjunta. Encabezan por Bildu Josu Estarrona (Álava), Idurre Bideguren (Bizkaia), Sonia Jacinto (Gipuzkoa) y Floren Aoiz (Navarra).", src:"https://www.infobae.com/america/agencias/2026/10/17/registradas-en-la-jec-nueve-coaliciones-electorales-dos-para-el-congreso-tres-para-el-senado-y-cuatro-autonomicas/"},
   {name:"Comuns-Front Ampli per la democràcia", parties:"Catalunya en Comú y Comuns", scope:"Cataluña (solo Senado)", how:"En Cataluña no hay Senado de Progreso: el PSC va solo y los Comuns, con su propia lista.", src:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"},
   {name:"Unidad del Pueblo Canario", parties:"NC-Bloque Canarista, Podemos, Movimiento Sumar e IU Canaria", scope:"Canarias (Congreso y Senado)", how:"En Canarias el PSOE va solo al Senado, salvo un pacto progresista en La Gomera.", src:"https://www.infobae.com/america/agencias/2026/10/17/registradas-en-la-jec-nueve-coaliciones-electorales-dos-para-el-congreso-tres-para-el-senado-y-cuatro-autonomicas/"},
   {name:"CC-Municipalistas Primero", parties:"Coalición Canaria y Municipalistas Primero", scope:"Tenerife, Gran Canaria, Fuerteventura, Lanzarote, La Palma y La Gomera", how:"No se presenta en El Hierro, donde AHI propone repetir con Javier Armas. En La Gomera, ASG presenta a Yaiza Castilla.", src:"https://www.eldebate.com/espana/20261017/nueve-coaliciones-registran-ante-junta-electoral-elecciones-29n_470781.html"},
   {name:"UPN-PP", parties:"UPN y PP («Unión del Pueblo Navarro en coalición con el Partido Popular»)", scope:"Navarra (Congreso y Senado)", how:"Al Congreso, UPN encabeza con una mujer; el PP lleva el 2.º (Sergio Sayas), el 3.º y el 5.º, y UPN el 4.º. Al Senado, UPN pone el 1.º y el 3.º candidato y el PP el 2.º. En 2023 fueron por separado y sacaron un diputado cada uno. En Formentera el PP va con Compromís per Formentera («Sa Unió»).", src:"https://www.vozpopuli.com/espana/politica/elecciones-generales-del-29-n-en-directo-ultima-hora-de-las-listas-electorales-sanchez-y-feijoo.html"},
-  {name:"PP y Vox: en negociación", parties:"PP y Vox", scope:"Senado, en una veintena de provincias (sin cerrar)", how:"Negocian Miguel Tellado (PP) y Montse Lluís (Vox). Como el plazo de coaliciones cerró el 16 de octubre, la fórmula que se baraja es que Vox no presente lista en las provincias donde dividir el voto le cuesta senadores al PP, a cambio de cesiones como senadores autonómicos o cargos en la Cámara; incluir candidatos de Vox en las listas del PP se ve complicado. Se han citado, entre otras, Valencia, Sevilla, Huelva, Badajoz y Cáceres. Vox dice que el acuerdo podría anunciarse el 26 de octubre, último día para presentar listas. Nuestra proyección supone listas separadas.", aim:"Llegar a los tres quintos del Senado (161 de 267), que permiten, entre otras cosas, designar magistrados del Tribunal Constitucional.", src:"https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557"},
+  {name:"Acuerdo PP–Vox", parties:"PP y Vox (no es una coalición: cada uno presenta sus listas)", scope:"Senado: 6 provincias sin Vox, 14 con un solo candidato de Vox y 3 sin PP", how:"Vox no presenta lista en Cádiz, Valencia, Castellón, Baleares (Mallorca, Menorca, Ibiza y Formentera) y Canarias (todas las islas); allí el PP incluye en su lista a un independiente propuesto por Vox. En Sevilla, Huelva, Granada, Jaén, Badajoz, Cáceres, Asturias, Álava, Navarra, Huesca, Zaragoza, Alicante, Cuenca y Pontevedra Vox presenta un solo candidato, para que sus votantes puedan marcarlo y dar los otros dos votos al PP. El PP no se presenta en Gipuzkoa, Girona y Tarragona. En las otras 23 provincias, cada uno va con normalidad. Lo anunciaron el 26 de octubre Miguel Tellado (PP) e Ignacio Garriga (Vox). Solo afecta al Senado.", aim:"Mantener la mayoría del PP frente al Senado de Progreso y acercarse a los tres quintos (161 de 267), que permiten, entre otras cosas, designar magistrados del Tribunal Constitucional.", src:"https://www.elespanol.com/espana/politica/20261026/pp-vox-llegan-acuerdo-listas-senado-abascal-retiran-provincias-feijoo/1003744434759_0.html"},
   {name:"Coalición Existe", parties:"Teruel Existe y Aragón Existe", scope:"Aragón (Congreso y Senado)", how:"Teruel Existe tuvo un diputado y dos senadores en 2019; en 2023 no obtuvo escaño.", src:"https://www.infobae.com/america/agencias/2026/10/17/registradas-en-la-jec-nueve-coaliciones-electorales-dos-para-el-congreso-tres-para-el-senado-y-cuatro-autonomicas/"}
 ];
 
 /* ---------- Alianzas de la derecha y de otros partidos por comunidad ---------- */
 const RIGHT_BY_CCAA = {
-  "Navarra":{type:"coal", congreso:[["UPN-PP","UPN 1.º y 4.º; PP 2.º (Sergio Sayas), 3.º y 5.º"]], senado:[["UPN-PP","UPN 1.º y 3.º; PP 2.º"]]},
-  "Baleares":{type:"part", congreso:[], senado:[["Sa Unió (Formentera)","PP con Compromís per Formentera"]]},
-  "Asturias":{type:"part", congreso:[["PP con apoyo de Foro Asturias","Foro no se presenta y pide el voto para el PP; no es una coalición. Encabeza Ángela Pumariega"]], senado:[]}
+  "Navarra":{type:"coal", congreso:[["UPN-PP","UPN 1.º y 4.º; PP 2.º (Sergio Sayas), 3.º y 5.º"]], senado:[["UPN-PP","UPN 1.º y 3.º; PP 2.º"],["Vox","un solo candidato (acuerdo con el PP)"]]},
+  "Baleares":{type:"part", congreso:[], senado:[["PP con un independiente propuesto por Vox","Vox no presenta lista en ninguna isla"],["Sa Unió (Formentera)","PP con Compromís per Formentera"]]},
+  "Asturias":{type:"sen", congreso:[["PP con apoyo de Foro Asturias","Foro no se presenta y pide el voto para el PP; no es una coalición. Encabeza Ángela Pumariega"]], senado:[["Vox","un solo candidato (acuerdo con el PP)"]]},
+  "Canarias":{type:"sen", congreso:[], senado:[["PP con un independiente propuesto por Vox","Vox no presenta lista en ninguna isla"]]},
+  "C. Valenciana":{type:"sen", congreso:[], senado:[["PP con un independiente propuesto por Vox","Valencia y Castellón: Vox no presenta lista"],["Vox","Alicante: un solo candidato"]]},
+  "Andalucía":{type:"sen", congreso:[], senado:[["PP con un independiente propuesto por Vox","Cádiz: Vox no presenta lista"],["Vox","un solo candidato en Sevilla, Huelva, Granada y Jaén"]]},
+  "Extremadura":{type:"sen", congreso:[], senado:[["Vox","un solo candidato en Badajoz y Cáceres"]]},
+  "Aragón":{type:"sen", congreso:[], senado:[["Vox","un solo candidato en Huesca y Zaragoza"]]},
+  "Castilla-La Mancha":{type:"sen", congreso:[], senado:[["Vox","un solo candidato en Cuenca"]]},
+  "Galicia":{type:"sen", congreso:[], senado:[["Vox","un solo candidato en Pontevedra"]]},
+  "País Vasco":{type:"sen", congreso:[], senado:[["PP","no se presenta en Gipuzkoa"],["Vox","un solo candidato en Álava"]]},
+  "Cataluña":{type:"sen", congreso:[], senado:[["PP","no se presenta en Girona ni en Tarragona"]]}
 };
 const OTHERS_BY_CCAA = {
   "Canarias":[["CC-Municipalistas Primero","Congreso por Canarias; Senado en todas las islas salvo El Hierro"],["ASG","Senado por La Gomera (Yaiza Castilla)"],["AHI","Senado por El Hierro (Javier Armas)"]],
@@ -1154,20 +1195,20 @@ const OTHERS_BY_CCAA = {
   "País Vasco":[["PNV","solo"]],
   "Galicia":[["BNG","solo"]]
 };
-const RIGHT_NOTE = "PP y Vox negocian que Vox no presente lista al Senado en una veintena de provincias para no dividir el voto. No hay acuerdo firmado: Feijóo ve «lógico» que Vox no vaya donde no tendría senadores y el PP dice que las conversaciones «avanzan bien». Podría anunciarse el 26 de octubre, último día para presentar listas.";
+const RIGHT_NOTE = "Al Congreso, PP y Vox van por separado salvo en Navarra (UPN-PP). Al Senado han pactado el 26 de octubre: Vox no se presenta en seis provincias (Cádiz, Valencia, Castellón, Baleares y las dos de Canarias), donde el PP lleva a un independiente propuesto por Vox; en otras 14 presenta un solo candidato, y el PP no va en Gipuzkoa, Girona y Tarragona.";
 
 /* ---------- Alianzas de la izquierda por comunidad (Congreso y Senado) ---------- */
 const LEFT_BY_CCAA = {
   "Andalucía":{type:"sep", congreso:[["Frente Amplio Por Andalucía","IU, Movimiento Sumar, Iniciativa del Pueblo Andaluz y Verdes Equo"],["Podemos Andalucía","lista propia"],["Adelante Andalucía","lista propia en las 8 provincias"]], senado:[["Senado de Progreso","PSOE + FA; en Sevilla el PSOE pone los 3 candidatos"],["Adelante Andalucía","listas propias"]]},
   "Aragón":{type:"reg", congreso:[["CHA-Frente Amplio Aragón","CHA, IU, Movimiento Sumar, Partido Verde y Recortes Cero; no se presenta al Congreso por Teruel"],["Podemos","lista propia"],["Coalición Existe","Teruel Existe y Aragón Existe"]], senado:[["Senado de Progreso","Huesca: PSOE-IU-PSOE; Zaragoza y Teruel: PSOE-CHA-PSOE"],["Coalición Existe",""]]},
   "Asturias":{type:"reg", congreso:[["Frente Amplio","con Somos Asturies"],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSOE + FA"]]},
-  "Baleares":{type:"reg", congreso:[["Ara MÉS-Front Ampli","MÉS per Mallorca, Més per Menorca, Ara Eivissa, Sumar e IU"],["Podemos","lista propia"]], senado:[["Mallorca","Acord de Progrés per Mallorca (PSIB, MÉS, Sumar, EU)"],["Ibiza","Juanjo Ferrer (PSOE, Ara Eivissa, IU, Podemos)"],["Formentera","Formentera al Senat (PSOE, Gent per Formentera, Sumar)"],["Menorca","PSOE–Més, sin cerrar"]]},
-  "Canarias":{type:"uni", congreso:[["Unidad del Pueblo Canario","NC-Bloque Canarista, Podemos, Movimiento Sumar e IU Canaria"],["Drago Canarias","Alberto Rodríguez (S. C. de Tenerife) y Héctor Morán (Las Palmas)"]], senado:[["Unidad del Pueblo Canario",""],["PSOE","solo, salvo un pacto progresista en La Gomera"]]},
+  "Baleares":{type:"uni", congreso:[["Ara MÉS-Front Ampli","MÉS per Mallorca, Més per Menorca, Ara Eivissa, Sumar, IU y Podemos (Lucía Muñoz, n.º 3, como independiente)"]], senado:[["Mallorca","Acord de Progrés per Mallorca (PSIB, MÉS, Sumar, EU)"],["Ibiza","Juanjo Ferrer (PSOE, Ara Eivissa, IU, Podemos)"],["Formentera","Formentera al Senat (PSOE, Gent per Formentera, Sumar)"],["Menorca","PSOE–Més, sin cerrar"]]},
+  "Canarias":{type:"uni", congreso:[["Unidad del Pueblo Canario","NC-Bloque Canarista, Podemos, Movimiento Sumar e IU Canaria. Luis Campos (Las Palmas) y Marisol Collado (S. C. de Tenerife)"],["Drago Canarias","Alberto Rodríguez (S. C. de Tenerife) y Héctor Morán (Las Palmas)"]], senado:[["Unidad del Pueblo Canario",""],["PSOE","solo, salvo un pacto progresista en La Gomera"]]},
   "Cantabria":{type:"sep", congreso:[["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSOE + FA"]], note:"El PRC no se presenta."},
   "Castilla-La Mancha":{type:"sep", congreso:[["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","en las 5 provincias"]]},
-  "Castilla y León":{type:"sep", congreso:[["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","en las 9 provincias"]]},
+  "Castilla y León":{type:"sep", congreso:[["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","en las 9 provincias; el Frente Amplio pone el 2.º"]]},
   "Cataluña":{type:"erc", congreso:[["ERC","Gabriel Rufián; Podemos no se presenta y apoya su lista"],["Frente Amplio (Comuns)","Ada Colau y Ernest Urtasun en Barcelona"]], senado:[["ERC-EH Bildu",""],["Comuns-Front Ampli per la democràcia",""],["PSC","solo: no hay Senado de Progreso en Cataluña"]]},
-  "C. Valenciana":{type:"uni", congreso:[["Compromís-Front Valencià","Compromís, Podemos, EUPV y ERPV. Valencia: Àgueda Micó; Alicante: María Teresa Pérez (Podemos)"]], senado:[["Senado de Progreso","PSOE + Compromís, IU y Sumar; en Valencia el PSOE pone el 1.º y el 2.º. Alicante y Castellón, pendientes"]], note:"Es la única comunidad donde el Frente Amplio no presenta lista propia al Congreso."},
+  "C. Valenciana":{type:"uni", congreso:[["Compromís-Front Valencià","Compromís, Podemos, EUPV y ERPV. Valencia: Àgueda Micó; Alicante: María Teresa Pérez (Podemos)"]], senado:[["Senado de Progreso","PSPV 1.º y 3.º; Compromís 2.º en Valencia y Alicante, EU 2.º en Castellón"]], note:"El Frente Amplio no presenta lista propia al Congreso. Podemos no se presenta al Senado."},
   "Extremadura":{type:"sep", congreso:[["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","el PSOE pone el 1.º y el 2.º en Badajoz y Cáceres"]], note:"Algunas fuentes hablan de repetir la coalición Unidas por Extremadura; no está confirmada."},
   "Galicia":{type:"sep", congreso:[["BNG",""],["Frente Amplio",""],["Podemos","lista propia"]], senado:[["Senado de Progreso","PSdeG 1.º y FA 2.º"],["BNG","solo"]]},
   "Madrid":{type:"sep", congreso:[["Frente Amplio","Emilio Delgado (Más Madrid)"],["Podemos","Irene Montero"]], senado:[["Senado de Progreso","PSOE, Más Madrid, IU y Sumar"]]},
@@ -1270,6 +1311,11 @@ const GROUPS = {
 /* ---------- Encuestas recientes ----------
    d: fecha (fin de campo o publicación según el agregador). seats: escaños publicados por la propia encuestadora. */
 const POLLS = [
+  {firm:"Sigma Dos", media:"El Mundo", d:"2026-10-26", field:"8–22 oct. · 3.122", PP:30.6,PSOE:26.1,VOX:19.9,FA:7.4,POD:2.8,SALF:null, CFV:0.8, ERC:2.5,JUNTS:1.2,BILDU:1.2,PNV:0.9,BNG:0.9,CC:0.4,UPN:0.2,AA:1.0, seats:"PP+UPN 125–131 · PSOE 103–109 · Vox 66–69 · FA 10–12 · ERC 8–9 · Bildu 7–8 · Junts 6–7 · PNV 4–5 · Compromís 2–3 · AA 2–3 · BNG 2 · Podemos 1 · CC 0–1"},
+  {firm:"NC Report", media:"La Razón", d:"2026-10-26", PP:32.9,PSOE:25.8,VOX:19.0,FA:6.6,POD:null,SALF:null, ERC:2.0,JUNTS:1.8,BILDU:1.4,PNV:0.9, seats:"PP 141–143 · PSOE 100–102 · Vox 64–66 · FA 8–9 · Junts 8–9 · ERC 7–8 · Bildu 6–7 · PNV 4–5 · AA 3 · BNG 1–2 · Podemos 1 · CC 1 · UPN 1"},
+  {firm:"SocioMétrica", media:"El Español", d:"2026-10-26", field:"Acumulado desde el 1 sep. · 3.223", PP:32.1,PSOE:27.0,VOX:18.6,FA:4.6,POD:1.9,SALF:null, ERC:2.5,JUNTS:1.7,BILDU:1.3,PNV:0.8,BNG:0.9,CC:0.4,UPN:0.2,AA:1.2, seats:"PP 135 · PSOE 108 · Vox 63 · ERC 9 · Junts 7 · Bildu 7 · FA 6 · PNV 4 · AA 2 · BNG 2 · UPN-PP 2 · CC 1 · Podemos 0"},
+  {firm:"Ateneo del Dato", media:"elDiario.es", d:"2026-10-25", field:"20–22 oct. · en línea", PP:31.1,PSOE:27.6,VOX:19.8,FA:6.8,POD:2.7,SALF:null, seats:"PP 119–134 · PSOE 102–117 · Vox 64–77 · FA 11–17 · Podemos 0–3"},
+  {firm:"EM-Analytics", media:"Electomanía (ElectoPanel)", d:"2026-10-25", field:"17–23 oct. · 4.309", PP:30.9,PSOE:26.7,VOX:19.0,FA:5.8,POD:1.7,SALF:1.7, CFV:1.2, ERC:2.2,JUNTS:1.3,BILDU:1.4,PNV:1.0,BNG:1.0,CC:0.3,AA:1.1, seats:"PP 132 · PSOE 111 · Vox 62 · FA 11 · ERC 8 · Bildu 7 · PNV 6 · Junts 5 · BNG 3 · Compromís 2 · AA 2 · Podemos 1"},
   {firm:"IMOP Insights", media:"El Confidencial", d:"2026-10-23", field:"13–16 oct. · 1.000", PP:28.5,PSOE:27.1,VOX:20.0,FA:8.9,POD:1.9,SALF:1.2, ERC:2.2,JUNTS:1.2,BILDU:1.3,PNV:1.0,BNG:1.1,CC:0.6, seats:"PP 123 · PSOE 113 · Vox 72 · FA 14 · ERC 8 · Bildu 6 · PNV 5 · Junts 4 · BNG 2 · Podemos 1 · AA 1 · CC 1"},
   {firm:"Sigma Dos", media:"El Mundo", d:"2026-10-19", field:"1–14 oct. · 3.007", PP:31.5,PSOE:25.3,VOX:19.5,FA:7.2,POD:2.8,SALF:null, CFV:0.9, ERC:2.5,JUNTS:1.2,BILDU:1.2,PNV:0.9,BNG:0.8,CC:0.5,UPN:0.2,AA:0.8, seats:"PP 132–137 · PSOE 101–106 · Vox 65–68 · ERC 9 · FA 9–10 · Bildu 6–7 · Junts 6–7 · PNV 5–6 · Compromís 3–4 · BNG 2 · AA 1–2 · Podemos 1 · CC 1 · UPN 1"},
   {firm:"EM-Analytics", media:"Electomanía (ElectoPanel)", d:"2026-10-18", field:"15–17 oct. · 3.141", PP:31.8,PSOE:27.1,VOX:18.9,FA:4.9,POD:2.0,SALF:1.7, CFV:1.3, ERC:2.1,JUNTS:1.2,BILDU:1.4,PNV:1.0,BNG:1.0,CC:0.3,AA:1.1, seats:"PP 134 · PSOE 111 · Vox 62 · ERC 8 · FA 7 · Compromís 3 · AA 3 · Podemos 1"},
@@ -1321,7 +1367,7 @@ const TREND = [
  [9,31.1,26.1,18.2,7.0,3.1,1.5],[9,34.5,24.9,18.3,5.7,3.4,null],[9,33.6,25.1,19.3,5.6,3.8,1.6],[9,31.5,25.6,18.9,6.9,2.8,2.5],[9,33.7,26.8,18.6,6.1,3.3,1.8],[9,34.7,26.3,17.3,4.5,3.7,1.0],[9,33.9,25.4,17.8,6.4,3.3,1.7],[9,33.9,25.7,18.0,5.7,3.3,2.0],[9,31.6,27.4,18.4,5.6,2.7,2.0],
  [10,33.2,27.5,19.2,7.0,3.3,null],[10,33.4,26.5,18.1,5.3,3.1,2.2],[10,31.3,26.9,19.4,6.3,3.4,1.7],
  [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null],
- [10,28.5,27.1,20.0,8.9,1.9,1.2]
+ [10,28.5,27.1,20.0,8.9,1.9,1.2],[10,30.9,26.7,19.0,7.0,1.7,1.7],[10,31.1,27.6,19.8,6.8,2.7,null],[10,32.1,27.0,18.6,4.6,1.9,null],[10,32.9,25.8,19.0,6.6,null,null],[10,30.6,26.1,19.9,8.2,2.8,null]
 ];
 
 /* ---------- Calendario (RD 806/2026 y LOREG) ---------- */
@@ -1335,8 +1381,9 @@ const CALENDAR = [
   {d:"2026-10-20", t:"ERC aprueba sus listas al Congreso y al Senado", k:"hecho"},
   {d:"2026-10-21", t:"Se abre la presentación de candidaturas", k:"hecho"},
   {d:"2026-10-22", t:"El PSOE acepta el cara a cara del 16 de noviembre; el PP cierra su lista por Madrid", k:"hecho"},
-  {d:"2026-10-23", t:"Publicación definitiva del censo electoral", k:"plazo"},
-  {d:"2026-10-26", t:"Último día para presentar las listas", k:"plazo"},
+  {d:"2026-10-23", t:"Publicación definitiva del censo electoral", k:"hecho"},
+  {d:"2026-10-24", t:"Sánchez promete blindar el aborto en la Constitución; el Frente Amplio propone jubilación a los 65 y ninguna pensión por debajo del SMI", k:"hecho"},
+  {d:"2026-10-26", t:"Cierra el plazo de candidaturas. PP y Vox anuncian su acuerdo para el Senado", k:"hecho"},
   {d:"2026-10-28", t:"El BOE publica las candidaturas presentadas. Acaba el plazo del Supremo para que el Gobierno entregue la lista de afectados por la «ley de nietos»", k:"plazo"},
   {d:"2026-11-02", t:"La Junta Electoral publica las candidaturas proclamadas", k:"plazo"},
   {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
@@ -1355,18 +1402,16 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
-  ["23 oct.","IMOP (El Confidencial): PP 28,5%, PSOE 27,1% y Vox 20%. PP 123 escaños, PSOE 113 y Vox 72; PP y Vox suman 195, cinco menos que en su encuesta del 9 de octubre."],
-  ["23 oct.","Feijóo, en la SER: reformar la eutanasia, que los padres participen en la decisión de abortar de las menores de 16 y 17 años, integrar Igualdad en otro ministerio y pensiones con el IPC. No descarta gobernar con Vox."],
-  ["23 oct.","PP y Vox siguen negociando el Senado: Feijóo ve «lógico» que Vox no se presente donde no tendría senadores. Aún no hay acuerdo."],
-  ["23 oct.","El Supremo da al Gobierno hasta el 28 de octubre para entregar la lista de los 163.020 afectados por la «ley de nietos». Adelante Andalucía reúne 37.409 avales y concurrirá sola."],
-  ["22 oct.","Sánchez, en La Revuelta: pide cuatro años más y reconoce errores con Ábalos y en Ceuta. Récord de audiencia del programa."],
-  ["22 oct.","El PSOE acepta el cara a cara Sánchez–Feijóo del 16 de noviembre y el debate a cuatro de RTVE del 26. El PP rechaza el de RTVE y prefiere Mediaset y Atresmedia."],
-  ["22 oct.","Feijóo encabeza Madrid con Cayetana Álvarez de Toledo de número dos y Borja Sémper de número tres."],
-  ["22 oct.","PP y Vox negocian que Vox no presente lista al Senado en una veintena de provincias; podría anunciarse el 26 de octubre."],
-  ["22 oct.","La Junta Electoral concluye que el CIS incumplió su deber de informar a los partidos del barómetro de octubre, pero no abre expediente."],
-  ["22 oct.","Pablo Bustinduy, portavoz de campaña del Frente Amplio. CHA y el Frente Amplio no presentan lista al Congreso por Teruel. Dimite la dirección de Podemos Aragón."],
-  ["21 oct.","El Constitucional inadmite el recurso del Defensor del Pueblo: los nacionalizados por la «ley de nietos» no votarán salvo que acrediten descender de exiliados."],
-  ["21 oct.","Se abre el plazo para presentar candidaturas (hasta el 26 oct.). ERC sitúa a Junqueras en el puesto 31 por Barcelona."]
+  ["26 oct.","PP y Vox pactan el Senado: Vox no presenta lista en Cádiz, Valencia, Castellón, Baleares y Canarias, donde el PP incluye a un independiente propuesto por Vox. En otras 14 provincias Vox presenta un solo candidato, y el PP no se presenta en Gipuzkoa, Girona y Tarragona."],
+  ["26 oct.","Cinco encuestas nuevas (Sigma Dos, NC Report, SocioMétrica, Ateneo del Dato y ElectoPanel): el PP baja en todas, entre el 30,6% y el 32,9%; el PSOE, entre el 25,8% y el 27,6%; Vox, entre el 18,6% y el 19,9%. PP y Vox siguen por encima de 176 escaños en todas."],
+  ["26 oct.","Cierra el plazo de candidaturas. El Frente Amplio se presenta al Congreso en todas las provincias salvo Teruel. Unidad del Pueblo Canario: Luis Campos (Las Palmas) y Marisol Collado (S. C. de Tenerife)."],
+  ["26 oct.","Senado de Progreso en la C. Valenciana: el PSPV pone el 1.º y el 3.º; Compromís el 2.º en Valencia y Alicante, y EU en Castellón. Podemos no se presenta al Senado en la C. Valenciana."],
+  ["26 oct.","Feijóo propone que la vivienda dependa de una vicepresidencia con un «mando único», un millón de viviendas en la legislatura y una ley del suelo y otra antiokupación en los primeros 100 días."],
+  ["25 oct.","Dimite el delegado del Gobierno en Madrid, Francisco Martín, tras quedar fuera de las listas del PSOE. Adelante Andalucía presenta a sus ocho cabezas de lista."],
+  ["24 oct.","Sánchez, en Granada: blindar el aborto en la Constitución, mantener la ley de eutanasia y subir el salario mínimo «con o sin» acuerdo con la patronal."],
+  ["24 oct.","Frente Amplio: jubilación como máximo a los 65 y ninguna pensión por debajo del SMI (1.221 €), con un impuesto del 2% a patrimonios de más de un millón."],
+  ["24 oct.","Podemos irá en Baleares en la lista de Ara MÉS-Front Ampli, con Lucía Muñoz de número tres. Montero y Rufián hacen su primer acto juntos en Barcelona."],
+  ["23 oct.","IMOP (El Confidencial): PP 28,5%, PSOE 27,1% y Vox 20%. PP 123 escaños, PSOE 113 y Vox 72."]
 ];
 
 
@@ -1379,10 +1424,14 @@ const CONTEXT = [
   ["2 oct. 2026","El Congreso tumba los dos decretos de vivienda del Gobierno con los votos de PP, Vox y Junts."],
   ["5–6 oct. 2026","Sánchez convoca elecciones para el 29 de noviembre y el Gobierno vuelve a aprobar los decretos, ahora con un fondo de 10.000 millones para la primera compra."],
   ["16–17 oct. 2026","Cierre de coaliciones sin unidad entre Frente Amplio y Podemos. Colau, candidata del Frente Amplio; Montero, de Podemos."],
-  ["19–22 oct. 2026","Feijóo presenta su «Contrato con España» y cierra su lista por Madrid. PP y Vox negocian cómo no dividir el voto de la derecha en el Senado."]
+  ["19–22 oct. 2026","Feijóo presenta su «Contrato con España» y cierra su lista por Madrid. PP y Vox negocian cómo no dividir el voto de la derecha en el Senado."],
+  ["26 oct. 2026","Cierre de candidaturas. PP y Vox anuncian un acuerdo para el Senado: Vox se retira en seis provincias y el PP en tres."]
 ];
 
 const SOURCES = [
+  ["Acuerdo PP–Vox para el Senado (El Español, 26 oct.)","https://www.elespanol.com/espana/politica/20261026/pp-vox-llegan-acuerdo-listas-senado-abascal-retiran-provincias-feijoo/1003744434759_0.html"],
+  ["Listas unitarias de la izquierda valenciana al Senado (elDiario.es)","https://www.eldiario.es/comunitat-valenciana/politica/son-listas-unitarias-izquierda-valenciana-senado_1_13616147.html"],
+  ["Encuestas del 25 y 26 de octubre (Electográfica)","https://www.electografica.com/2026/10/encuesta-sigmados-261026.html"],
   ["Calendario electoral (Diario de Avisos)","https://diariodeavisos.elespanol.com/2026/10/elecciones-voto-por-correo/"],
   ["Reparto de escaños del RD 806/2026 (Artículo14)","https://www.articulo14.es/espana-por-la-igualdad/estas-son-las-provincias-que-ganan-escanos-y-las-que-pierden-de-cara-a-las-elecciones-del-29-n-20261006.html"],
   ["Encuestas recientes (PolitPro)","https://politpro.eu/en/spain"],
@@ -1963,7 +2012,7 @@ function renderEscanos(){
     <p class="small muted">Cuadraditos = escaños de cada circunscripción en este escenario. Pulsa una para ver el reparto D'Hondt y quién se queda cerca del último escaño.</p>
     <div class="grid2" style="align-items:start"><div class="prov-list" id="prov-list"></div><div class="panel stack" id="prov-detail" style="position:sticky; top:120px"></div></div>
   </section>
-  <p class="note">Cómo calculamos: partimos del resultado de 2023 en cada provincia y multiplicamos el voto de cada partido por la variación nacional que marca el escenario (Frente Amplio y Podemos heredan la distribución de Sumar; SALF, la de Vox suavizada; Adelante Andalucía se reparte solo en Andalucía). Aplicamos las alianzas registradas para el 29-N: en la C. Valenciana el voto de FA y Podemos pasa a Compromís-Front Valencià; en Canarias, a Unidad del Pueblo Canario; en Cataluña, Podemos no se presenta (apoya a ERC) y repartimos su voto a medias entre ERC y FA. Aliança Catalana no se presenta. Con los votos y las listas de 2023 el modelo reproduce exactamente los 350 escaños de entonces. No recoge cambios locales ni partidos que solo se presentan en una provincia, como Democracia21.</p>`;
+  <p class="note">Cómo calculamos: partimos del resultado de 2023 en cada provincia y multiplicamos el voto de cada partido por la variación nacional que marca el escenario (Frente Amplio y Podemos heredan la distribución de Sumar; SALF, la de Vox suavizada; Adelante Andalucía se reparte solo en Andalucía). Aplicamos las alianzas registradas para el 29-N: en la C. Valenciana el voto de FA y Podemos pasa a Compromís-Front Valencià; en Canarias, a Unidad del Pueblo Canario; en Cataluña, Podemos no se presenta (apoya a ERC) y repartimos su voto a medias entre ERC y FA; en Baleares, Podemos va dentro de Ara MÉS-Front Ampli y su voto pasa al FA. Aliança Catalana no se presenta. Con los votos y las listas de 2023 el modelo reproduce exactamente los 350 escaños de entonces. No recoge cambios locales ni partidos que solo se presentan en una provincia, como Democracia21.</p>`;
   $("#preset").addEventListener("change", e => { loadPreset(e.target.value); syncSliders(); updateSim(); });
   $$(".sl input", v).forEach(inp => inp.addEventListener("input", ()=>{ simT[inp.dataset.k] = +inp.value; simT.__key = "custom"; $("#o-"+inp.dataset.k).textContent = fmt(+inp.value, inp.step==="0.05"?2:1)+"%"; simLabel = "Escenario modificado por ti"; updateSim(); }));
   $$("#pact-presets .chip").forEach(b => b.addEventListener("click", ()=>{ const id=b.dataset.b; coalition = id==="clear" ? new Set() : new Set(BLOCS.find(x=>x.id===id).ks); updatePact(); }));
@@ -2080,7 +2129,7 @@ function renderSenado(){
     <div class="table-wrap" style="margin-top:10px"><table class="mini"><thead><tr><th>Circunscripción</th><th>Comunidad</th><th>Escaños</th><th>Proyección</th><th>2023</th><th>Las dos primeras listas</th></tr></thead>
     <tbody>${S.circs.map(c=>`<tr><td>${esc(c.name)}${c.close?' <span class="flag tdoc" title="Menos de 2 puntos entre las dos primeras listas">reñida</span>':""}${c.local?' <span class="flag tdoc" title="Partido insular: mantenemos su resultado de 2023">insular</span>':""}</td><td style="text-align:left">${esc(c.ccaa)}</td><td>${c.seats}</td><td style="text-align:left">${seatStrip(c.alloc)}</td><td style="text-align:left">${c.r23?seatStrip(c.r23):'<span class="muted small">nueva</span>'}</td><td style="text-align:left" class="small">${c.order.slice(0,2).map(l=>`${esc(senListName(l,c))} ${fmt(c.lists[l])}%`).join(" · ")}</td></tr>`).join("")}</tbody></table></div></details>
   </section>
-  <p class="note">Cómo calculamos: tomamos el voto estimado de cada provincia en el modelo del Congreso, lo agrupamos en las listas al Senado de 2026 (Senado de Progreso, ERC-EH Bildu, UPN-PP, pactos de Baleares…) y aplicamos el patrón habitual: en las circunscripciones de 4, la lista más votada gana 3 y la segunda 1 (2 y 2 si las separa menos de 1 punto). Las islas usan el voto de su provincia; en La Gomera y El Hierro mantenemos a ASG y AHI, que ganaron en 2023 y no están en las encuestas. Con los votos y las listas de 2023, el método acierta 201 de los 208 escaños. En el Senado se vota a personas, así que el resultado real puede desviarse, sobre todo en las circunscripciones reñidas.</p>`;
+  <p class="note">Cómo calculamos: tomamos el voto estimado de cada provincia en el modelo del Congreso, lo agrupamos en las listas al Senado de 2026 (Senado de Progreso, ERC-EH Bildu, UPN-PP, pactos de Baleares…) y aplicamos el patrón habitual: en las circunscripciones de 4, la lista más votada gana 3 y la segunda 1 (2 y 2 si las separa menos de 1 punto). Acuerdo PP–Vox: donde Vox no se presenta (Cádiz, Valencia, Castellón, Baleares y Canarias) sumamos su voto al del PP; donde presenta un solo candidato (14 provincias) suponemos que sus votantes marcan a ese candidato y a dos del PP, y contamos los votos candidato a candidato; donde el PP no se presenta (Gipuzkoa, Girona y Tarragona) quitamos su lista sin trasladar su voto. En la C. Valenciana, Podemos no presenta lista al Senado. Las islas usan el voto de su provincia; en La Gomera y El Hierro mantenemos a ASG y AHI, que ganaron en 2023 y no están en las encuestas. Con los votos y las listas de 2023, el método acierta 201 de los 208 escaños. En el Senado se vota a personas, así que el resultado real puede desviarse, sobre todo en las circunscripciones reñidas.</p>`;
   $("#sen-map").addEventListener("click", ()=>{ mapMode = "senado"; show("mapa", true); });
   $("#sen-ally").addEventListener("click", ()=>{ mapMode = "alianzas"; show("mapa", true); });
 }
@@ -2113,7 +2162,8 @@ function senateBy(level){
 }
 const RIGHT_TYPES = {
   sep:{label:"PP y Vox por separado", color:"#9AA3AE"},
-  part:{label:"PP en coalición en parte del territorio", color:"#8DB6E6"},
+  sen:{label:"Por separado al Congreso; acuerdo PP–Vox en el Senado", color:"#5B7FA8"},
+  part:{label:"Acuerdo PP–Vox en el Senado y PP en coalición en parte del territorio", color:"#8DB6E6"},
   coal:{label:"PP en coalición con un partido regional", color:"#1F6FC5"}
 };
 const rightOf = n => RIGHT_BY_CCAA[n] || {type:"sep", congreso:[], senado:[]};
@@ -2185,7 +2235,7 @@ function renderMapa(){
     <div class="panel stack minw0">
       <div class="map-wrap">${svg}</div>
       <div class="map-legend">${legend}</div>
-      <p class="small muted">${mapMode==="alianzas" ? (allySide==="dcha" ? esc(RIGHT_NOTE) : "Listas al Congreso a la izquierda del PSOE en cada comunidad, tras el cierre de coaliciones del 16 de octubre. Al Senado, el PSOE va con el Frente Amplio en casi toda España.") : gradInfo ? `Gradiente: cuanto más intenso, mayor porcentaje de voto estimado ${gradParty==="lead"?"del partido más votado en cada territorio":"de "+esc(sname(gradParty))} (${esc(scen)}).${mapMode==="senado"?" Voto por listas al Senado.":""}${level==="ccaa"?" En las comunidades, media de sus provincias ponderada por escaños.":""}` : `Color: partido con más ${mapMode==="senado"?"senadores":"escaños"} en este escenario; a rayas, si hay empate (${esc(scen)}). ${mapMode==="senado"?"En las provincias de las islas se suman las circunscripciones insulares.":"Cambia el escenario en Congreso › Escaños y pactos."}`}</p>
+      <p class="small muted">${mapMode==="alianzas" ? (allySide==="dcha" ? esc(RIGHT_NOTE) : "Listas al Congreso a la izquierda del PSOE en cada comunidad, tras el cierre de candidaturas del 26 de octubre. Al Senado, el PSOE va con el Frente Amplio en casi toda España.") : gradInfo ? `Gradiente: cuanto más intenso, mayor porcentaje de voto estimado ${gradParty==="lead"?"del partido más votado en cada territorio":"de "+esc(sname(gradParty))} (${esc(scen)}).${mapMode==="senado"?" Voto por listas al Senado.":""}${level==="ccaa"?" En las comunidades, media de sus provincias ponderada por escaños.":""}` : `Color: partido con más ${mapMode==="senado"?"senadores":"escaños"} en este escenario; a rayas, si hay empate (${esc(scen)}). ${mapMode==="senado"?"En las provincias de las islas se suman las circunscripciones insulares.":"Cambia el escenario en Congreso › Escaños y pactos."}`}</p>
     </div>
     <div class="panel stack minw0" id="map-detail"></div>
   </div>
@@ -2235,7 +2285,7 @@ function allyCard(n){
   const L = LEFT_BY_CCAA[n], R = rightOf(n), O = OTHERS_BY_CCAA[n] || [];
   const side = allySide === "dcha" ? RIGHT_TYPES[R.type] : (L ? ALLY_TYPES[L.type] : null);
   const rC = R.congreso.length ? R.congreso : [["PP y Vox","por separado"]];
-  const rS = R.senado.length ? R.senado : [["PP y Vox","por separado (negocian en algunas provincias)"]];
+  const rS = R.senado.length ? R.senado : [["PP y Vox","por separado: el acuerdo del Senado no afecta a esta comunidad"]];
   return `<div class="row" style="justify-content:space-between"><h3>${esc(n)}</h3>${side?`<span class="small"><i class="sq" style="background:${side.color}"></i>${esc(side.label)}</span>`:""}</div>
     <div class="ally-blk${allySide==="izq"?" on":""}"><span class="eyebrow">Izquierda</span>${L?`<span class="small muted">Congreso</span><ul class="ally">${allyList(L.congreso)}</ul><span class="small muted">Senado</span><ul class="ally">${allyList(L.senado)}</ul>${L.note?`<p class="small muted">${esc(L.note)}</p>`:""}`:`<p class="small muted">Sin información publicada.</p>`}</div>
     <div class="ally-blk${allySide==="dcha"?" on":""}"><span class="eyebrow">Derecha</span><span class="small muted">Congreso</span><ul class="ally">${allyList(rC)}</ul><span class="small muted">Senado</span><ul class="ally">${allyList(rS)}</ul></div>
@@ -2248,7 +2298,7 @@ function allyTable(){
   <div class="table-wrap"><table class="ally-table"><thead><tr><th>Comunidad</th><th>Izquierda al Congreso</th><th>Izquierda al Senado</th><th>Derecha y otros</th></tr></thead><tbody>${CCAA_LIST.map(c=>{ const L=LEFT_BY_CCAA[c], R=rightOf(c), O=OTHERS_BY_CCAA[c]||[];
     const rt = R.congreso.concat(R.senado.map(x=>[x[0]+" (Senado)", x[1]]));
     return `<tr><td><i class="sq" style="background:${allySide==="dcha"?RIGHT_TYPES[R.type].color:(L?ALLY_TYPES[L.type].color:"var(--soft)")}"></i><b>${esc(c)}</b></td><td>${L?cell(L.congreso):"—"}</td><td>${L?cell(L.senado):"—"}</td><td>${rt.length?cell(rt):`<div class="muted">PP y Vox, por separado</div>`}${O.length?cell(O):""}</td></tr>`; }).join("")}</tbody></table></div>
-  <p class="small muted">Fuentes: coaliciones registradas ante la Junta Electoral Central y acuerdos publicados hasta el ${UPDATED}. Las listas definitivas se presentan entre el 21 y el 26 de octubre.</p></section>`;
+  <p class="small muted">Fuentes: coaliciones registradas ante la Junta Electoral Central y acuerdos publicados hasta el ${UPDATED}. Las candidaturas presentadas se publican en el BOE el 28 de octubre y la Junta Electoral las proclama el 2 de noviembre.</p></section>`;
 }
 
 /* ---------- PREGÚNTALE A CLAUDE ---------- */
