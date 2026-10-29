@@ -73,11 +73,11 @@ const BLOCS = [
 ];
 
 /* ---------- Vistas ---------- */
-const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Partidos minoritarios"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
+const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Partidos minoritarios"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["candidatos","Candidatos"],["papeleta","Tu papeleta del Senado"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
 const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE; // versión web independiente: sin consulta a Claude
 const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
-const SUBNAV = {partidos:[["partidos","Partidos y programas"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Minoritarios"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["mapa","Mapa","senado"]]};
-const parentOf = id => id==="comparar" ? "partidos" : (id==="encuestas"||id==="grupos"||id==="minoritarios") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
+const SUBNAV = {partidos:[["partidos","Partidos y programas"],["candidatos","Candidatos"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Minoritarios"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["papeleta","Tu papeleta"],["mapa","Mapa","senado"]]};
+const parentOf = id => (id==="comparar"||id==="candidatos") ? "partidos" : id==="papeleta" ? "senado" : (id==="encuestas"||id==="grupos"||id==="minoritarios") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
 function subnav(id){ const items = SUBNAV[parentOf(id)]; if (!items) return "";
   return `<nav class="subnav" aria-label="Apartados">${items.map(([v,l,mm])=>`<button class="subtab" data-go="${v}"${mm?` data-mapmode="${mm}"`:""} aria-pressed="${v===id}">${l}</button>`).join("")}</nav>`; }
 function markTab(id){ const p = parentOf(id); $$("#tabs .tab").forEach(b => b.setAttribute("aria-selected", b.dataset.v===p ? "true":"false")); }
@@ -88,7 +88,7 @@ function renderTabs(){
 function show(id, push){
   if (!VIEWS.some(v=>v[0]===id) || (SITE && id === "pregunta")) id = "resumen";
   $$(".view").forEach(v => v.hidden = v.id !== "v-"+id);
-  if (id === "mapa") renderMapa(); else if (id === "senado") renderSenado();
+  if (id === "mapa") renderMapa(); else if (id === "senado") renderSenado(); else if (id === "candidatos") renderCandidatos(); else if (id === "papeleta") renderPapeleta();
   markTab(id);
   if (push) { try{ history.replaceState(null,"","#"+id); }catch(e){} try{ window.scrollTo({top:0}); }catch(e){} }
   const t = $("#tab-"+parentOf(id)), bar = $("#tabs"); if (t && bar) { const l = t.offsetLeft, r = l + t.offsetWidth; if (l < bar.scrollLeft || r > bar.scrollLeft + bar.clientWidth) bar.scrollLeft = l - 16; }
@@ -163,7 +163,7 @@ function renderResumen(){
       <div class="panel stack small">
         <p><b>Programas.</b> A ${UPDATED} ningún partido ha publicado su programa para el 29-N (el del PP lo redacta Alma Ezcurra). Los anuncios más recientes van marcados como <span class="new">nuevo</span>. En cada ficha tienes sus documentos más recientes con enlace al original: propuestas de precampaña (<span class="flag t2026">2026</span>), ponencias de congreso u otros textos (<span class="flag tdoc">2024</span>) y el programa de las generales de 2023 (<span class="flag t2023">2023</span>). En el comparador, <span class="flag tvoto">voto</span> indica cómo votó el partido.</p>
         <p><b>Encuestas.</b> Son estimaciones con margen de error de unos ±2–3 puntos. El CIS se muestra aparte porque su estimación difiere mucho del resto.</p>
-        <p><b>Escaños.</b> Los cálculos de esta web aplican un modelo sencillo y transparente, con las coaliciones registradas el 16 de octubre; puedes ver el reparto provincia a provincia.</p>
+        <p><b>Escaños.</b> Los cálculos de esta web aplican un modelo sencillo y transparente, con las listas publicadas en el BOE el 28 de octubre; puedes ver el reparto provincia a provincia.</p>
         <p><b>Neutralidad.</b> El orden de los partidos sigue su resultado o su estimación, nunca una preferencia.</p>
       </div>
     </div>
@@ -724,6 +724,150 @@ function probHTML(s, lbl, isAvg, is23){
     <p class="note">Cómo calculamos: en cada simulación movemos el voto nacional de cada partido con un error al azar. Su tamaño suma lo que discrepan entre sí las encuestas (la desviación entre la última de cada empresa) y un error común a todas, porque pueden fallar a la vez (en 2023 casi todas se quedaron cortas con el PSOE): de ±1,5 puntos para PP y PSOE, ±1 para Vox, ±0,8 para FA y ±0,5 para Podemos y SALF. Añadimos un error compartido de ±1,5 puntos que pasa voto de la derecha a la izquierda o al revés, y un ruido de cada partido en cada provincia (±6%). Luego repartimos los escaños con el mismo modelo. Desviaciones usadas ahora: ${MAIN6.map(k=>`${esc(sname(k))} ±${fmt(s.sd[k])}`).join(", ")}. No es una predicción: solo dice cuánto pesa el margen de error de las encuestas.</p>`;
 }
 
+/* ---------- CANDIDATOS (BOE del 28 de octubre) ---------- */
+const XLAB = {SDP:{c:"#E0251B"}, TE:{c:"#2E7D5B"}, DRAGO:{c:"#3C8D5A"}, PACMA:{c:"#6BAA3A"}, ALHORA:{c:"#B23A48"}};
+const lcolor = k => k ? ((P[k]&&P[k].color) || (XLAB[k]&&XLAB[k].c) || "#9AA0A6") : "#9AA0A6";
+const KEEP_UP = new Set(["UPC","PSOE","PP","IU","MS","SDP","CHA","EU","UPN","PNV","ERC","BNG","EH","PSC","PCTE","FO","JONS","MÉS","AHI","ASG","SALF","PACMA","D21","CCA","UCIN","EAJ"]);
+const SMALL_W = new Set(["de","del","la","las","los","y","e","el","per","dels","i","da","dos","das","al","con","en","para","amb","les","des","a"]);
+function listBase(n){ const k = n.search(/\s[\(\[]/); return (k > 0 ? n.slice(0, k) : n).trim(); }
+function listAcro(n){ let m = n.match(/\[([^\]]+)\]\s*$/); if (m) return m[1].trim(); m = n.match(/\(([^()]*)\)\s*$/); return m ? m[1].trim() : ""; }
+function titleCase(t){
+  const L = t.replace(/[^A-Za-zÀ-ÿ]/g,""); if (!L || L.replace(/[^A-ZÀ-Þ]/g,"").length / L.length < 0.7) return t;
+  return t.split(/(\s+|-|\/)/).map((w,i) => { if (/^(\s+|-|\/)$/.test(w) || !w) return w; if (KEEP_UP.has(w.toUpperCase())) return w.toUpperCase(); const lw = w.toLowerCase(); if (i > 0 && SMALL_W.has(lw)) return lw; return lw.charAt(0).toUpperCase() + lw.slice(1); }).join("");
+}
+const listLabel = n => titleCase(listBase(n));
+const PROV_NAMES = Object.keys(CANDS).sort((a,b)=>a.localeCompare(b,"es"));
+let candProv = "Madrid", candQuery = "";
+const normTxt = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+let CAND_INDEX = null;
+function candIndex(){
+  if (CAND_INDEX) return CAND_INDEX;
+  CAND_INDEX = [];
+  Object.entries(CANDS).forEach(([p, v]) => {
+    v.c.forEach(([ln, k, cs]) => cs.forEach((n, i) => CAND_INDEX.push({n, q: normTxt(n), p, k, l: listLabel(ln), where: "Congreso", pos: i+1})));
+    Object.entries(v.s).forEach(([circ, ls]) => ls.forEach(([ln, k, cs]) => cs.forEach((n, i) => CAND_INDEX.push({n, q: normTxt(n), p, k, l: listLabel(ln), where: "Senado" + (circ !== p ? " · " + circ : ""), pos: i+1}))));
+  });
+  return CAND_INDEX;
+}
+/* De la lista del BOE a las claves del modelo de escaños */
+const CONG_KEYS = k => k === "UPN" ? ["UPN","PP"] : (k && MODEL_PARTIES.includes(k)) ? [k] : [];
+const SEN_KEY = k => k === "UPN" ? "UPNPP" : k;
+function scenLabel(){ return (lastSim && simT && simT.__key !== "avg") ? simLabel : "media de encuestas (sin CIS)"; }
+function nameHTML(n){ const m = n.match(/^(.*) \(([^)]+)\)$/); return m ? `${esc(m[1])} <span class="ctag">${esc(m[2])}</span>` : esc(n); }
+function candCard(ln, k, cs, seats, extra){
+  const acr = listAcro(ln);
+  return `<div class="ccard" style="--pc:${lcolor(k)}">
+    <div class="cc-head"><b>${esc(listLabel(ln))}</b>${acr && acr.toUpperCase() !== listBase(ln).toUpperCase() ? ` <span class="muted small">${esc(acr)}</span>` : ""}${seats != null ? `<span class="cc-seats ${seats?"on":""}" title="Escaños en la proyección (${esc(scenLabel())})">${seats} ${seats===1?"escaño":"escaños"}</span>` : ""}</div>
+    ${cs.length ? `<ol class="cc-list">${cs.map((n,i)=>`<li class="${seats && i < seats ? "in" : ""}${i >= 5 ? " more" : ""}">${nameHTML(n)}</li>`).join("")}</ol>${cs.length > 5 ? `<button class="linkbtn cc-all">Ver los ${cs.length} candidatos</button>` : ""}` : `<p class="small muted">Candidatura inadmitida por la Junta Electoral.</p>`}
+    ${extra || ""}
+  </div>`;
+}
+function renderCandidatos(){
+  const v = $("#v-candidatos");
+  const C = CANDS[candProv], res = currentRes(), pr = res.provinces.find(x => x.name === candProv);
+  const S = senateProjection(res), circs = S.circs.filter(c => c.prov === candProv);
+  const congHTML = C.c.map(([ln, k, cs]) => { const ks = CONG_KEYS(k); const seats = ks.length && pr && cs.length ? ks.reduce((a,x)=>a+(pr.alloc.seats[x]||0),0) : null; return candCard(ln, k, cs, seats); }).join("");
+  const senHTML = Object.entries(C.s).map(([circ, ls]) => {
+    const c = circs.find(x => x.name === circ);
+    const seatOf = k => !c ? null : c.local ? (SEN_LOCAL[circ] === k ? 1 : (c.lists[SEN_KEY(k)] != null ? 0 : null)) : (c.win[SEN_KEY(k)] || (c.lists[SEN_KEY(k)] != null ? 0 : null));
+    return `<div class="stack"><div class="row" style="justify-content:space-between"><h4 class="cc-circ">${esc(circ)} <span class="muted small">· ${c ? c.seats : ""} ${c && c.seats===1 ? "senador" : "senadores"}</span></h4><button class="linkbtn" data-pap="${esc(circ)}">Probar la papeleta</button></div>
+      <div class="cgrid">${ls.map(([ln, k, cs]) => candCard(ln, k, cs, cs.length ? seatOf(k) : null)).join("")}</div></div>`;
+  }).join("");
+  v.innerHTML = `${subnav("candidatos")}
+  <div class="view-head"><span class="eyebrow">Partidos y programas · Candidatos</span><h2>Quién se presenta en tu provincia</h2>
+  <p class="lead">Todas las listas al Congreso y al Senado publicadas en el BOE el 28 de octubre: ${Object.values(CANDS).reduce((a,x)=>a+x.c.length,0)} al Congreso y ${Object.values(CANDS).reduce((a,x)=>a+Object.values(x.s).reduce((b,l)=>b+l.filter(y=>y[2].length).length,0),0)} al Senado.</p></div>
+  <div class="panel stack">
+    <div class="cand-ctl">
+      <label class="stack" style="gap:4px"><span class="eyebrow">Provincia</span><select id="cand-prov">${PROV_NAMES.map(n=>`<option ${n===candProv?"selected":""}>${esc(n)}</option>`).join("")}</select></label>
+      <label class="stack" style="gap:4px; flex:1 1 240px"><span class="eyebrow">Buscar un nombre en toda España</span><input id="cand-q" type="search" placeholder="Por ejemplo, Montero" value="${esc(candQuery)}" autocomplete="off"></label>
+    </div>
+    <div id="cand-res"></div>
+  </div>
+  <section class="stack">
+    <div class="row" style="justify-content:space-between"><h3>Congreso · ${esc(candProv)}</h3><span class="muted small">${pr ? pr.seats : ""} diputados · ${C.c.length} listas</span></div>
+    <p class="small muted">En el orden en que las publica el BOE. Marcados en amarillo, los candidatos que obtendrían escaño en la proyección de esta web (${esc(scenLabel())}); cambia el escenario en Congreso › Escaños y pactos.</p>
+    <div class="cgrid">${congHTML}</div>
+  </section>
+  <section class="stack">
+    <h3>Senado · ${esc(candProv)}</h3>
+    <p class="small muted">En el Senado se vota a personas. Marcados, los que saldrían elegidos en la proyección orientativa del Senado. «Independiente»: así figura en el BOE.</p>
+    ${senHTML}
+  </section>
+  <p class="note">Fuente: <a href="https://www.boe.es/boe/dias/2026/10/28/pdfs/BOE-A-2026-22607.pdf" target="_blank" rel="noopener">BOE núm. 267, de 28 de octubre de 2026</a> (candidaturas presentadas; mostramos los titulares, sin suplentes). Las juntas electorales las proclaman el 2 de noviembre y pueden cambiar: por ejemplo, los Comuns han anunciado que retiran sus listas al Senado en Girona, Lleida y Tarragona.</p>`;
+  $("#cand-prov").addEventListener("change", e => { candProv = e.target.value; renderCandidatos(); });
+  const q = $("#cand-q"); q.addEventListener("input", () => { candQuery = q.value; renderCandRes(); });
+  $$("#v-candidatos .cc-all").forEach(b => b.addEventListener("click", () => { b.closest(".ccard").classList.add("open"); b.remove(); }));
+  $$("#v-candidatos [data-pap]").forEach(b => b.addEventListener("click", () => { papCirc = b.dataset.pap; papMarks = new Set(); show("papeleta", true); }));
+  renderCandRes();
+}
+function renderCandRes(){
+  const box = $("#cand-res"); if (!box) return;
+  const q = normTxt(candQuery.trim());
+  if (q.length < 3) { box.innerHTML = ""; return; }
+  const words = q.split(/\s+/), hits = candIndex().filter(x => words.every(w => x.q.includes(w)));
+  box.innerHTML = `<p class="small muted">${hits.length ? `${hits.length} ${hits.length===1?"resultado":"resultados"}${hits.length > 40 ? " (se muestran 40)" : ""}` : "Ningún candidato con ese nombre."}</p>
+    <div class="cand-hits">${hits.slice(0,40).map(x=>`<button class="cand-hit" data-p="${esc(x.p)}"><i class="dot" style="background:${lcolor(x.k)}"></i><span><b>${nameHTML(x.n)}</b><span class="muted small">${esc(x.l)} · ${esc(x.where)}, n.º ${x.pos} · ${esc(x.p)}</span></span></button>`).join("")}</div>`;
+  $$("#cand-res .cand-hit").forEach(b => b.addEventListener("click", () => { candProv = b.dataset.p; renderCandidatos(); const s = $("#v-candidatos h3"); if (s) s.scrollIntoView({behavior:"smooth", block:"start"}); }));
+}
+
+/* ---------- TU PAPELETA DEL SENADO ---------- */
+let papCirc = "Madrid", papMarks = new Set();
+const papMax = seats => seats >= 4 ? 3 : seats === 3 ? 2 : 1;
+function papLists(circ){ const c = SEN_CIRCS.find(x => x[0] === circ); return c ? (CANDS[c[1]].s[circ] || []) : []; }
+function renderPapeleta(){
+  const v = $("#v-papeleta");
+  const opts = SEN_CIRCS.map(c => [c[0], c[0] === c[1] ? c[0] : `${c[0]} (${c[1]})`]).sort((a,b)=>a[1].localeCompare(b[1],"es"));
+  v.innerHTML = `${subnav("papeleta")}
+  <div class="view-head"><span class="eyebrow">Senado · Tu papeleta</span><h2>Prueba la papeleta sepia</h2>
+  <p class="lead">Con los candidatos reales de tu circunscripción. Marca a quien quieras, aunque sean de listas distintas, y mira si tu voto sería válido y quién saldría elegido según la proyección de esta web.</p></div>
+  <label class="stack" style="gap:4px; max-width:360px"><span class="eyebrow">Circunscripción</span><select id="pap-circ">${opts.map(([n,l])=>`<option value="${esc(n)}" ${n===papCirc?"selected":""}>${esc(l)}</option>`).join("")}</select></label>
+  <div class="pap-grid">
+    <div class="minw0" id="pap-ballot"></div>
+    <div class="stack minw0" id="pap-side"></div>
+  </div>`;
+  $("#pap-circ").addEventListener("change", e => { papCirc = e.target.value; papMarks = new Set(); renderPapeleta(); });
+  renderBallot(); renderPapSide();
+}
+function renderBallot(){
+  const sc = SEN_CIRCS.find(x => x[0] === papCirc), seats = sc[3], max = papMax(seats), ls = papLists(papCirc);
+  $("#pap-ballot").innerHTML = `<div class="sen-ballot">
+    <div class="sb-head"><b>Elecciones al Senado</b><span>29 de noviembre de 2026 · Circunscripción de ${esc(papCirc)}</span><span class="sb-rule">Marque con una cruz, como máximo, <b>${max}</b> ${max===1?"candidato":"candidatos"}</span></div>
+    ${ls.filter(l => l[2].length).map(([ln, k, cs], i) => `<fieldset class="sb-list"><legend>${esc(ln)}</legend>${cs.map((n,j)=>`<label class="sb-cand"><input type="checkbox" data-m="${i}:${j}" ${papMarks.has(i+":"+j)?"checked":""}><span class="sb-box" aria-hidden="true"></span><span>${nameHTML(n)}</span></label>`).join("")}</fieldset>`).join("")}
+  </div>`;
+  $$("#pap-ballot input").forEach(inp => inp.addEventListener("change", () => { inp.checked ? papMarks.add(inp.dataset.m) : papMarks.delete(inp.dataset.m); renderPapSide(); }));
+}
+function renderPapSide(){
+  const sc = SEN_CIRCS.find(x => x[0] === papCirc), seats = sc[3], max = papMax(seats), ls = papLists(papCirc).filter(l => l[2].length);
+  const S = senateProjection(currentRes()), c = S.circs.find(x => x.name === papCirc);
+  const n = papMarks.size;
+  const status = n === 0 ? `<div class="pap-status blank"><b>Voto en blanco.</b> Si metes en el sobre una papeleta sin marcas, cuenta como voto en blanco.</div>`
+    : n > max ? `<div class="pap-status bad"><b>Voto nulo.</b> Has marcado ${n} candidatos y aquí se pueden marcar como máximo ${max}.</div>`
+    : `<div class="pap-status ok"><b>Voto válido.</b> Has marcado ${n} de ${max}. Cada marca suma un voto a ese candidato${new Set([...papMarks].map(m=>m.split(":")[0])).size > 1 ? "; puedes mezclar candidatos de listas distintas" : ""}.</div>`;
+  const seatOf = k => c.local ? (SEN_LOCAL[papCirc] === k ? 1 : 0) : (c.win[SEN_KEY(k)] || 0);
+  const winners = [];
+  const voxOneC = SEN_VOX_ONE.includes(sc[1]) && seats === 4 && c.lists.VOX != null;
+  const candVote = (k, j) => { const mk = SEN_KEY(k), v = c.lists[mk] || 0; return v + (voxOneC && (mk === "PP" || mk === "UPNPP") && j < 2 ? (c.lists.VOX || 0) : 0); };
+  ls.forEach(([ln, k, cs], i) => { const s = seatOf(k); cs.slice(0, s).forEach((nm, j) => winners.push({nm, k, l: listLabel(ln), id: i+":"+j, v: candVote(k, j)})); });
+  winners.sort((a,b) => b.v - a.v);
+  const allLists = papLists(papCirc);
+  const lname = mk => { const hit = allLists.find(l => SEN_KEY(l[1]) === mk); return hit ? listLabel(hit[0]) : sname(mk); };
+  const bars = c.order.map(mk => ({mk, v: c.lists[mk]})).filter(x => x.v >= 0.5);
+  const mx = Math.max(...bars.map(b => b.v), 1);
+  const mine = [...papMarks].map(id => { const [i,j] = id.split(":").map(Number); const L = allLists[i]; return L ? {nm: L[2][j], l: listLabel(L[0]), k: L[1], win: winners.some(w => w.id === id)} : null; }).filter(Boolean);
+  const voxOne = SEN_VOX_ONE.includes(sc[1]) && seats === 4, voxOut = SEN_VOX_OUT.includes(sc[1]), ppOut = SEN_PP_OUT.includes(sc[1]);
+  $("#pap-side").innerHTML = `${status}
+    ${mine.length && n <= max ? `<div class="panel stack"><span class="eyebrow">Tus marcas</span><ul class="plain">${mine.map(m=>`<li><i class="dot" style="background:${lcolor(m.k)}"></i> <b>${nameHTML(m.nm)}</b> <span class="muted small">(${esc(m.l)})</span>: ${m.win ? "<b>saldría elegido/a</b> en la proyección" : "no saldría elegido/a en la proyección"}</li>`).join("")}</ul></div>` : ""}
+    <div class="panel stack">
+      <span class="eyebrow">Proyección · ${esc(scenLabel())}</span>
+      ${c.local ? `<p class="small">En ${esc(papCirc)} mantenemos el resultado de 2023 (${esc(sname(SEN_LOCAL[papCirc]))}), porque las encuestas no recogen a los partidos insulares.</p>` : ""}
+      <div class="bars">${bars.map(b=>`<div class="bar"><span class="nm" title="${esc(lname(b.mk))}"><i class="dot" style="background:${lcolor(b.mk==="UPNPP"?"UPN":b.mk)}"></i>${esc(lname(b.mk))}</span><span class="tr"><i style="width:${(b.v/mx*100).toFixed(1)}%;background:${lcolor(b.mk==="UPNPP"?"UPN":b.mk)}"></i></span><span class="v num">${fmt(b.v)}%</span></div>`).join("")}</div>
+      <span class="eyebrow" style="margin-top:6px">${seats === 1 ? "Saldría elegido/a" : `Los ${seats} elegidos`}</span>
+      <ol class="cc-list">${winners.map(w=>`<li class="in"><i class="dot" style="background:${lcolor(w.k)}"></i> ${nameHTML(w.nm)} <span class="muted small">· ${esc(w.l)}</span></li>`).join("")}</ol>
+      ${c.close ? `<p class="small"><span class="flag tdoc">reñida</span> Menos de 2 puntos deciden el último escaño: el reparto puede cambiar.</p>` : ""}
+    </div>
+    <p class="note">Cómo calculamos: el porcentaje es el voto estimado de cada lista en esta provincia con el modelo del Congreso. Suponemos que cada votante marca a todos los candidatos de su lista; dentro de una lista salen primero los primeros de la papeleta.${seats === 4 ? " Si las dos primeras están a menos de 1 punto, suponemos un reparto 2–2." : seats === 2 ? " Con 2 escaños, la primera lista se lleva los dos solo si saca más de 3 puntos a la segunda." : ""}${voxOne ? " Aquí Vox presenta un solo candidato por su acuerdo con el PP: suponemos que sus votantes lo marcan a él y a los dos primeros del PP." : ""}${voxOut ? " Aquí Vox no se presenta y el PP incluye a un independiente propuesto por Vox: sumamos el voto de los dos." : ""}${ppOut ? " Aquí el PP no se presenta por su acuerdo con Vox." : ""}</p>`;
+}
+
 /* ---------- SENADO ---------- */
 function senListName(l, c){
   if (l === "SDP") return c.ccaa === "Baleares" ? ({"Mallorca":"Acord de Progrés","Ibiza":"Lista progresista (Ferrer)","Formentera":"Formentera al Senat","Menorca":"PSOE–Més"}[c.name] || "PSOE y aliados") : "Senado de Progreso";
@@ -768,6 +912,7 @@ function renderSenado(){
         <li><b>Novedad de 2026:</b> Formentera elige su propio senador, separado de Ibiza (reforma del artículo 69 de la Constitución). Por eso son 209 electos y no 208.</li>
         <li>El PP tiene ahora mayoría absoluta: ${SENATE_FACTS.now.PP} de ${SENATE_FACTS.total23} escaños al disolverse las Cortes.</li>
       </ul>
+      <p><button class="btn" data-go="papeleta">Prueba tu papeleta con los candidatos reales</button></p>
     </div>
   </section>
   <section class="stack">
@@ -979,6 +1124,8 @@ function dossier(){
   const MCk = JSON.stringify(mcBase(A.avg)); if (mcCache.has(MCk)) { const S = mcCache.get(MCk); L.push(`PROBABILIDADES DE ESTA WEB (${S.n} elecciones simuladas con el margen de error de las encuestas alrededor de la media): PP+Vox ≥176 en ${pct(S.pRight)}; PP más escaños que el PSOE en ${pct(S.pFirst)}; PP solo ≥176 en ${pct(S.pPP)}; bloque de la investidura de 2023 ≥176 en ${pct(S.pInv)}. Rangos del 80%: PP ${S.iv.PP[0]}–${S.iv.PP[2]}, PSOE ${S.iv.PSOE[0]}–${S.iv.PSOE[2]}, Vox ${S.iv.VOX[0]}–${S.iv.VOX[2]}, PP+Vox+UPN ${S.iv.RIGHT[0]}–${S.iv.RIGHT[2]}. Es un cálculo sobre el error de las encuestas, no una predicción.`); }
   L.push("PROYECCIÓN DE ESCAÑOS DE ESTA WEB CON LA MEDIA (modelo: resultados 2023 por provincia + swing proporcional + D'Hondt): " + SEAT_ORDER.filter(k=>sAvg[k]).map(k=>`${sname(k)} ${sAvg[k]}`).join(", ") + `. PP+Vox = ${sAvg.PP+sAvg.VOX}.`);
   try { const SP = senateProjection(simulate(A.avg)).totals; L.push("PROYECCIÓN ORIENTATIVA DEL SENADO DE ESTA WEB (209 electos, con la media de encuestas y las listas al Senado de 2026): " + ALL_ORDER.filter(k=>SP[k]).map(k=>`${sname(k)} ${SP[k]}`).join(", ") + `. Con los designados: PP ${(SP.PP||0)+DESIGNATED.by.PP} de 267.`); } catch(e){}
+  const MAINK = ["PP","PSOE","VOX","FA","POD","SALF","ERC","JUNTS","BILDU","PNV","BNG","CC","UPN","AA","CFV","UPC","D21","SDP"];
+  L.push("\nCANDIDATURAS PRESENTADAS (BOE núm. 267, 28 oct. 2026; proclamación el 2 nov.). Por provincia, cabezas de lista al Congreso de los partidos principales y candidatos al Senado (la sección «Candidatos» de la web tiene todas las listas, incluidos partidos pequeños):\n" + PROV_NAMES.map(p => { const C = CANDS[p]; return `- ${p}: Congreso: ` + C.c.filter(l=>MAINK.includes(l[1]) && l[2].length).map(l=>`${listLabel(l[0])} — ${l[2][0]}`).join("; ") + ". Senado: " + Object.entries(C.s).map(([circ, ls]) => (circ !== p ? circ + ": " : "") + ls.filter(l=>MAINK.includes(l[1]) && l[2].length).map(l=>`${listLabel(l[0])} (${l[2].join(", ")})`).join("; ")).join(" | "); }).join("\n"));
   L.push("\nPACTOS AL SENADO 2026:\n" + SEN_PACTS.map(p=>`- ${p.name} (${p.parties}). Dónde: ${p.scope}. ${p.how}`).join("\n"));
   L.push("\nIZQUIERDA POR COMUNIDAD (Congreso | Senado):\n" + Object.entries(LEFT_BY_CCAA).map(([c,x])=>`- ${c}: ${x.congreso.map(y=>y[0]+(y[1]?" ("+y[1]+")":"")).join("; ")} | ${x.senado.map(y=>y[0]+(y[1]?" ("+y[1]+")":"")).join("; ")}`).join("\n"));
   if (lastSim && simT && simT.__key !== "avg") L.push(`ESCENARIO QUE EL USUARIO TIENE AHORA EN EL SIMULADOR (${simLabel}): ` + SEAT_ORDER.filter(k=>lastSim.totals[k]).map(k=>`${sname(k)} ${lastSim.totals[k]} (${(simT[k]||0).toFixed(1)}%)`).join(", "));

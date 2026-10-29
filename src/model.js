@@ -9,6 +9,8 @@ const MODEL_PARTIES = ["PP","PSOE","VOX","FA","POD","SALF","ERC","JUNTS","BILDU"
    Aliança Catalana no se presenta. */
 const CFV_PROV = ["Alicante","Castellón","Valencia"];
 const POD_IN_FA = ["Baleares"];
+/* Según el BOE (28 oct.): el Frente Amplio no presenta lista en Teruel, Ceuta ni Melilla, y Podemos no la presenta en Melilla. Su voto estimado allí pasa a «otros». */
+const FA_OUT = ["Teruel","Ceuta","Melilla"], POD_OUT = ["Melilla"];
 const UPC_PROV = ["Las Palmas","S. C. de Tenerife"];
 /* Si una encuesta da Compromís aparte (targets.CFV > 0), se reparte solo en la C. Valenciana con la geografía de Sumar 2023
    y el FA se reparte en el resto de España. SUMAR_CV_NAT: aportación aproximada de la C. Valenciana al 12,33% de Sumar en 2023. */
@@ -116,6 +118,8 @@ function simulate(targets, opts){
       else if (UPC_PROV.includes(name)) { raw.UPC = raw.FA + raw.POD; raw.FA = 0; raw.POD = 0; }
       else if (p[1] === "Cataluña") { raw.ERC += raw.POD/2; raw.FA += raw.POD/2; raw.POD = 0; }
       else if (POD_IN_FA.includes(name)) { raw.FA += raw.POD; raw.POD = 0; }
+      if (FA_OUT.includes(name)) raw.FA = 0;
+      if (POD_OUT.includes(name)) raw.POD = 0;
     }
     const listed2023 = b.pp + b.psoe + (opts.vox2023 ? p[6] : b.vox) + b.sumar + Object.values(b.extra).reduce((a,v)=>a+v,0);
     const others2023 = Math.max(0.5, 100 - listed2023);
@@ -156,13 +160,14 @@ const SDP_PSOE3 = ["Álava","Sevilla"];                   // el PSOE pone los 3 
      los dos primeros del PP reciben el voto de PP + Vox; el tercero, solo el del PP; el de Vox, el de Vox.
    - SEN_PP_OUT: el PP no se presenta → quitamos su lista y no trasladamos su voto (no hay dato de adónde iría). */
 const SEN_VOX_OUT = ["Cádiz","Valencia","Castellón","Baleares","Las Palmas","S. C. de Tenerife"];
-const SEN_VOX_ONE = ["Sevilla","Huelva","Asturias","Badajoz","Álava","Navarra","Cáceres","Huesca","Zaragoza","Alicante","Granada","Cuenca","Pontevedra","Jaén"];
+const SEN_VOX_ONE = ["Sevilla","Huelva","Asturias","Badajoz","Álava","Bizkaia","Cáceres","Huesca","Zaragoza","Alicante","Granada","Cuenca","Pontevedra","Jaén"]; // según el BOE del 28 oct.
+const COMUNS_SEN_OUT = ["Girona","Lleida","Tarragona"]; // los Comuns retiran su lista al Senado y apoyan al PSC (27 oct.)
 const SEN_PP_OUT = ["Gipuzkoa","Girona","Tarragona"];
 function senateLists(pr, circ, y2023){
   const s = pr.share, c = pr.ccaa, L = {}, add = (k,v) => { if (v > 0.05) L[k] = (L[k]||0) + v; };
   ["PP","VOX","SALF","AA","JUNTS","PNV","BNG"].forEach(k => add(k, s[k]||0));
   if (y2023) { add("PSOE", s.PSOE); add("FA", s.FA); ["ERC","BILDU","UPN","CC"].forEach(k=>add(k, s[k]||0)); if (circ==="Ibiza") { L.SDP = (L.PSOE||0) + (L.FA||0); delete L.PSOE; delete L.FA; } return L; }
-  if (c === "Cataluña") { add("PSOE", s.PSOE); add("FA", s.FA); add("ERC", s.ERC); }
+  if (c === "Cataluña") { if (COMUNS_SEN_OUT.includes(pr.name)) add("PSOE", s.PSOE + s.FA); else { add("PSOE", s.PSOE); add("FA", s.FA); } add("ERC", s.ERC); }
   else if (c === "Canarias") { add("PSOE", s.PSOE); add("UPC", s.UPC); if (circ !== "El Hierro") add("CC", s.CC); }
   else if (c === "Baleares") { add("SDP", s.PSOE + s.FA + (circ==="Ibiza" ? s.POD : 0)); if (circ !== "Ibiza") add("POD", s.POD); }
   else {
@@ -209,7 +214,8 @@ function senateProjection(res, opts){
       });
       cands.sort((x,y) => y[1] - x[1]);
       cands.slice(0, 4).forEach(([l]) => win[l] = (win[l]||0) + 1);
-      gap = cands[3][1] - (cands[4] ? cands[4][1] : 0);
+      const nextOther = cands.slice(4).find(x => x[0] !== cands[3][0]); // un empate dentro de la misma lista no cambia el reparto
+      gap = cands[3][1] - (nextOther ? nextOther[1] : 0);
     }
     else if (seats === 4) { if (gap < 1) { win[a] = 2; win[b] = 2; } else { win[a] = 3; win[b] = 1; } }
     else if (seats === 3) { win[a] = 2; win[b] = 1; }
@@ -219,7 +225,7 @@ function senateProjection(res, opts){
     if (SEN_LOCAL[name]) { alloc = {[SEN_LOCAL[name]]: 1}; local = true; }
     else Object.entries(win).forEach(([l,n]) => Object.entries(senateSeatsOf(l, n, name, prov, ccaa)).forEach(([k,v]) => alloc[k] = (alloc[k]||0) + v));
     Object.entries(alloc).forEach(([k,v]) => totals[k] = (totals[k]||0) + v);
-    out.push({name, prov, ccaa, seats, lists, order: ord, alloc, local, close: seats > 1 && gap < 2 && !local});
+    out.push({name, prov, ccaa, seats, lists, order: ord, alloc, win, local, close: seats > 1 && gap < 2 && !local});
   });
   return {totals, circs: out};
 }

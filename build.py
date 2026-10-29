@@ -9,7 +9,7 @@ strip = lambda s: re.sub(r'\nif \(typeof module !== "undefined"\).*\n?', '\n', s
 t = t.replace('/*STYLE*/', open(src+'style.css').read())
 t = t.replace('/*MAPDATA*/', open(src+'mapdata.js').read())
 t = t.replace('/*MODEL*/', strip(open(src+'model.js').read()))
-t = t.replace('/*DATA*/', strip(open(src+'data.js').read()))
+t = t.replace('/*DATA*/', strip(open(src+'data.js').read()) + '\n' + open(src+'candidates.js').read())
 t = t.replace('/*APP*/', open(src+'app.js').read())
 if site:
     NAME = 'Two-Hemiciclo 29N'
