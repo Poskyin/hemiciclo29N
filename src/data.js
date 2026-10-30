@@ -1,5 +1,5 @@
-/* ===== Datos de la plataforma (actualizados el 29 de octubre de 2026) ===== */
-const UPDATED = "29 de octubre de 2026";
+/* ===== Datos de la plataforma (actualizados el 31 de octubre de 2026) ===== */
+const UPDATED = "31 de octubre de 2026";
 const ELECTION_DATE = "2026-11-29T09:00:00+01:00";
 
 /* Orden de izquierda a derecha para el hemiciclo */
@@ -730,6 +730,7 @@ const CALENDAR = [
   {d:"2026-10-27", t:"Los Comuns retiran sus listas al Senado en Girona, Lleida y Tarragona en favor del PSC", k:"hecho"},
   {d:"2026-10-28", t:"El BOE publica las 929 candidaturas presentadas. El Gobierno entrega al Supremo la lista de la «ley de nietos». Accidente ferroviario de Urda (Toledo): los partidos, salvo Vox, suspenden la precampaña", k:"hecho"},
   {d:"2026-10-29", t:"Tres días de luto oficial (29–31 de octubre)", k:"hecho"},
+  {d:"2026-10-31", t:"Empieza el sorteo de los miembros de las mesas electorales (hasta el 4 de noviembre; la notificación llega como tarde el 7)", k:"votante"},
   {d:"2026-11-02", t:"Las juntas electorales proclaman las candidaturas", k:"plazo"},
   {d:"2026-11-03", t:"El BOE publica las candidaturas proclamadas", k:"plazo"},
   {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
@@ -748,16 +749,16 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
+  ["30 oct.","Óscar Puente, ministro de Transportes y cabeza de lista del PSOE por Valladolid, puso su cargo a disposición de Sánchez por el accidente de Urda; Sánchez rechazó su dimisión. El balance sube a al menos 69 muertos."],
+  ["30 oct.","El PP retomará la precampaña el lunes 2 de noviembre, al acabar el luto oficial, con un Comité Ejecutivo Nacional en Génova."],
+  ["30 oct.","Sociómetro del Gobierno Vasco: EH Bildu sería primera fuerza en el País Vasco con 7 escaños; el PNV perdería uno en Gipuzkoa, el PSE mantendría 5 y el PP, 2."],
+  ["30 oct.","El Supremo da tres días a las partes para opinar sobre si suspende también el voto de los hijos de los nacionalizados por la «ley de nietos»."],
   ["29 oct.","Tres días de luto oficial (29–31 oct.) por el choque de un AVE de Renfe y un tren de Iryo cerca de Urda (Toledo) el día 28: al menos 68 muertos y más de un centenar de heridos. PP, PSOE, Frente Amplio y Podemos suspenden la precampaña; Vox mantiene sus actos."],
   ["28 oct.","El BOE publica las candidaturas: 929 listas, 556 al Congreso y 373 al Senado, casi un 15% menos que en 2023. Ya puedes consultar todos los candidatos de tu provincia en «Candidatos»."],
   ["28 oct.","Según el BOE, Vox presenta un solo candidato al Senado en 14 provincias, entre ellas Bizkaia (no Navarra, como se dijo al anunciar el pacto). En sus listas al Senado, el PP lleva a un independiente en Cádiz, Valencia, Castellón y Gran Canaria."],
   ["28 oct.","El Frente Amplio no se presenta al Congreso en Teruel, Ceuta ni Melilla; Podemos, en Cataluña, la C. Valenciana, Baleares ni Melilla; SALF, en 6 provincias."],
   ["28 oct.","«Ley de nietos»: el Gobierno entrega al Supremo la lista de 163.355 nacionalizados. Solo 901 han acreditado descender de exiliados y podrán votar el 29-N."],
-  ["27 oct.","Los Comuns retiran sus listas al Senado en Girona, Lleida y Tarragona para apoyar al PSC, que designará a un senador autonómico propuesto por ellos."],
-  ["26 oct.","PP y Vox pactan el Senado: Vox no presenta lista en Cádiz, Valencia, Castellón, Baleares y Canarias, y presenta un solo candidato en otras 14 provincias. El PP no se presenta en Gipuzkoa, Girona y Tarragona."],
-  ["26 oct.","Cinco encuestas nuevas (Sigma Dos, NC Report, SocioMétrica, Ateneo del Dato y ElectoPanel): el PP baja en todas; PP y Vox siguen por encima de 176 escaños."],
-  ["26 oct.","Feijóo propone que la vivienda dependa de una vicepresidencia con un «mando único» y un millón de viviendas en la legislatura."],
-  ["24 oct.","Sánchez promete blindar el aborto en la Constitución; el Frente Amplio propone jubilación a los 65 y ninguna pensión por debajo del salario mínimo."]
+  ["27 oct.","Los Comuns retiran sus listas al Senado en Girona, Lleida y Tarragona para apoyar al PSC, que designará a un senador autonómico propuesto por ellos."]
 ];
 
 
@@ -776,6 +777,7 @@ const CONTEXT = [
 ];
 
 const SOURCES = [
+  ["Sánchez rechazó la dimisión de Puente (Infobae/EFE)","https://www.infobae.com/america/agencias/2026/10/30/puente-puso-su-cargo-a-disposicion-de-sanchez-pero-este-rechazo-su-dimision-al-considerarla-injusta/"],
   ["Candidaturas presentadas (BOE núm. 267, 28 oct. 2026)","https://www.boe.es/boe/dias/2026/10/28/pdfs/BOE-A-2026-22607.pdf"],
   ["Precampaña suspendida por el accidente de Urda (Demócrata)","https://democrata.es/elecciones-generales-espana/tragedia-urda-campana-29n-cronica-sanchez-feijoo-abascal"],
   ["Acuerdo PP–Vox para el Senado (El Español, 26 oct.)","https://www.elespanol.com/espana/politica/20261026/pp-vox-llegan-acuerdo-listas-senado-abascal-retiran-provincias-feijoo/1003744434759_0.html"],
