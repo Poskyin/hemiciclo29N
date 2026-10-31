@@ -654,6 +654,7 @@ const GROUPS = {
 /* ---------- Encuestas recientes ----------
    d: fecha (fin de campo o publicación según el agregador). seats: escaños publicados por la propia encuestadora. */
 const POLLS = [
+  {firm:"Winston", media:"Artículo14", d:"2026-10-26", field:"21–23 oct. · 1.200 · en línea", PP:29.4,PSOE:27.1,VOX:19.2,FA:5.6,POD:null,SALF:null, seats:"PP 121 · PSOE 115 · Vox 69 · FA 9 · Podemos 2"},
   {firm:"Sigma Dos", media:"El Mundo", d:"2026-10-26", field:"8–22 oct. · 3.122", PP:30.6,PSOE:26.1,VOX:19.9,FA:7.4,POD:2.8,SALF:null, CFV:0.8, ERC:2.5,JUNTS:1.2,BILDU:1.2,PNV:0.9,BNG:0.9,CC:0.4,UPN:0.2,AA:1.0, seats:"PP+UPN 125–131 · PSOE 103–109 · Vox 66–69 · FA 10–12 · ERC 8–9 · Bildu 7–8 · Junts 6–7 · PNV 4–5 · Compromís 2–3 · AA 2–3 · BNG 2 · Podemos 1 · CC 0–1"},
   {firm:"NC Report", media:"La Razón", d:"2026-10-26", field:"22–24 oct.", PP:32.9,PSOE:25.8,VOX:19.0,FA:6.6,POD:2.6,SALF:null, ERC:2.0,JUNTS:1.8,BILDU:1.4,PNV:0.9,AA:1.3, seats:"PP 141–143 · PSOE 100–102 · Vox 64–66 · FA 8–9 · Junts 8–9 · ERC 7–8 · Bildu 6–7 · PNV 4–5 · AA 3 · BNG 1–2 · Podemos 1 · CC 1 · UPN 1"},
   {firm:"SocioMétrica", media:"El Español", d:"2026-10-26", field:"Acumulado desde el 1 sep. · 3.223", PP:32.1,PSOE:27.0,VOX:18.6,FA:4.6,POD:1.9,SALF:null, ERC:2.5,JUNTS:1.7,BILDU:1.3,PNV:0.8,BNG:0.9,CC:0.4,UPN:0.2,AA:1.2, seats:"PP 135 · PSOE 108 · Vox 63 · ERC 9 · Junts 7 · Bildu 7 · FA 6 · PNV 4 · AA 2 · BNG 2 · UPN-PP 2 · CC 1 · Podemos 0"},
@@ -710,7 +711,8 @@ const TREND = [
  [9,31.1,26.1,18.2,7.0,3.1,1.5],[9,34.5,24.9,18.3,5.7,3.4,null],[9,33.6,25.1,19.3,5.6,3.8,1.6],[9,31.5,25.6,18.9,6.9,2.8,2.5],[9,33.7,26.8,18.6,6.1,3.3,1.8],[9,34.7,26.3,17.3,4.5,3.7,1.0],[9,33.9,25.4,17.8,6.4,3.3,1.7],[9,33.9,25.7,18.0,5.7,3.3,2.0],[9,31.6,27.4,18.4,5.6,2.7,2.0],
  [10,33.2,27.5,19.2,7.0,3.3,null],[10,33.4,26.5,18.1,5.3,3.1,2.2],[10,31.3,26.9,19.4,6.3,3.4,1.7],
  [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null],
- [10,28.5,27.1,20.0,8.9,1.9,1.2],[10,30.9,26.7,19.0,7.0,1.7,1.7],[10,31.1,27.6,19.8,6.8,2.7,null],[10,32.1,27.0,18.6,4.6,1.9,null],[10,32.9,25.8,19.0,6.6,2.6,null],[10,30.6,26.1,19.9,8.2,2.8,null]
+ [10,28.5,27.1,20.0,8.9,1.9,1.2],[10,30.9,26.7,19.0,7.0,1.7,1.7],[10,31.1,27.6,19.8,6.8,2.7,null],[10,32.1,27.0,18.6,4.6,1.9,null],[10,32.9,25.8,19.0,6.6,2.6,null],[10,30.6,26.1,19.9,8.2,2.8,null],
+ [10,29.4,27.1,19.2,5.6,null,null],
 ];
 
 /* ---------- Calendario (RD 806/2026 y LOREG) ---------- */
@@ -731,7 +733,7 @@ const CALENDAR = [
   {d:"2026-10-28", t:"El BOE publica las 929 candidaturas presentadas. El Gobierno entrega al Supremo la lista de la «ley de nietos». Accidente ferroviario de Urda (Toledo): los partidos, salvo Vox, suspenden la precampaña", k:"hecho"},
   {d:"2026-10-29", t:"Tres días de luto oficial (29–31 de octubre)", k:"hecho"},
   {d:"2026-10-31", t:"Empieza el sorteo de los miembros de las mesas electorales (hasta el 4 de noviembre; la notificación llega como tarde el 7)", k:"votante"},
-  {d:"2026-11-02", t:"Las juntas electorales proclaman las candidaturas", k:"plazo"},
+  {d:"2026-11-02", t:"Las juntas electorales proclaman las candidaturas. PP, PSOE y el resto retoman la precampaña tras el luto", k:"plazo"},
   {d:"2026-11-03", t:"El BOE publica las candidaturas proclamadas", k:"plazo"},
   {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
   {d:"2026-11-13", t:"Empieza la campaña electoral (00:00 h)", k:"plazo"},
@@ -749,6 +751,7 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
+  ["31 oct.","Narciso Michavila (GAD3) dice en X que detectan «un cambio abrupto de voto» desde el accidente de Urda y que «ahora es imposible que Sánchez sea el más votado». No publica cifras ni ficha técnica."],
   ["30 oct.","Óscar Puente, ministro de Transportes y cabeza de lista del PSOE por Valladolid, puso su cargo a disposición de Sánchez por el accidente de Urda; Sánchez rechazó su dimisión. El balance sube a al menos 69 muertos."],
   ["30 oct.","El PP retomará la precampaña el lunes 2 de noviembre, al acabar el luto oficial, con un Comité Ejecutivo Nacional en Génova."],
   ["30 oct.","Sociómetro del Gobierno Vasco: EH Bildu sería primera fuerza en el País Vasco con 7 escaños; el PNV perdería uno en Gipuzkoa, el PSE mantendría 5 y el PP, 2."],
@@ -758,7 +761,6 @@ const NEWS = [
   ["28 oct.","Según el BOE, Vox presenta un solo candidato al Senado en 14 provincias, entre ellas Bizkaia (no Navarra, como se dijo al anunciar el pacto). En sus listas al Senado, el PP lleva a un independiente en Cádiz, Valencia, Castellón y Gran Canaria."],
   ["28 oct.","El Frente Amplio no se presenta al Congreso en Teruel, Ceuta ni Melilla; Podemos, en Cataluña, la C. Valenciana, Baleares ni Melilla; SALF, en 6 provincias."],
   ["28 oct.","«Ley de nietos»: el Gobierno entrega al Supremo la lista de 163.355 nacionalizados. Solo 901 han acreditado descender de exiliados y podrán votar el 29-N."],
-  ["27 oct.","Los Comuns retiran sus listas al Senado en Girona, Lleida y Tarragona para apoyar al PSC, que designará a un senador autonómico propuesto por ellos."]
 ];
 
 
@@ -776,7 +778,73 @@ const CONTEXT = [
   ["28 oct. 2026","El BOE publica 929 candidaturas. Accidente ferroviario de Urda (Toledo), con al menos 68 muertos: tres días de luto oficial y precampaña suspendida salvo por Vox."]
 ];
 
+/* ---------- Parlamentos autonómicos (resultado de las últimas elecciones de cada comunidad) ----------
+   seats: [nombre, escaños, clave de PARTIES o color, familia]  — ordenados de izquierda a derecha en el hemiciclo.
+   familia: PP, PSOE, VOX o "OTR" (para el recuento total). gov: partido de la presidencia; gt: abs (mayoría absoluta), coal (coalición), min (minoría). */
+const PARLIAMENTS = [
+  {n:"Andalucía", ch:"Parlamento de Andalucía", el:"2026-05-17", pres:"Juanma Moreno", gov:"PP", gt:"coal", how:"Coalición PP–Vox. Investido el 2 jul. 2026 con los votos de PP y Vox, tras fallar la primera votación.",
+   seats:[["Adelante Andalucía",8,"AA","OTR"],["Por Andalucía",5,"#8C3F7A","OTR"],["PSOE-A",28,"PSOE","PSOE"],["PP",53,"PP","PP"],["Vox",15,"VOX","VOX"]],
+   src:"https://www.eldebate.com/espana/20260517/moreno-queda-dos-escanos-mayoria-absoluta-sanchez-lleva-psoe-mayor-batacazo-andalucia_418519.html"},
+  {n:"Aragón", ch:"Cortes de Aragón", el:"2026-02-08", pres:"Jorge Azcón", gov:"PP", gt:"coal", how:"Coalición PP–Vox. Investido el 29 abr. 2026 con 39 votos (PP y Vox).",
+   seats:[["IU-Sumar",1,"FA","OTR"],["CHA",6,"#C2410C","OTR"],["PSOE",18,"PSOE","PSOE"],["Existe",2,"#7A5BA6","OTR"],["PP",26,"PP","PP"],["Vox",14,"VOX","VOX"]],
+   src:"https://es.wikipedia.org/wiki/Elecciones_a_las_Cortes_de_Arag%C3%B3n_de_2026"},
+  {n:"Asturias", ch:"Junta General del Principado", el:"2023-05-28", pres:"Adrián Barbón", gov:"PSOE", gt:"coal", how:"Coalición PSOE–IU-Convocatoria por Asturies.",
+   seats:[["Podemos",1,"POD","OTR"],["IU-Convocatoria",3,"#A3243B","OTR"],["PSOE",19,"PSOE","PSOE"],["Foro",1,"#2C6FB0","OTR"],["PP",17,"PP","PP"],["Vox",4,"VOX","VOX"]],
+   src:"https://theobjective.com/espana/politica/2023-06-02/voto-exterior-ratifica-psoe-asturias/"},
+  {n:"Baleares", ch:"Parlament de les Illes Balears", el:"2023-05-28", pres:"Marga Prohens", gov:"PP", gt:"min", how:"Gobierno del PP en minoría; Vox apoyó su investidura.",
+   seats:[["Podem-EUIB",1,"POD","OTR"],["Més per Mallorca",4,"#E36F1E","OTR"],["Més per Menorca",2,"#3AA0A0","OTR"],["PSIB-PSOE",18,"PSOE","PSOE"],["Sa Unió (Formentera)",1,"#4C7FBF","OTR"],["PP",25,"PP","PP"],["Vox",8,"VOX","VOX"]],
+   src:"https://www.vilaweb.cat/noticies/directe-eleccions-parlament-balear-corts-valencianes/"},
+  {n:"Canarias", ch:"Parlamento de Canarias", el:"2023-05-28", pres:"Fernando Clavijo", gov:"CC", gt:"coal", how:"Coalición CC–PP.",
+   seats:[["NC-BC",5,"#F28C28","OTR"],["PSOE",23,"PSOE","PSOE"],["ASG",3,"ASG","OTR"],["CC",19,"CC","OTR"],["AHI",1,"AHI","OTR"],["PP",15,"PP","PP"],["Vox",4,"VOX","VOX"]],
+   src:"https://www.parcan.es/"},
+  {n:"Cantabria", ch:"Parlamento de Cantabria", el:"2023-05-28", pres:"María José Sáenz de Buruaga", gov:"PP", gt:"min", how:"Gobierno del PP en minoría.",
+   seats:[["PSOE",8,"PSOE","PSOE"],["PRC",8,"#C9A227","OTR"],["PP",15,"PP","PP"],["Vox",4,"VOX","VOX"]],
+   src:"https://parlamento-cantabria.es/"},
+  {n:"Castilla-La Mancha", ch:"Cortes de Castilla-La Mancha", el:"2023-05-28", pres:"Emiliano García-Page", gov:"PSOE", gt:"abs", how:"Mayoría absoluta del PSOE.",
+   seats:[["PSOE",17,"PSOE","PSOE"],["PP",12,"PP","PP"],["Vox",4,"VOX","VOX"]],
+   src:"https://www.cortesclm.es/"},
+  {n:"Castilla y León", ch:"Cortes de Castilla y León", el:"2026-03-15", pres:"Alfonso Fernández Mañueco", gov:"PP", gt:"coal", how:"Coalición PP–Vox. Investido el 9 jun. 2026 con 47 votos (PP y Vox).",
+   seats:[["PSOE",30,"PSOE","PSOE"],["UPL",3,"#B0234F","OTR"],["Soria ¡Ya!",1,"#2B7A78","OTR"],["Por Ávila",1,"#3A8F5C","OTR"],["PP",33,"PP","PP"],["Vox",14,"VOX","VOX"]],
+   src:"https://www.publico.es/resultados-elecciones/autonomicas/2026/castilla-y-leon"},
+  {n:"Cataluña", ch:"Parlament de Catalunya", el:"2024-05-12", pres:"Salvador Illa", gov:"PSOE", gt:"min", how:"Gobierno del PSC en minoría; investido con los votos de ERC y Comuns.",
+   seats:[["CUP",4,"#D4C400","OTR"],["Comuns",6,"FA","OTR"],["ERC",20,"ERC","OTR"],["PSC",42,"PSOE","PSOE"],["Junts",35,"JUNTS","OTR"],["PP",15,"PP","PP"],["Vox",11,"VOX","VOX"],["Aliança Catalana",2,"AC","OTR"]],
+   src:"https://www.parlament.cat/"},
+  {n:"C. Valenciana", ch:"Corts Valencianes", el:"2023-05-28", pres:"Juanfran Pérez Llorca", gov:"PP", gt:"min", how:"Gobierno del PP en minoría con apoyo externo de Vox; sustituyó a Carlos Mazón en 2025. Ha descartado adelantar las autonómicas.",
+   seats:[["Compromís",15,"CFV","OTR"],["PSPV-PSOE",31,"PSOE","PSOE"],["PP",40,"PP","PP"],["Vox",13,"VOX","VOX"]],
+   src:"https://www.infobae.com/espana/agencias/2026/10/06/perez-llorca-no-se-plantea-adelantar-las-elecciones-en-la-comunitat-valenciana/"},
+  {n:"Extremadura", ch:"Asamblea de Extremadura", el:"2025-12-21", pres:"María Guardiola", gov:"PP", gt:"coal", how:"Coalición PP–Vox desde abril de 2026, tras fallar la investidura de marzo.",
+   seats:[["Unidas por Extremadura",7,"#7B3F8E","OTR"],["PSOE",18,"PSOE","PSOE"],["PP",29,"PP","PP"],["Vox",11,"VOX","VOX"]],
+   src:"https://rtvc.es/resultado-de-las-elecciones-en-extremadura-21-de-diciembre-de-2025/"},
+  {n:"Galicia", ch:"Parlamento de Galicia", el:"2024-02-18", pres:"Alfonso Rueda", gov:"PP", gt:"abs", how:"Mayoría absoluta del PP.",
+   seats:[["BNG",25,"BNG","OTR"],["PSdeG-PSOE",9,"PSOE","PSOE"],["Democracia Ourensana",1,"#7C5C2E","OTR"],["PP",40,"PP","PP"]],
+   src:"https://www.parlamentodegalicia.gal/"},
+  {n:"Madrid", ch:"Asamblea de Madrid", el:"2023-05-28", pres:"Isabel Díaz Ayuso", gov:"PP", gt:"abs", how:"Mayoría absoluta del PP.",
+   seats:[["Más Madrid",27,"#25A783","OTR"],["PSOE",27,"PSOE","PSOE"],["PP",70,"PP","PP"],["Vox",11,"VOX","VOX"]],
+   src:"https://www.asambleamadrid.es/"},
+  {n:"Murcia", ch:"Asamblea Regional de Murcia", el:"2023-05-28", pres:"Fernando López Miras", gov:"PP", gt:"min", how:"Gobierno del PP en minoría desde que Vox salió en julio de 2024.",
+   seats:[["Podemos-IU-AV",2,"POD","OTR"],["PSOE",13,"PSOE","PSOE"],["PP",21,"PP","PP"],["Vox",9,"VOX","VOX"]],
+   src:"https://www.asambleamurcia.es/"},
+  {n:"Navarra", ch:"Parlamento de Navarra", el:"2023-05-28", pres:"María Chivite", gov:"PSOE", gt:"coal", how:"Coalición PSN–Geroa Bai–Contigo-Zurekin, en minoría.",
+   seats:[["EH Bildu",9,"BILDU","OTR"],["Contigo-Zurekin",3,"#8E44AD","OTR"],["PSN-PSOE",11,"PSOE","PSOE"],["Geroa Bai",7,"GBAI","OTR"],["UPN",15,"UPN","OTR"],["PP",3,"PP","PP"],["Vox",2,"VOX","VOX"]],
+   src:"https://parlamentodenavarra.es/"},
+  {n:"País Vasco", ch:"Parlamento Vasco", el:"2024-04-21", pres:"Imanol Pradales", gov:"PNV", gt:"coal", how:"Coalición PNV–PSE-EE, con mayoría absoluta entre los dos.",
+   seats:[["EH Bildu",27,"BILDU","OTR"],["Sumar",1,"FA","OTR"],["PSE-EE",12,"PSOE","PSOE"],["PNV",27,"PNV","OTR"],["PP",7,"PP","PP"],["Vox",1,"VOX","VOX"]],
+   src:"https://www.legebiltzarra.eus/"},
+  {n:"La Rioja", ch:"Parlamento de La Rioja", el:"2023-05-28", pres:"Gonzalo Capellán", gov:"PP", gt:"abs", how:"Mayoría absoluta del PP.",
+   seats:[["Podemos-IU",2,"POD","OTR"],["PSOE",12,"PSOE","PSOE"],["PP",17,"PP","PP"],["Vox",2,"VOX","VOX"]],
+   src:"https://nuevecuatrouno.com/2023/06/02/elecciones-28m-voto-extranjero-podemos-iu-conserva-dos-diputados/"},
+  {n:"Ceuta", ch:"Asamblea de Ceuta", city:true, el:"2023-05-28", pres:"Juan Jesús Vivas", gov:"PP", gt:"min", how:"Gobierno del PP en minoría.",
+   seats:[["Ceuta Ya!",2,"#D9822B","OTR"],["MDyC",3,"#2E8B57","OTR"],["PSOE",6,"PSOE","PSOE"],["PP",9,"PP","PP"],["Vox",5,"VOX","VOX"]],
+   src:"https://www.idpbarcelona.net/docs/public/iccaa/2023/ceutaymelilla_2023.pdf"},
+  {n:"Melilla", ch:"Asamblea de Melilla", city:true, el:"2023-05-28", pres:"Juan José Imbroda", gov:"PP", gt:"abs", how:"Mayoría absoluta del PP.",
+   seats:[["CpM",5,"#2E8B57","OTR"],["PSOE",3,"PSOE","PSOE"],["Somos Melilla",1,"#E6A33E","OTR"],["PP",14,"PP","PP"],["Vox",2,"VOX","VOX"]],
+   src:"https://theobjective.com/espana/tribunales/2023-07-04/justicia-rechaza-repetir-elecciones-melilla/"}
+];
+
 const SOURCES = [
+  ["Encuesta de Winston para Artículo14 (Enpapel)","https://enpapel.es/elecciones-29n/encuesta-winston-pp-psoe-distancia-29n/"],
+  ["Michavila (GAD3): «cambio abrupto de voto» (The Objective)","https://theobjective.com/espana/politica/2026-10-31/gad3-cambio-intencion-voto-accidente-ferroviario-urda/"],
+  ["Gobiernos autonómicos en 2026 (Política Electoral)","https://www.politicaelectoral.com/es/espana/gobiernos-autonomicos"],
   ["Sánchez rechazó la dimisión de Puente (Infobae/EFE)","https://www.infobae.com/america/agencias/2026/10/30/puente-puso-su-cargo-a-disposicion-de-sanchez-pero-este-rechazo-su-dimision-al-considerarla-injusta/"],
   ["Candidaturas presentadas (BOE núm. 267, 28 oct. 2026)","https://www.boe.es/boe/dias/2026/10/28/pdfs/BOE-A-2026-22607.pdf"],
   ["Precampaña suspendida por el accidente de Urda (Demócrata)","https://democrata.es/elecciones-generales-espana/tragedia-urda-campana-29n-cronica-sanchez-feijoo-abascal"],

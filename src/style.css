@@ -438,3 +438,14 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
 #pap-side .bar{grid-template-columns:minmax(0,150px) minmax(0,1fr) 54px}
 .cc-list li.in .muted{color:inherit; opacity:.8}
 .cc-list li.in{color:var(--ink)}
+
+/* Parlamentos autonómicos */
+.parls{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:14px}
+.parl{display:flex; flex-direction:column; gap:8px; padding:16px; min-width:0; scroll-margin-top:90px}
+.parl[data-sel]{border-color:var(--ink); box-shadow:0 0 0 1px var(--ink)}
+.parl-h{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+.parl-h h4{margin:0; font-size:17px}
+.parl p{margin:0}
+.parl .parl-hemi{max-width:340px; margin:0 auto}
+.parl .schips{font-size:12.5px; gap:4px 10px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}

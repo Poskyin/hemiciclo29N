@@ -73,9 +73,9 @@ const BLOCS = [
 ];
 
 /* ---------- Vistas ---------- */
-const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Partidos minoritarios"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["candidatos","Candidatos"],["papeleta","Tu papeleta del Senado"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
+const VIEWS = [["resumen","Resumen"],["partidos","Partidos y programas"],["comparar","Comparar"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Partidos minoritarios"],["escanos","Congreso"],["senado","Senado"],["mapa","Mapa"],["candidatos","Candidatos"],["papeleta","Tu papeleta del Senado"],["autonomias","Comunidades"],["pregunta","Pregúntale a Claude"],["calendario","Calendario y voto"]];
 const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE; // versión web independiente: sin consulta a Claude
-const TABS = ["resumen","partidos","escanos","senado","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
+const TABS = ["resumen","partidos","escanos","senado","autonomias","pregunta","calendario"].filter(t => !(SITE && t === "pregunta"));
 const SUBNAV = {partidos:[["partidos","Partidos y programas"],["candidatos","Candidatos"],["comparar","Comparar"]], escanos:[["escanos","Escaños y pactos"],["encuestas","Encuestas"],["grupos","Voto por grupos"],["minoritarios","Minoritarios"],["mapa","Mapa","congreso"]], senado:[["senado","Senado"],["papeleta","Tu papeleta"],["mapa","Mapa","senado"]]};
 const parentOf = id => (id==="comparar"||id==="candidatos") ? "partidos" : id==="papeleta" ? "senado" : (id==="encuestas"||id==="grupos"||id==="minoritarios") ? "escanos" : id==="mapa" ? (mapMode==="senado" ? "senado" : "escanos") : id;
 function subnav(id){ const items = SUBNAV[parentOf(id)]; if (!items) return "";
@@ -910,6 +910,7 @@ function renderSenado(){
         <li>Cada provincia peninsular elige <b>4 senadores</b> y se pueden marcar hasta 3. Así, la lista más votada suele llevarse 3 y la segunda, 1.</li>
         <li>Mallorca, Gran Canaria y Tenerife eligen 3 (se marcan 2). Menorca, Ibiza, Formentera, Lanzarote, Fuerteventura, La Palma, La Gomera y El Hierro eligen 1. Ceuta y Melilla, 2 (se marca 1).</li>
         <li><b>Novedad de 2026:</b> Formentera elige su propio senador, separado de Ibiza (reforma del artículo 69 de la Constitución). Por eso son 209 electos y no 208.</li>
+        <li>Los ${DESIGNATED.total} senadores autonómicos dependen de la composición de cada parlamento: <button class="linkbtn" data-go="autonomias">ver los parlamentos autonómicos</button>.</li>
         <li>El PP tiene ahora mayoría absoluta: ${SENATE_FACTS.now.PP} de ${SENATE_FACTS.total23} escaños al disolverse las Cortes.</li>
       </ul>
       <p><button class="btn" data-go="papeleta">Prueba tu papeleta con los candidatos reales</button></p>
@@ -929,6 +930,95 @@ function renderSenado(){
   <p class="note">Cómo calculamos: tomamos el voto estimado de cada provincia en el modelo del Congreso, lo agrupamos en las listas al Senado de 2026 (Senado de Progreso, ERC-EH Bildu, UPN-PP, pactos de Baleares…) y aplicamos el patrón habitual: en las circunscripciones de 4, la lista más votada gana 3 y la segunda 1 (2 y 2 si las separa menos de 1 punto). Acuerdo PP–Vox: donde Vox no se presenta (Cádiz, Valencia, Castellón, Baleares y Canarias) sumamos su voto al del PP; donde presenta un solo candidato (14 provincias) suponemos que sus votantes marcan a ese candidato y a dos del PP, y contamos los votos candidato a candidato; donde el PP no se presenta (Gipuzkoa, Girona y Tarragona) quitamos su lista sin trasladar su voto. En la C. Valenciana, Podemos no presenta lista al Senado. Las islas usan el voto de su provincia; en La Gomera y El Hierro mantenemos a ASG y AHI, que ganaron en 2023 y no están en las encuestas. Con los votos y las listas de 2023, el método acierta 201 de los 208 escaños. En el Senado se vota a personas, así que el resultado real puede desviarse, sobre todo en las circunscripciones reñidas.</p>`;
   $("#sen-map").addEventListener("click", ()=>{ mapMode = "senado"; show("mapa", true); });
   $("#sen-ally").addEventListener("click", ()=>{ mapMode = "alianzas"; show("mapa", true); });
+}
+
+/* ---------- PARLAMENTOS AUTONÓMICOS ---------- */
+const pcol = c => (P[c] && P[c].color) || c;
+const parlTotal = p => p.seats.reduce((a,x)=>a+x[1],0);
+const parlMaj = p => Math.floor(parlTotal(p)/2) + 1;
+const fullDate = iso => { const [y] = iso.split("-"); return dateLabel(iso) + " " + y; };
+const GOV_T = {abs:{l:"Mayoría absoluta", t:1}, coal:{l:"Coalición", t:0.68}, min:{l:"En minoría", t:0.38}};
+let autFilter = "all", autSel = null;
+function parlHemi(p){
+  const T = parlTotal(p), M = parlMaj(p);
+  const rows = T <= 35 ? 3 : T <= 60 ? 4 : T <= 85 ? 5 : T <= 110 ? 6 : 7;
+  const W = 360, H = 192, cx = W/2, cy = H - 8, R = 172, r0 = rows <= 3 ? 104 : rows <= 5 ? 96 : 88;
+  const radii = Array.from({length:rows}, (_,i)=> r0 + (R - r0) * i/(rows-1));
+  const sumR = radii.reduce((a,b)=>a+b,0);
+  const counts = radii.map(r => Math.round(T * r / sumR)); counts[rows-1] += T - counts.reduce((a,b)=>a+b,0);
+  const pts = [];
+  radii.forEach((r,i) => { const k = counts[i]; for (let j=0;j<k;j++){ const a = Math.PI - (k===1 ? Math.PI/2 : j*Math.PI/(k-1)); pts.push({a, x:cx + r*Math.cos(a), y:cy - r*Math.sin(a)}); } });
+  pts.sort((u,v)=> v.a - u.a);
+  const seq = []; p.seats.forEach(s => { for (let i=0;i<s[1];i++) seq.push(s); });
+  const arc = Math.min(...radii.map((r,i)=> counts[i] > 1 ? Math.PI*r/(counts[i]-1) : 99));
+  const dotR = Math.min((R - r0)/(rows-1), arc) * 0.44;
+  let s = `<svg class="hemi parl-hemi" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(p.ch)}: ${p.seats.map(x=>x[0]+" "+x[1]).join(", ")}">`;
+  pts.forEach((q,i) => { const x = seq[i]; s += `<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${dotR.toFixed(1)}" fill="${pcol(x[2])}"><title>${esc(x[0])}: ${x[1]}</title></circle>`; });
+  s += `<text x="${cx}" y="${cy-30}" text-anchor="middle" font-weight="800" font-size="34" style="fill:var(--ink);font-family:var(--display)">${T}</text>`;
+  s += `<text x="${cx}" y="${cy-12}" text-anchor="middle" font-size="11" style="fill:var(--muted);font-family:var(--body)">escaños · mayoría ${M}</text>`;
+  const ty = cy - R - dotR; s += `<line x1="${cx}" y1="${(ty-9).toFixed(1)}" x2="${cx}" y2="${(ty-1).toFixed(1)}" stroke-width="2" style="stroke:var(--ink)"/>`;
+  return s + "</svg>";
+}
+function parlCard(p, i){
+  const T = parlTotal(p), M = parlMaj(p), g = GOV_T[p.gt];
+  const fam = f => p.seats.filter(x=>x[3]===f).reduce((a,x)=>a+x[1],0);
+  const ppv = fam("PP") + fam("VOX");
+  const chips = p.seats.slice().sort((a,b)=>b[1]-a[1]).map(x=>`<span class="schip"><i class="dot" style="background:${pcol(x[2])}"></i>${esc(x[0])} <b>${x[1]}</b></span>`).join("");
+  const big = p.seats.reduce((a,x)=> x[1] > a[1] ? x : a);
+  const line = big[1] >= M ? (p.gt === "abs" ? `${big[1]} de ${T} escaños.` : `${esc(big[0])} tiene mayoría absoluta (${big[1]} de ${T}).`) : `Nadie tiene mayoría absoluta. PP y Vox suman ${ppv} de ${T}${ppv >= M ? " (más de la mitad)" : ""}.`;
+  return `<article class="panel parl" id="parl-${i}" data-gov="${p.gov}"${autSel===p.n?' data-sel="1"':""}>
+    <div class="parl-h"><h4>${esc(p.n)}</h4><span class="flag ${p.el >= "2025-12-01" ? "t2026" : "t2023"}" title="Fecha de las últimas elecciones">${fullDate(p.el)}</span></div>
+    <span class="small muted">${esc(p.ch)}</span>
+    ${parlHemi(p)}
+    <div class="schips">${chips}</div>
+    <p class="small"><b>Presidencia:</b> ${esc(p.pres)} <span class="muted">(${esc(sname(p.gov) === "PSOE" && p.n === "Cataluña" ? "PSC" : sname(p.gov))} · ${g.l.toLowerCase()})</span></p>
+    <p class="small muted">${esc(p.how)} ${line}</p>
+    <a class="small" href="${esc(p.src)}" target="_blank" rel="noopener">Fuente</a>
+  </article>`;
+}
+function renderAutonomias(){
+  const v = $("#v-autonomias"); if (!v) return;
+  const sum = {PP:0, PSOE:0, VOX:0, OTR:0}; let T = 0;
+  PARLIAMENTS.forEach(p => p.seats.forEach(x => { sum[x[3]] += x[1]; T += x[1]; }));
+  const govs = {}; PARLIAMENTS.forEach(p => govs[p.gov] = (govs[p.gov]||0) + 1);
+  const withVox = PARLIAMENTS.filter(p => /PP–Vox/.test(p.how)).map(p=>p.n);
+  const fams = [["PP","PP",color("PP")],["PSOE","PSOE (con PSC, PSE…)",color("PSOE")],["VOX","Vox",color("VOX")],["OTR","Otros partidos","var(--muted)"]];
+  const byP = {}; PARLIAMENTS.forEach(p => byP[p.n] = p);
+  const fillOf = n => { const p = byP[n]; return p ? mixC(color(p.gov), GOV_T[p.gt].t) : "var(--soft)"; };
+  const list = PARLIAMENTS.map((p,i)=>[p,i]).filter(([p]) => autFilter==="all" || (autFilter==="other" ? !["PP","PSOE"].includes(p.gov) : autFilter==="vox" ? withVox.includes(p.n) : p.gov===autFilter));
+  const govKs = Object.keys(govs).sort((a,b)=>govs[b]-govs[a]);
+  v.innerHTML = `
+  <div class="view-head"><span class="eyebrow">Comunidades</span><h2>Los parlamentos autonómicos</h2>
+  <p class="lead">Cómo quedaron los 17 parlamentos autonómicos y las asambleas de Ceuta y Melilla en sus últimas elecciones, y quién gobierna. No se votan el 29-N: Andalucía, Aragón, Castilla y León y Extremadura votaron entre diciembre de 2025 y mayo de 2026; la mayoría de las demás, en mayo de 2027. Cada parlamento designa además senadores autonómicos.</p></div>
+  <section class="grid2">
+    <div class="panel stack minw0">
+      <span class="eyebrow">Quién gobierna</span>
+      <div class="map-wrap" id="aut-map">${spainSVG(fillOf, "ccaa", autSel)}</div>
+      <div class="hemi-legend">${govKs.map(k=>`<span><i class="sq" style="background:${color(k)}"></i>${esc(sname(k))} ${govs[k]}</span>`).join("")}</div>
+      <div class="hemi-legend small muted">${Object.values(GOV_T).map(g=>`<span><i class="sq" style="background:${mixC("#808080", g.t)}"></i>${g.l}</span>`).join("")}</div>
+      <p class="small muted">Color: partido de la presidencia. Más intenso si gobierna con mayoría absoluta, medio si es una coalición y claro si gobierna en minoría. Pulsa una comunidad para ver su parlamento.</p>
+    </div>
+    <div class="panel stack">
+      <span class="eyebrow">Todos los escaños autonómicos</span>
+      <div class="sen-big"><span class="n num">${T.toLocaleString("es-ES")}</span><span>escaños en ${PARLIAMENTS.length} cámaras</span></div>
+      <div class="pact-bar">${fams.map(([k,l,c])=>`<i style="width:${(sum[k]/T*100).toFixed(2)}%;background:${c}" title="${esc(l)} ${sum[k]}"></i>`).join("")}</div>
+      <div class="schips">${fams.map(([k,l,c])=>`<span class="schip"><i class="dot" style="background:${c}"></i>${esc(l)} <b>${sum[k]}</b> <span class="muted">(${fmt(sum[k]/T*100,1)}%)</span></span>`).join("")}</div>
+      <ul class="plain small">
+        <li>El PP preside ${govs.PP||0} de las 19; el PSOE, ${govs.PSOE||0} (Asturias, Castilla-La Mancha, Cataluña y Navarra); CC preside Canarias y el PNV, el País Vasco.</li>
+        <li>Vox está en el Gobierno de ${withVox.length}: ${withVox.join(", ")}. Salió de todos sus gobiernos autonómicos en julio de 2024 y volvió tras las elecciones de 2025 y 2026.</li>
+        <li>Hay mayoría absoluta de un solo partido en ${PARLIAMENTS.filter(p=>p.gt==="abs").length}: ${PARLIAMENTS.filter(p=>p.gt==="abs").map(p=>p.n).join(", ")}.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="stack">
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px"><h3 style="margin:0">Parlamento a parlamento</h3>
+    <div class="chips" role="group" aria-label="Filtrar">${[["all","Todos"],["PP","Gobierna el PP"],["PSOE","Gobierna el PSOE"],["other","Otros"],["vox","Con Vox en el Gobierno"]].map(([k,l])=>`<button class="chip" data-af="${k}" aria-pressed="${autFilter===k}">${l}</button>`).join("")}</div></div>
+    <div class="parls">${list.map(([p,i])=>parlCard(p,i)).join("")}</div>
+    <p class="note">Escaños según el resultado de las últimas elecciones de cada comunidad, con el voto exterior. No recogen cambios de grupo o diputados que han pasado a no adscritos durante la legislatura. El orden de los hemiciclos va de izquierda a derecha de forma aproximada.</p>
+  </section>`;
+  $$("[data-af]", v).forEach(b => b.addEventListener("click", ()=>{ autFilter = b.dataset.af; renderAutonomias(); }));
+  $$("#aut-map .rg", v).forEach(r => { const go = ()=>{ const n = r.dataset.k; autSel = n; autFilter = "all"; renderAutonomias(); const i = PARLIAMENTS.findIndex(p=>p.n===n); const c = $("#parl-"+i); if (c) { try{ c.scrollIntoView({behavior:"smooth", block:"center"}); }catch(e){ c.scrollIntoView(); } } };
+    r.addEventListener("click", go); r.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); go(); } }); });
 }
 
 /* ---------- MAPA ---------- */
@@ -1126,6 +1216,7 @@ function dossier(){
   try { const SP = senateProjection(simulate(A.avg)).totals; L.push("PROYECCIÓN ORIENTATIVA DEL SENADO DE ESTA WEB (209 electos, con la media de encuestas y las listas al Senado de 2026): " + ALL_ORDER.filter(k=>SP[k]).map(k=>`${sname(k)} ${SP[k]}`).join(", ") + `. Con los designados: PP ${(SP.PP||0)+DESIGNATED.by.PP} de 267.`); } catch(e){}
   const MAINK = ["PP","PSOE","VOX","FA","POD","SALF","ERC","JUNTS","BILDU","PNV","BNG","CC","UPN","AA","CFV","UPC","D21","SDP"];
   L.push("\nCANDIDATURAS PRESENTADAS (BOE núm. 267, 28 oct. 2026; proclamación el 2 nov.). Por provincia, cabezas de lista al Congreso de los partidos principales y candidatos al Senado (la sección «Candidatos» de la web tiene todas las listas, incluidos partidos pequeños):\n" + PROV_NAMES.map(p => { const C = CANDS[p]; return `- ${p}: Congreso: ` + C.c.filter(l=>MAINK.includes(l[1]) && l[2].length).map(l=>`${listLabel(l[0])} — ${l[2][0]}`).join("; ") + ". Senado: " + Object.entries(C.s).map(([circ, ls]) => (circ !== p ? circ + ": " : "") + ls.filter(l=>MAINK.includes(l[1]) && l[2].length).map(l=>`${listLabel(l[0])} (${l[2].join(", ")})`).join("; ")).join(" | "); }).join("\n"));
+  L.push("\nPARLAMENTOS AUTONÓMICOS (últimas elecciones; no se votan el 29-N):\n" + PARLIAMENTS.map(p=>`- ${p.n} (${p.ch}, elecciones ${p.el}): ${p.seats.slice().sort((a,b)=>b[1]-a[1]).map(x=>x[0]+" "+x[1]).join(", ")}. Presidencia: ${p.pres} (${p.gov}). ${p.how}`).join("\n"));
   L.push("\nPACTOS AL SENADO 2026:\n" + SEN_PACTS.map(p=>`- ${p.name} (${p.parties}). Dónde: ${p.scope}. ${p.how}`).join("\n"));
   L.push("\nIZQUIERDA POR COMUNIDAD (Congreso | Senado):\n" + Object.entries(LEFT_BY_CCAA).map(([c,x])=>`- ${c}: ${x.congreso.map(y=>y[0]+(y[1]?" ("+y[1]+")":"")).join("; ")} | ${x.senado.map(y=>y[0]+(y[1]?" ("+y[1]+")":"")).join("; ")}`).join("\n"));
   if (lastSim && simT && simT.__key !== "avg") L.push(`ESCENARIO QUE EL USUARIO TIENE AHORA EN EL SIMULADOR (${simLabel}): ` + SEAT_ORDER.filter(k=>lastSim.totals[k]).map(k=>`${sname(k)} ${lastSim.totals[k]} (${(simT[k]||0).toFixed(1)}%)`).join(", "));
@@ -1234,7 +1325,7 @@ function renderCalendario(){
 function goLinks(){ document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) { if (g.dataset.mapmode) mapMode = g.dataset.mapmode; show(g.dataset.go, true); } }); }
 function boot(){
   renderTabs(); renderCount(); goLinks();
-  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderGrupos(); renderMinoritarios(); renderEscanos(); if (!SITE) renderPregunta(); renderCalendario();
+  renderResumen(); renderPartidos(); renderComparar(); renderEncuestas(); renderGrupos(); renderMinoritarios(); renderEscanos(); renderAutonomias(); if (!SITE) renderPregunta(); renderCalendario();
   const h = (location.hash||"").replace("#","");
   show(h || "resumen", false);
   window.addEventListener("hashchange", ()=> show((location.hash||"").replace("#",""), false));
