@@ -492,7 +492,7 @@ footer{max-width:1180px; margin:0 auto; padding-inline:16px; padding-block:24px 
   <section class="view" id="v-calendario" role="tabpanel" aria-labelledby="tab-calendario" hidden></section>
 </main>
 <footer>
-  <span><b>Two-Hemiciclo 29N</b> · Web informativa independiente sobre las elecciones generales del 29 de noviembre de 2026. Datos actualizados el 31 de octubre de 2026.</span>
+  <span><b>Two-Hemiciclo 29N</b> · Web informativa independiente sobre las elecciones generales del 29 de noviembre de 2026. Datos actualizados el 3 de noviembre de 2026.</span>
   <span>Las proyecciones de escaños son un cálculo propio a partir de encuestas publicadas; no son una encuesta ni una predicción.</span>
 </footer>
 <script>
@@ -763,8 +763,8 @@ function dhondt(share, seats, barrier){
 }
 
 
-/* ===== Datos de la plataforma (actualizados el 31 de octubre de 2026) ===== */
-const UPDATED = "31 de octubre de 2026";
+/* ===== Datos de la plataforma (actualizados el 3 de noviembre de 2026) ===== */
+const UPDATED = "3 de noviembre de 2026";
 const ELECTION_DATE = "2026-11-29T09:00:00+01:00";
 
 /* Orden de izquierda a derecha para el hemiciclo */
@@ -1419,6 +1419,13 @@ const GROUPS = {
 /* ---------- Encuestas recientes ----------
    d: fecha (fin de campo o publicación según el agregador). seats: escaños publicados por la propia encuestadora. */
 const POLLS = [
+  {firm:"Target Point", media:"El Debate", d:"2026-11-02", field:"28–30 oct. · 1.024 · en línea", PP:31.8,PSOE:25.5,VOX:19.9,FA:6.6,POD:2.4,SALF:2.6, seats:"PP (con UPN) 131–135 · PSOE 99–103 · Vox 68–72 · FA (con Compromís y UPC) 9–11 · Podemos 1"},
+  {firm:"Hamalgama Métrica", media:"Vozpópuli", d:"2026-11-02", field:"22–28 oct. · 1.000", PP:32.4,PSOE:26.4,VOX:19.9,FA:5.4,POD:2.2,SALF:1.8, ERC:1.9,JUNTS:1.7,BILDU:1.3,PNV:0.9,BNG:0.8,CC:0,UPN:0.2,AA:1.1, seats:"PP+UPN 137 · PSOE 106 · Vox 70 · FA 7 · ERC 7 · Junts 7 · Bildu 7 · PNV 4 · AA 2 · BNG 2 · Podemos 1"},
+  {firm:"NC Report", media:"La Razón", d:"2026-11-02", field:"26–29 oct. · 1.000", PP:33.0,PSOE:25.6,VOX:19.3,FA:6.9,POD:2.4,SALF:null, ERC:2.0,JUNTS:1.8,BILDU:1.4,PNV:0.9,BNG:0.8,CC:0.4,AA:1.2, seats:"PP 140–142 · PSOE 100–102 · Vox 66–68 · FA 9–10 · Junts 8–9 · ERC 7–8 · Bildu 6–7 · PNV 4–5 · AA 2–3 · BNG 2 · CC 1 · Podemos 0–1"},
+  {firm:"Sigma Dos", media:"El Mundo", d:"2026-11-01", field:"29–30 oct. · 2.505", PP:31.1,PSOE:24.6,VOX:19.3,FA:7.1,POD:1.9,SALF:null, CFV:0.9, ERC:3.0,JUNTS:1.1,BILDU:1.3,PNV:0.9,BNG:1.0,CC:0.4,UPN:0.2,AA:1.4, seats:"PP 133–139 · PSOE 97–103 · Vox 63–69 · FA 9–11 · ERC 9–11 · Bildu 7–8 · Junts 6 · PNV 5–6 · AA 3–4 · Compromís 2–3 · BNG 2 · Podemos 0–1 · CC 0–1 · UPC 0–1"},
+  {firm:"SocioMétrica", media:"El Español", d:"2026-11-01", field:"Acumulado 1 sep.–1 nov. · 4.893", PP:32.7,PSOE:26.6,VOX:19.1,FA:4.9,POD:1.7,SALF:2.5, CFV:0.9, ERC:2.5,JUNTS:1.4,BILDU:1.4,PNV:0.8,BNG:0.9,CC:0.5,AA:1.4, seats:"PP+UPN 139 · PSOE 106 · Vox 64 · FA 7 (10 con Compromís y UPC) · ERC 9 · Bildu 7 · Junts 6 · PNV 4 · AA 2 · BNG 2 · CC 1"},
+  {firm:"EM-Analytics", media:"Electomanía (ElectoPanel)", d:"2026-11-01", field:"28–30 oct. · 1.527", PP:31.5,PSOE:25.8,VOX:19.2,FA:6.2,POD:1.7,SALF:1.6, seats:"PP 133 · PSOE 108 · Vox 64 · FA 12 · Podemos 1"},
+  {firm:"Sondaxe", media:"La Voz de Galicia", d:"2026-11-01", field:"26–28 oct. · 1.200", PP:29.2,PSOE:26.9,VOX:19.2,FA:7.2,POD:2.0,SALF:2.4, ERC:2.6,JUNTS:1.3,BILDU:1.4,PNV:0.9,BNG:0.9,CC:0.3,UPN:0,AA:2.0},
   {firm:"Winston", media:"Artículo14", d:"2026-10-26", field:"21–23 oct. · 1.200 · en línea", PP:29.4,PSOE:27.1,VOX:19.2,FA:5.6,POD:null,SALF:null, seats:"PP 121 · PSOE 115 · Vox 69 · FA 9 · Podemos 2"},
   {firm:"Sigma Dos", media:"El Mundo", d:"2026-10-26", field:"8–22 oct. · 3.122", PP:30.6,PSOE:26.1,VOX:19.9,FA:7.4,POD:2.8,SALF:null, CFV:0.8, ERC:2.5,JUNTS:1.2,BILDU:1.2,PNV:0.9,BNG:0.9,CC:0.4,UPN:0.2,AA:1.0, seats:"PP+UPN 125–131 · PSOE 103–109 · Vox 66–69 · FA 10–12 · ERC 8–9 · Bildu 7–8 · Junts 6–7 · PNV 4–5 · Compromís 2–3 · AA 2–3 · BNG 2 · Podemos 1 · CC 0–1"},
   {firm:"NC Report", media:"La Razón", d:"2026-10-26", field:"22–24 oct.", PP:32.9,PSOE:25.8,VOX:19.0,FA:6.6,POD:2.6,SALF:null, ERC:2.0,JUNTS:1.8,BILDU:1.4,PNV:0.9,AA:1.3, seats:"PP 141–143 · PSOE 100–102 · Vox 64–66 · FA 8–9 · Junts 8–9 · ERC 7–8 · Bildu 6–7 · PNV 4–5 · AA 3 · BNG 1–2 · Podemos 1 · CC 1 · UPN 1"},
@@ -1463,7 +1470,7 @@ const POLLS = [
 ];
 const MINOR_DEFAULTS = {ERC:2.07,JUNTS:1.33,BILDU:1.38,PNV:1.02,BNG:0.87,CC:0.43,UPN:0.2,AA:1.0};
 
-/* Serie 2026 para la evolución (sin CIS). [mes(1-10), PP, PSOE, Vox, Sumar, Podemos, SALF] */
+/* Serie 2026 para la evolución (sin CIS). [mes(1-11), PP, PSOE, Vox, Sumar, Podemos, SALF] */
 const TREND = [
  [1,32.4,26.1,17.8,8.2,4.6,null],[1,32.1,26.1,20.0,5.8,4.1,1.8],[1,34.4,27.0,16.6,5.0,5.1,0.5],[1,32.1,26.0,19.9,5.6,4.2,1.7],[1,32.2,26.5,17.9,7.2,4.2,1.5],[1,33.7,27.1,16.9,5.2,4.9,0.7],[1,32.6,26.5,19.4,5.2,4.1,1.6],[1,30.0,26.1,19.2,8.0,3.2,1.8],[1,30.0,26.5,17.8,8.3,4.3,1.7],[1,32.5,25.7,17.9,6.5,3.8,2.1],[1,32.3,26.9,19.7,5.0,4.0,1.5],[1,33.5,26.3,17.6,6.1,4.4,null],[1,31.5,27.1,17.9,5.9,3.5,2.1],[1,32.2,26.8,19.8,4.7,4.5,1.5],
  [2,31.9,26.4,18.3,8.4,4.1,null],[2,32.0,26.5,20.1,5.7,3.8,2.2],[2,30.2,27.7,18.8,5.9,3.3,2.3],[2,29.4,27.0,20.3,7.2,3.8,null],[2,31.9,26.5,20.3,5.2,3.8,2.4],[2,30.5,25.8,20.3,6.7,3.7,2.4],[2,32.1,25.0,18.4,7.2,4.2,2.5],[2,33.1,25.9,18.1,6.0,4.3,null],[2,32.0,26.7,20.1,5.7,4.0,2.0],[2,31.6,26.0,19.5,6.6,2.2,2.9],[2,31.8,27.0,19.6,6.0,3.9,1.8],[2,31.2,27.7,18.0,6.4,3.7,1.6],
@@ -1478,6 +1485,7 @@ const TREND = [
  [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null],
  [10,28.5,27.1,20.0,8.9,1.9,1.2],[10,30.9,26.7,19.0,7.0,1.7,1.7],[10,31.1,27.6,19.8,6.8,2.7,null],[10,32.1,27.0,18.6,4.6,1.9,null],[10,32.9,25.8,19.0,6.6,2.6,null],[10,30.6,26.1,19.9,8.2,2.8,null],
  [10,29.4,27.1,19.2,5.6,null,null],
+ [11,31.8,25.5,19.9,6.6,2.4,2.6],[11,32.4,26.4,19.9,5.4,2.2,1.8],[11,33.0,25.6,19.3,6.9,2.4,null],[11,31.1,24.6,19.3,8.0,1.9,null],[11,32.7,26.6,19.1,5.8,1.7,2.5],[11,31.5,25.8,19.2,6.2,1.7,1.6],[11,29.2,26.9,19.2,7.2,2.0,2.4],
 ];
 
 /* ---------- Calendario (RD 806/2026 y LOREG) ---------- */
@@ -1498,8 +1506,9 @@ const CALENDAR = [
   {d:"2026-10-28", t:"El BOE publica las 929 candidaturas presentadas. El Gobierno entrega al Supremo la lista de la «ley de nietos». Accidente ferroviario de Urda (Toledo): los partidos, salvo Vox, suspenden la precampaña", k:"hecho"},
   {d:"2026-10-29", t:"Tres días de luto oficial (29–31 de octubre)", k:"hecho"},
   {d:"2026-10-31", t:"Empieza el sorteo de los miembros de las mesas electorales (hasta el 4 de noviembre; la notificación llega como tarde el 7)", k:"votante"},
-  {d:"2026-11-02", t:"Las juntas electorales proclaman las candidaturas. PP, PSOE y el resto retoman la precampaña tras el luto", k:"plazo"},
-  {d:"2026-11-03", t:"El BOE publica las candidaturas proclamadas", k:"plazo"},
+  {d:"2026-11-02", t:"Las juntas electorales proclaman las candidaturas. Los partidos retoman la precampaña tras el luto", k:"hecho"},
+  {d:"2026-11-03", t:"El BOE publica las candidaturas proclamadas", k:"hecho"},
+  {d:"2026-11-04", t:"Recursos contra la proclamación de candidaturas (4–5 nov.); amparo ante el Constitucional hasta el 9", k:"plazo"},
   {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
   {d:"2026-11-13", t:"Empieza la campaña electoral (00:00 h)", k:"plazo"},
   {d:"2026-11-16", t:"Cara a cara Sánchez–Feijóo en Mediaset", k:"debate"},
@@ -1516,16 +1525,16 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
+  ["3 nov.","El BOE publica las candidaturas proclamadas. Los partidos pueden recurrir el 4 y el 5 de noviembre."],
+  ["2 nov.","Las juntas electorales proclaman las candidaturas. Acaba el luto y los partidos retoman la precampaña."],
+  ["2 nov.","Sánchez anuncia un decreto de ayudas para las víctimas de Urda (anticipos de indemnizaciones, incapacidad temporal y oficinas de atención) para el Consejo de Ministros del 3 de noviembre. Feijóo pide por primera vez la dimisión de Óscar Puente y resume su programa como «reconstrucción nacional»."],
+  ["1–2 nov.","Primeras encuestas tras Urda: el PSOE baja en todas. Sigma Dos lo deja en el 24,6%, su peor dato de la legislatura (97–103 escaños). PP y Vox suman entre 196 y 210 diputados según el sondeo."],
+  ["2 nov.","SocioMétrica estima para el Senado que PP y Vox tienen un 72% de opciones de lograr tres quintos y el PP solo, un 89% de mantener la mayoría absoluta."],
+  ["1 nov.","The Objective publica un sondeo interno de Vox, hecho antes de Urda: PSOE 29,6%, PP 28,1%, Vox 20,2%. Es una encuesta de parte y no entra en la media."],
   ["31 oct.","Narciso Michavila (GAD3) dice en X que detectan «un cambio abrupto de voto» desde el accidente de Urda y que «ahora es imposible que Sánchez sea el más votado». No publica cifras ni ficha técnica."],
   ["30 oct.","Óscar Puente, ministro de Transportes y cabeza de lista del PSOE por Valladolid, puso su cargo a disposición de Sánchez por el accidente de Urda; Sánchez rechazó su dimisión. El balance sube a al menos 69 muertos."],
-  ["30 oct.","El PP retomará la precampaña el lunes 2 de noviembre, al acabar el luto oficial, con un Comité Ejecutivo Nacional en Génova."],
   ["30 oct.","Sociómetro del Gobierno Vasco: EH Bildu sería primera fuerza en el País Vasco con 7 escaños; el PNV perdería uno en Gipuzkoa, el PSE mantendría 5 y el PP, 2."],
   ["30 oct.","El Supremo da tres días a las partes para opinar sobre si suspende también el voto de los hijos de los nacionalizados por la «ley de nietos»."],
-  ["29 oct.","Tres días de luto oficial (29–31 oct.) por el choque de un AVE de Renfe y un tren de Iryo cerca de Urda (Toledo) el día 28: al menos 68 muertos y más de un centenar de heridos. PP, PSOE, Frente Amplio y Podemos suspenden la precampaña; Vox mantiene sus actos."],
-  ["28 oct.","El BOE publica las candidaturas: 929 listas, 556 al Congreso y 373 al Senado, casi un 15% menos que en 2023. Ya puedes consultar todos los candidatos de tu provincia en «Candidatos»."],
-  ["28 oct.","Según el BOE, Vox presenta un solo candidato al Senado en 14 provincias, entre ellas Bizkaia (no Navarra, como se dijo al anunciar el pacto). En sus listas al Senado, el PP lleva a un independiente en Cádiz, Valencia, Castellón y Gran Canaria."],
-  ["28 oct.","El Frente Amplio no se presenta al Congreso en Teruel, Ceuta ni Melilla; Podemos, en Cataluña, la C. Valenciana, Baleares ni Melilla; SALF, en 6 provincias."],
-  ["28 oct.","«Ley de nietos»: el Gobierno entrega al Supremo la lista de 163.355 nacionalizados. Solo 901 han acreditado descender de exiliados y podrán votar el 29-N."],
 ];
 
 
@@ -1540,7 +1549,8 @@ const CONTEXT = [
   ["16–17 oct. 2026","Cierre de coaliciones sin unidad entre Frente Amplio y Podemos. Colau, candidata del Frente Amplio; Montero, de Podemos."],
   ["19–22 oct. 2026","Feijóo presenta su «Contrato con España» y cierra su lista por Madrid. PP y Vox negocian cómo no dividir el voto de la derecha en el Senado."],
   ["26 oct. 2026","Cierre de candidaturas. PP y Vox anuncian un acuerdo para el Senado: Vox se retira en seis provincias y el PP en tres."],
-  ["28 oct. 2026","El BOE publica 929 candidaturas. Accidente ferroviario de Urda (Toledo), con al menos 68 muertos: tres días de luto oficial y precampaña suspendida salvo por Vox."]
+  ["28 oct. 2026","El BOE publica 929 candidaturas. Accidente ferroviario de Urda (Toledo), con al menos 68 muertos: tres días de luto oficial y precampaña suspendida salvo por Vox."],
+  ["1–2 nov. 2026","Primeras encuestas tras Urda: el PSOE cae en todas y PP y Vox amplían su ventaja. Proclamación de candidaturas y fin del luto."]
 ];
 
 /* ---------- Parlamentos autonómicos (resultado de las últimas elecciones de cada comunidad) ----------
@@ -1607,6 +1617,17 @@ const PARLIAMENTS = [
 ];
 
 const SOURCES = [
+  ["Encuestas del 1 y 2 de noviembre (Electográfica: Sigma Dos)","https://www.electografica.com/2026/11/encuesta-sigmados-261101.html"],
+  ["SocioMétrica, 1 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-sociometrica-261101.html"],
+  ["Target Point, 2 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-target-point-261102.html"],
+  ["Hamalgama Métrica, 2 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-hamalgama-metrica-261102.html"],
+  ["NC Report, 2 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-nc-report-261102.html"],
+  ["Sondaxe, 1 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-sondaxe-261101.html"],
+  ["ElectoPanel, 1 nov. (Electomanía)","https://electomania.es/electopanel-1-nov-el-psoe-baja-y-vuelve-a-minimos/"],
+  ["Proclamación de candidaturas (Público/EFE)","https://www.publico.es/politica/juntas-electorales-proclaman-lunes-candidaturas-elecciones-29n.html"],
+  ["Sánchez y Feijóo tras el luto (El Plural)","https://www.elplural.com/politica/espana/sanchez-feijoo-rearman-estrategias-luto-urda_802998102"],
+  ["Senado: opciones de tres quintos (El Español)","https://www.elespanol.com/espana/politica/20261102/tragedia-urda-pp-vox-hoy-opciones-lograr-mayoria-quintos-senado/1003744443526_0.html"],
+  ["Sondeo interno de Vox (The Objective)","https://theobjective.com/espana/2026-11-01/sondeo-vox-71-escanos/"],
   ["Encuesta de Winston para Artículo14 (Enpapel)","https://enpapel.es/elecciones-29n/encuesta-winston-pp-psoe-distancia-29n/"],
   ["Michavila (GAD3): «cambio abrupto de voto» (The Objective)","https://theobjective.com/espana/politica/2026-10-31/gad3-cambio-intencion-voto-accidente-ferroviario-urda/"],
   ["Gobiernos autonómicos en 2026 (Política Electoral)","https://www.politicaelectoral.com/es/espana/gobiernos-autonomicos"],
