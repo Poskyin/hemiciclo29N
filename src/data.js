@@ -1,5 +1,5 @@
-/* ===== Datos de la plataforma (actualizados el 3 de noviembre de 2026) ===== */
-const UPDATED = "3 de noviembre de 2026";
+/* ===== Datos de la plataforma (actualizados el 10 de noviembre de 2026) ===== */
+const UPDATED = "10 de noviembre de 2026";
 const ELECTION_DATE = "2026-11-29T09:00:00+01:00";
 
 /* Orden de izquierda a derecha para el hemiciclo */
@@ -36,11 +36,20 @@ const ALL_ORDER = ["POD","AA","UPC","CFV","FA","BILDU","BNG","ERC","PSOE","ASG",
 
 /* ---------- Programas y documentos programáticos ----------
    Cada partido tiene varios documentos (docs). kind: "2026" precampaña (2025-2026), "doc" documento de partido reciente, "2023" programa electoral 23-J, "otro" otros documentos.
-   Ningún partido había publicado su programa para el 29-N a 9 de octubre de 2026. */
+   A 10 de noviembre de 2026, de los grandes partidos solo el PP ha publicado su programa para el 29-N. */
 const PROGRAMS = {
   PP: {
-    pitch:"Vivienda con rebajas fiscales para jóvenes, ley antiokupación, inmigración por puntos, bajada de impuestos y regeneración institucional. Feijóo ha firmado un «Contrato con España» de quince compromisos; el programa completo, que redacta Alma Ezcurra, aún no se ha publicado.",
+    pitch:"Programa «La reconstrucción nacional» (10 nov.): 249 medidas en cuatro bloques (administración y seguridad, regeneración democrática, modelo territorial y políticas económicas y sociales). Un millón de viviendas, rebajas fiscales para jóvenes y autónomos, autoridad única de inmigración, recuperar la sedición y derogar la amnistía. Antes firmó un «Contrato con España» de quince compromisos.",
     docs:[
+      {kind:"2026", label:"Programa 29-N", isNew:true, title:"La reconstrucción nacional", date:"10 nov. 2026", url:"https://www.democrata.es/uploads/s1/35/09/79/8/la-reconstruccion-nacional.pdf", more:[["Resumen del programa (Demócrata)","https://www.democrata.es/en/general-elections-spain/pp-election-manifesto-for-29n-read-here-feijoo-249-proposals/"],["Presentación de Feijóo (Infobae)","https://www.infobae.com/espana/2026/11/10/el-pp-presenta-su-programa-electoral-para-concurrir-al-29-n-el-proyecto-no-tiene-unicornios-dice-la-verdad/"]], sections:[
+        {topic:"El documento", items:["82 páginas y 249 medidas numeradas. Ocho (las 83, 109, 132, 164, 167, 173, 200 y 210) se anunciarán durante la campaña.","No incluye memoria económica: no calcula el coste de las rebajas de impuestos ni de las inversiones.","Primeros 100 días: auditoría del gasto, reforma de RTVE y EFE y suspender el calendario de cierre de las nucleares."]},
+        {topic:"Vivienda", items:["Un millón de viviendas en la legislatura; derogar la Ley de Vivienda, con las zonas tensionadas y los índices de precios.","Licencias resueltas en tres meses, con silencio positivo.","IVA del 4% (ahora 10%) en la primera vivienda para menores de 40 años y avales públicos de hasta el 20% del valor para la entrada.","«Hucha Hogar Joven»: aportaciones de hasta 2.000 € al año con deducción del 20%. Ventajas fiscales a caseros que renueven con subidas por debajo del IPC.","Desalojo de okupas en 48 horas."]},
+        {topic:"Impuestos y trabajo", items:["Deflactar el IRPF; salario mínimo exento de IRPF; IRPF rebajado para jóvenes de 18 a 35 años durante cuatro declaraciones (100%, 75%, 50% y 25%).","IVA del 0% en alimentos básicos (también carne, pescado y conservas) mientras dure la crisis de precios.","Autónomos: cuota cero el primer año, sin declarar IVA hasta 85.000 € de facturación y bonificación del 100% de la cotización del primer empleado.","Quitar el impuesto del 7% a la generación eléctrica."]},
+        {topic:"Inmigración", items:["Autoridad única de inmigración; identificar en siete días a quien entra de forma irregular.","Prohibir por ley las regularizaciones masivas; visados por puntos y cuotas ligadas a la cooperación en devoluciones.","Rechazo en frontera de quienes entran a nado en Ceuta y Melilla.","Español y Constitución para renovar la residencia; expulsión como regla para ciertos delitos graves; prohibir el burka y el niqab en espacios públicos; pérdida de la nacionalidad adquirida por delitos graves."]},
+        {topic:"Instituciones y justicia", items:["Recuperar los delitos de sedición y de convocatoria de referéndum ilegal; derogar la Ley de Amnistía y aprobar una ley de indulto que excluya corrupción y terrorismo.","Los jueces elegirían a los 12 vocales judiciales del CGPJ; cinco años de espera para jueces y fiscales que hayan tenido cargos políticos.","Fiscal general con un único mandato de cinco años.","Dos prórrogas presupuestarias seguidas obligarían a disolver las Cortes.","Auditar el CIS y reformar RTVE y EFE."]},
+        {topic:"Pensiones, sanidad y educación", items:["Pensiones con el IPC; el Estado pagaría el 50% de la dependencia.","4.500 médicos más de atención primaria y una ley nacional de cuidados paliativos.","0–3 años gratis al final de la legislatura; sustituir la LOMLOE; PAU común en toda España.","Prohibir las redes sociales a menores de 14 años."]},
+        {topic:"Energía, territorio y otros", items:["Anular el calendario de cierre de Almaraz, Ascó, Vandellós, Cofrentes y Trillo.","Plan de infraestructuras de más de 300.000 millones en 15 años; revisar más de 1.000 limitaciones temporales de velocidad en el tren; Pacto Nacional del Agua de hasta 40.000 millones.","Nueva financiación autonómica en el Consejo de Política Fiscal y Financiera, sin acuerdos bilaterales.","Revisar la ley trans y derogar la Ley de Memoria Democrática."]}
+      ]},
       {kind:"2026", label:"Últimos anuncios", title:"Vivienda y pacto del Senado", date:"24–26 oct. 2026", url:"https://www.vozpopuli.com/espana/politica/feijoo-elevara-la-vivienda-a-una-vicepresidencia-estrategica-y-nombrara-un-mando-unico-si-gobierna.html", more:[["Acuerdo PP–Vox para el Senado (El Español)","https://www.elespanol.com/espana/politica/20261026/pp-vox-llegan-acuerdo-listas-senado-abascal-retiran-provincias-feijoo/1003744434759_0.html"]], sections:[{topic:"Vivienda (26 oct.)", items:["La vivienda dependería de una vicepresidencia transversal, con un «mando único» que coordine a todos los ministerios.","Un millón de viviendas en la legislatura; la primera Conferencia de Presidentes trataría la vivienda, con la FEMP.","En los primeros 100 días: nueva ley del suelo (silencio positivo a los 90 días en algunos trámites), ley antiokupación con desalojo en 48 horas y reforma de la Ley de Propiedad Horizontal.","Menores de 40: avales públicos de hasta el 100% del precio, impuestos de la primera vivienda un 60% más bajos y una «Hucha Hogar Joven» con ventajas fiscales.","Deducciones para caseros e inquilinos que prorroguen el contrato hasta tres años con subidas por debajo del IPC, y suelo público para viviendas hasta un 30% más baratas."]},{topic:"Senado (26 oct.)", items:["Acuerdo con Vox: el PP no se presenta en Gipuzkoa, Girona y Tarragona, e incluye a un independiente propuesto por Vox en Cádiz, Valencia, Castellón, Baleares y Canarias, donde Vox no presenta lista."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Entrevista en la SER y alianzas", date:"17–23 oct. 2026", url:"https://diariodeavisos.elespanol.com/2026/10/feijoo-reforma-eutanasia-subida-salario-minimo/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Foro Asturias apoya al PP (Moncloa.com)","https://www.moncloa.com/2026/10/17/foro-asturias-apoyo-pp-29n-3450227/"],["PP y Vox negocian el Senado (EFE)","https://www.diaridetarragona.com/espana/273541/pp-negocia-vox-listas-senado-seria-error-dejar-control-sanchismo.html"]], sections:[
         {topic:"Entrevista en la SER (23 oct.)", items:["Reformar la ley de eutanasia para dar más peso a los médicos y revisar los procedimientos en trámite.","Reabrir el debate para que los padres participen en la decisión de abortar de las menores de 16 y 17 años, y ayudas a las mujeres con dificultades económicas que quieran seguir con el embarazo.","No mantendrá el Ministerio de Igualdad como ministerio propio: sus competencias pasarían a otro.","Mantener la subida de las pensiones con el IPC y reactivar el Pacto de Toledo.","Salario mínimo: no concreta subida; lo pactaría con sindicatos y empresarios.","No descarta gobernar con Vox si hace falta para completar una mayoría."]},
@@ -120,8 +129,13 @@ const PROGRAMS = {
     ]
   },
   PSOE: {
-    pitch:"Hace campaña con su paquete de vivienda (regulación del alquiler, préstamos a coste cero para la primera compra y deducción por alquiler), el balance económico y el rechazo a un Gobierno con Vox. Está redactando su programa; su último documento programático es la ponencia de su congreso de 2024.",
+    pitch:"Hace campaña con su paquete de vivienda (regulación del alquiler, préstamos a coste cero para la primera compra y deducción por alquiler), el balance económico y el rechazo a un Gobierno con Vox. No ha publicado programa ni fecha; su último documento programático es la ponencia de su congreso de 2024.",
     docs:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Dimisión de Puente, decretos y debates", date:"3–10 nov. 2026", url:"https://www.democrata.es/elecciones-generales-espana/sanchez-la-septima-medidas-sociales-29n/", more:[["Dimisión de Puente (The Objective)","https://theobjective.com/espana/politica/2026-11-03/oscar-puente-crisis-ferroviaria/"],["Puente seguirá en la papeleta (El Debate/EFE)","https://www.eldebate.com/espana/20261103/puente-figurara-como-numero-papeleta-psoe-valladolid-pese-renuncia_476934.html"],["Decreto de familias monoparentales (Deia)","https://www.deia.eus/politica/2026/11/10/consejo-ministros-aprueba-decreto-ley-11740535.html"],["Decretos de vivienda el 12 nov. (idealista)","https://www.idealista.com/news/inmobiliario/vivienda/2026/11/05/922768-la-diputacion-permantente-votara-el-12-de-noviembre-los-decretos-de-vivienda-del"]], sections:[
+        {topic:"Puente y Valladolid", items:["Óscar Puente dimite como ministro de Transportes (3 nov.) y renuncia a encabezar la lista por Valladolid. Carlos Cuerpo asume Transportes de forma transitoria hasta las elecciones.","Puente seguirá en la papeleta: la lista ya está proclamada y no se imprimen papeletas nuevas. Si sale elegido, el acta pasará a la número dos, la ministra Ana Redondo."]},
+        {topic:"Medidas de Gobierno", items:["Decreto ley (10 nov.): título oficial para las familias monoparentales, que con dos hijos tendrán los beneficios de las numerosas.","Sánchez anuncia Consejos de Ministros extraordinarios para aprobar más medidas sociales antes del 29-N (La Séptima, 9 nov.).","La Diputación Permanente vota el 12 de noviembre los decretos de vivienda: préstamos a interés cero para la entrada y prórroga de los alquileres."]},
+        {topic:"Debates", items:["Propone que la Academia de Televisión organice un cara a cara y un debate a cuatro si el PP sigue sin aceptar uno en RTVE. No ha aceptado el debate a cuatro de Atresmedia del 23."]}
+      ]},
       {kind:"2026", label:"Últimos anuncios", title:"Mitin de Granada", date:"24 oct. 2026", url:"https://espaciodiario.com/pedro-sanchez-promete-en-granada-blindar-el-aborto-en-la-constitucion-y-subir-el-salario-minimo/", more:[["Sánchez promete blindar el aborto (RTVC)","https://rtvc.es/sanchez-promete-blindar-derecho-aborto-constitucion-sigue-moncloa-24-octubre-2026/"]], sections:[{topic:"Derechos", items:["Reformar la Constitución para proteger el derecho al aborto en la próxima legislatura.","Mantener la ley de eutanasia."]},{topic:"Trabajo", items:["Subir el salario mínimo «con o sin acuerdo con la patronal»."]},{topic:"Vivienda", items:["La ministra Isabel Rodríguez anuncia que el programa llevará nueve medidas de vivienda; se publicará en las próximas semanas."]},{topic:"Listas", items:["Dimite el delegado del Gobierno en Madrid, Francisco Martín, tras quedar fuera de las listas al Congreso y al Senado."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Listas y entrevista en La Revuelta", date:"14–23 oct. 2026", url:"https://www.moncloa.com/2026/10/15/listas-psoe-madrid-robles-marlaska-3448967/", more:[["Novedades del 23 oct. (Diario de Pontevedra)","https://www.diariodepontevedra.es/articulo/espana/carrera-29-n-directo/202610230930261473449.html"],["Subvenciones de Senado de Progreso (El Español, 23 oct.)","https://www.elespanol.com/espana/20261023/elecciones-generales-directo-ultima-hora-adelanto-electoral-espana-pedro-sanchez-actos-psoe-pp-vox-encuestas-voto-correo-sondeos-2026-partidos-por/1003744431749_10.html"]], sections:[
         {topic:"Listas", items:["Madrid: Pedro Sánchez, Margarita Robles, Félix Bolaños, Pilar Sánchez Acera y Fernando Grande-Marlaska en los cinco primeros puestos.","Jordi Hereu encabeza Barcelona; Óscar Puente y Ana Redondo, en Castilla y León."]},
@@ -178,6 +192,10 @@ const PROGRAMS = {
   VOX: {
     pitch:"Centra su oferta en la «prioridad nacional», la «remigración» y la desregulación, que plantea como condiciones para pactar con el PP. Su último programa completo es el del 23-J.",
     docs:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Cartel y lema de campaña", date:"8–9 nov. 2026", url:"https://www.eldiarioalerta.com/articulo/politica/abascal-lanza-campana-vox-29-n-tres-prioridades-inmigracion-burocracia-acceso-servicios-publicos/20261108123552585942.html", more:[["El Supremo rechaza la petición de Vox sobre la ley de nietos (elDiario.es)","https://www.eldiario.es/politica/supremo-rechaza-peticion-vox-impedir-votar-29n-hijos-nacionalizados-ley-nietos_1_13649698.html"]], sections:[
+        {topic:"Campaña", items:["Lema «Es sentido común», con tres ideas: prioridad nacional, desregulación y remigración.","Abrirá la campaña el 13 de noviembre en la plaza de Colón (Madrid).","Abascal ha confirmado que irá al debate a cuatro de Atresmedia del 23 de noviembre."]},
+        {topic:"Ley de nietos", items:["El Supremo rechaza la petición de Vox e Iustitia Europa de suspender también el voto de unos 190.000 hijos de nacionalizados por la «ley de nietos» (9 nov.)."]}
+      ]},
       {kind:"2026", label:"Últimos anuncios", title:"Precampaña y pacto del Senado", date:"24–26 oct. 2026", url:"https://www.elindependiente.com/espana/2026/10/26/pp-y-vox-llegan-a-un-acuerdo-para-concurrir-juntos-al-senado/", more:[["Mitin de Abascal en Ibiza y propuestas (Vozpópuli)","https://www.vozpopuli.com/espana/politica/elecciones-generales-del-29-n-en-directo-sanchez-feijoo-y-abascal-protagonizan-los-actos-de-campana-este-sabado.html"]], sections:[{topic:"Senado (26 oct.)", items:["Acuerdo con el PP: Vox no presenta lista en Cádiz, Valencia, Castellón, Baleares y Canarias (el PP lleva a un independiente propuesto por Vox) y presenta un solo candidato en otras 14 provincias. En las 23 restantes va con normalidad.","Al Congreso se presenta en solitario en todas las provincias."]},{topic:"Propuestas (24 oct.)", items:["Abascal promete «recuperar Ceuta» y expulsar con rapidez a los delincuentes extranjeros.","Defiende la «prioridad nacional» en las ayudas públicas y endurecer el acceso de los inmigrantes."]},{topic:"Listas", items:["Presenta a sus candidatos el 26 de octubre en Talavera de la Reina. Renueva una veintena de cabezas de lista; quedan fuera, entre otros, Javier Ortega Smith (Madrid)."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Listas y Senado", date:"21–22 oct. 2026", url:"https://www.moncloa.com/2026/10/22/pacto-pp-vox-senado-listas-3453557", sections:[
         {topic:"Senado", items:["Montse Lluís negocia con el PP. La portavoz, Pepa Millán, dice que el acuerdo podría cerrarse el lunes 26 de octubre; Abascal solo comunicará el resultado final."]},
@@ -217,6 +235,10 @@ const PROGRAMS = {
   FA: {
     pitch:"Coalición de IU, Movimiento Sumar, Comuns, Más Madrid, CHA y otros partidos, con Ada Colau como candidata a la Presidencia. Ejes: vivienda, salarios y pensiones. No hubo acuerdo con Podemos. Su último programa es el de Sumar en 2023, cuando aún incluía a Podemos y Compromís.",
     docs:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Lema de campaña y expropiación a fondos", date:"8–9 nov. 2026", url:"https://www.articulo14.es/politica/ada-colau-candidata-de-frente-amplio-para-el-29n-si-de-mi-depende-los-fondos-buitre-seran-expulsados-de-este-pais-20261108.html", more:[["Lema y presupuesto de campaña (Demócrata)","https://www.democrata.es/politica/ampliacion-frente-amplio-hace-de-la-vivienda-su-bandera-y-colau-desplegara-actos-en-una-decena-de-comunidades/"]], sections:[
+        {topic:"Vivienda (Málaga, 8 nov.)", items:["Ley de Expropiación de Viviendas a Propietarios Corporativos Privados: expropiar unas 100.000 viviendas a grandes fondos de inversión. No afectaría a particulares; falta concretar las indemnizaciones."]},
+        {topic:"Campaña", items:["Lema «Un voto como una casa», con la vivienda como eje.","Presupuesto de 1,6 millones de euros y actos de Colau en una decena de comunidades. Quiere disputar escaños a Vox en una quincena de provincias.","Debates: dispuesta a ir a todos; prefiere RTVE pero acepta la Academia de Televisión. Colau ha confirmado el debate a cuatro de Atresmedia del 23."]}
+      ]},
       {kind:"2026", label:"Últimos anuncios", title:"Pensiones y listas", date:"24–26 oct. 2026", url:"https://www.infobae.com/espana/agencias/2026/10/24/frente-amplio-plantea-jubilarse-con-65-anos-y-que-ninguna-pension-baje-del-salario-minimo/", more:[["Listas en todas las provincias salvo Teruel (Demócrata)","https://www.democrata.es/politica/ampliacion-frente-amplio-presentara-listas-al-congreso-en-casi-toda-espana-y-solo-deja-vacante-teruel"]], sections:[{topic:"Pensiones (24 oct.)", items:["Jubilación como máximo a los 65 años.","Ninguna pensión por debajo del salario mínimo (1.221 € al mes).","Lo pagaría con una tributación mínima efectiva para grandes empresas, un impuesto del 2% a patrimonios de más de un millón, eliminar poco a poco el tope de cotización y una aportación de las empresas más automatizadas. Calcula unos 10.000 millones al año por cada medida."]},{topic:"Vivienda", items:["Ada Colau sitúa la regulación del alquiler y la vivienda asequible entre sus prioridades."]},{topic:"Listas", items:["Se presenta al Congreso en 51 de las 52 circunscripciones; no en Teruel, donde CHA retiró la candidatura.","En Baleares, Podemos se suma a la lista de Ara MÉS-Front Ampli."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Portavoz y listas", date:"22 oct. 2026", url:"https://www.libertaddigital.com/espana/politica/2026-10-22/bustinduy-rechazo-liderar-el-frente-amplio-pero-ahora-sera-el-portavoz-de-colau-el-29n-7480327/", sections:[
         {topic:"Campaña", items:["Pablo Bustinduy será el portavoz de campaña. Resume su programa en cuatro ejes: vivienda, salarios, pensiones y servicios públicos.","Juan Ponte (IU) encabeza Asturias. CHA y el Frente Amplio no presentan lista al Congreso por Teruel para no dividir el voto."]}
@@ -251,6 +273,11 @@ const PROGRAMS = {
   POD: {
     pitch:"Irene Montero, elegida en primarias con un 90%, encabeza la lista por Madrid con el lema «Paz, casa, trabajo». No hubo acuerdo con el Frente Amplio: en Cataluña apoya a ERC y va en coalición en la C. Valenciana (Compromís-Front Valencià), en Canarias (Unidad del Pueblo Canario) y en Baleares (Ara MÉS-Front Ampli). En 2023 concurrió dentro de Sumar.",
     docs:[
+      {kind:"2026", label:"Últimos anuncios", isNew:true, title:"Pensiones, gasto militar y debates", date:"6–10 nov. 2026", url:"https://www.democrata.es/politica/irene-montero-propone-jubilarse-a-los-63-anos-y-elevar-las-pensiones-minimas-y-no-contributivas/", more:[["Gasto militar y Repsol (Demócrata)","https://www.democrata.es/politica/irene-montero-propone-desviar-gasto-militar-para-nacionalizar-repsol-reforzar-sanidad-y-lanzar-un-super-publico/"],["Acto con Rufián en Madrid (Demócrata)","https://www.democrata.es/politica/ampliacion-montero-y-rufian-llaman-a-votar-con-memoria-y-conciencia-y-rechazan-el-voto-util-del-psoe-el-psoe-si-puede-te-come/"],["Montero y la Academia de TV (Europa Press)","https://www.diariosigloxxi.com/texto-ep/mostrar/20261110163144/irene-montero-afirma-academia-tv-incluye-podemos-debate-electoral-entre-candidatos"]], sections:[
+        {topic:"Pensiones (6 nov.)", items:["Bajar la edad legal de jubilación a los 63 años.","Subir las pensiones mínimas y las no contributivas."]},
+        {topic:"Gasto público", items:["Pasar los 24.000 millones que, según sus cálculos, ha subido el gasto militar a reforzar la sanidad, nacionalizar Repsol y crear un supermercado público."]},
+        {topic:"Campaña y debates", items:["Acto con Gabriel Rufián (ERC) en Madrid (7 nov.): rechazan el «voto útil» al PSOE.","Pide estar en los debates y acusa al PSOE de bloquearlo. Montero dice que la Academia de Televisión incluye a Podemos y les ha citado a una reunión (10 nov.); el PSOE y el PP aún no lo han confirmado. Atresmedia no la incluye en su debate."]}
+      ]},
       {kind:"2026", label:"Últimos anuncios", title:"Baleares, Senado y acto con ERC", date:"24–25 oct. 2026", url:"https://www.infobae.com/espana/agencias/2026/10/26/pp-y-vox-cierran-un-acuerdo-para-el-senado-mientras-las-izquierdas-ultiman-sus-listas/", more:[["Podemos no se presenta al Senado en la C. Valenciana (Moncloa.com)","https://www.moncloa.com/2026/10/25/podemos-senado-valencia-confluencia-rota-3455097"]], sections:[{topic:"Listas", items:["En Baleares va dentro de Ara MÉS-Front Ampli, con Lucía Muñoz de número tres como independiente.","No presenta listas al Senado en la C. Valenciana.","Primer acto conjunto de Irene Montero con Gabriel Rufián (ERC) en Barcelona."]},{topic:"Igualdad", items:["Montero rechaza que Feijóo suprima el Ministerio de Igualdad y que se informe a los padres del aborto de las menores de 16 y 17 años."]}]},
       {kind:"2026", label:"Últimos anuncios", title:"Debates y Senado", date:"23 oct. 2026", url:"https://www.infobae.com/espana/2026/10/23/elecciones-generales-en-espana-29-n-en-directo-ultima-hora-de-los-sondeos-los-debates-y-las-entrevistas-a-pedro-sanchez-y-feijoo/", sections:[
         {topic:"Debates", items:["Pedirá a la Junta Electoral Central estar en el debate a cuatro y en el de portavoces de RTVE, aunque comparta tiempo con el Frente Amplio."]},
@@ -425,74 +452,74 @@ const MINOR_NOTES = {
 /* ---------- Comparador por temas: [etiqueta, texto] ---------- */
 const TOPICS = [
   {id:"vivienda", name:"Vivienda", rows:{
-    PP:[["2026","Vicepresidencia con «mando único» de vivienda. Suelo para 1 millón de viviendas en 4 años, impuestos de compra un 60% más bajos para jóvenes, avales del 95–100%, derogar la Ley de Vivienda y las zonas tensionadas, y ley antiokupación con desalojo en 48 h."],["2023","Pacto de Estado, avales hasta 35 años y desalojo de okupas en 24 h."]],
+    PP:[["2026","Programa: 1 millón de viviendas, licencias en tres meses con silencio positivo, IVA del 4% en la primera vivienda para menores de 40, avales de hasta el 20% para la entrada, «Hucha Hogar Joven», derogar la Ley de Vivienda y desalojo de okupas en 48 h. Vicepresidencia con «mando único» de vivienda."],["2023","Pacto de Estado, avales hasta 35 años y desalojo de okupas en 24 h."]],
     PSOE:[["2026","Prórroga de alquileres, tope del 2%, sin desahucios de vulnerables hasta 2030, veto a compras especulativas, préstamos de hasta 50.000 € a coste cero para la entrada y deducción del alquiler en la renta."],["2024","Parque público de al menos el 6% y 1,5 millones de viviendas rehabilitadas en 2030."],["2023","183.000 viviendas públicas de alquiler."]],
     VOX:[["2026","Prioridad nacional en vivienda protegida y ayudas, eliminar o rebajar mucho los impuestos de compra y quitar trabas para construir."],["2023","Sin IVA en la primera vivienda, deducción por vivienda y derogar la ley de vivienda y el control de rentas."]],
-    FA:[["2026","Alquiler indefinido, congelación de rentas, moratoria de desahucios y 150.000 viviendas públicas al año."],["2023","2 millones de viviendas sociales en 10 años y alquiler social obligatorio para grandes tenedores."]],
+    FA:[["2026","Alquiler indefinido, congelación de rentas, moratoria de desahucios, 150.000 viviendas públicas al año y expropiar unas 100.000 viviendas a grandes fondos."],["2023","2 millones de viviendas sociales en 10 años y alquiler social obligatorio para grandes tenedores."]],
     POD:[["2026","Bajar por ley el alquiler, prohibir la compra a no residentes y que los fondos cedan la mitad de sus pisos."],["2024","Congelar alquileres y contratos de 10 años."]],
     SALF:[]}},
   {id:"impuestos", name:"Impuestos", rows:{
-    PP:[["2025","Revisar las 97 subidas de impuestos y bajarlos."],["2023","Rebajar el IRPF a rentas de menos de 40.000 €."]],
+    PP:[["2026","Programa: deflactar el IRPF, salario mínimo sin IRPF, IRPF rebajado para jóvenes de 18 a 35 años, IVA del 0% en alimentos básicos, cuota cero el primer año para autónomos y quitar el impuesto del 7% a la generación eléctrica."],["2025","Revisar las 97 subidas de impuestos y bajarlos."],["2023","Rebajar el IRPF a rentas de menos de 40.000 €."]],
     PSOE:[["2024","Reforma fiscal más progresiva, sin competencia a la baja en Patrimonio y Sucesiones; fiscalidad ambiental con bono climático."],["2026","IVA del 10% a pisos turísticos y bonificaciones a inquilinos."]],
     VOX:[["2026","IRPF de dos tramos y menos presión fiscal."],["2023","IRPF de dos tipos (15% y 25%), suprimir Patrimonio, Sucesiones y plusvalía, Sociedades al 15%."]],
     FA:[["2023","Impuesto permanente a grandes fortunas, IRPF del 52% por encima de 300.000 € y herencia universal de 20.000 €."]],
     POD:[["2026","Bajar el coste de la vida interviniendo precios."]],
     SALF:[]}},
   {id:"empleo", name:"Trabajo y salarios", rows:{
-    PP:[["2026","Ampliar el límite de horas extra, que las mutuas puedan dar altas médicas e IRPF bonificado para jóvenes en sus 4 primeros años de trabajo."],["2025","Subir el salario mínimo con acuerdo social y que el subsidio no compita con el empleo."],["voto","Votó contra la jornada de 37,5 h (2025)."]],
+    PP:[["2026","Bonificar al 100% la cotización del primer empleado de un autónomo, ampliar el límite de horas extra, que las mutuas puedan dar altas médicas e IRPF rebajado para jóvenes."],["2025","Subir el salario mínimo con acuerdo social y que el subsidio no compita con el empleo."],["voto","Votó contra la jornada de 37,5 h (2025)."]],
     PSOE:[["2024","Jornada media de 36 h en 2030 y reparto de beneficios en grandes empresas."],["2023","Salario mínimo por ley al 60% del salario medio; paro al 8%."]],
     VOX:[["2023","Derogar la reforma laboral y bonificar el 100% de las cotizaciones el primer año en contratos indefinidos."],["voto","Votó contra la jornada de 37,5 h (2025)."]],
     FA:[["2026","Subir el salario mínimo, reducir la jornada, registro horario y prestación por crianza."],["2023","37,5 h y después 32 h; paro al 7%."]],
     POD:[["2026","Salario mínimo de 1.800 € y jornada hacia 35 h sin bajar sueldos."]],
     SALF:[]}},
   {id:"pensiones", name:"Pensiones y familias", rows:{
-    PP:[["2026","Mantener la subida de las pensiones con el IPC y reactivar el Pacto de Toledo."],["2025","Garantizar la actualización de las pensiones y su viabilidad; apoyo a la natalidad."]],
+    PP:[["2026","Pensiones con el IPC y Pacto de Toledo; el Estado pagaría el 50% de la dependencia; deducción familiar reembolsable cobrada cada mes."],["2025","Garantizar la actualización de las pensiones y su viabilidad; apoyo a la natalidad."]],
     PSOE:[["2023","Pensiones con el IPC por ley y 5.000 millones al año al fondo de reserva; permisos de nacimiento de 20 semanas."]],
     VOX:[["2026","Garantizar su pago y pasar a un modelo mixto de reparto y capitalización."],["2023","Pensiones contributivas sin IRPF y deducción por nacimiento de 1.200 a 2.750 €."]],
     FA:[["2026","Jubilación como máximo a los 65 años y ninguna pensión por debajo del salario mínimo (1.221 €), pagado con impuestos a grandes empresas y patrimonios y quitando el tope de cotización."],["2023","Pensiones mínimas por encima del umbral de pobreza y 200 € al mes por hijo."]],
-    POD:[],
+    POD:[["2026","Jubilación a los 63 años y subir las pensiones mínimas y no contributivas."]],
     SALF:[]}},
   {id:"sanidad", name:"Sanidad y educación", rows:{
-    PP:[["2025","Afrontar la falta de médicos y financiar la ley ELA; ley de lenguas con enseñanza en español."],["2023","Plan de choque de especialistas, 0-3 gratuito y EBAU común."]],
+    PP:[["2026","4.500 médicos más de primaria, ley de paliativos, 0–3 gratis, sustituir la LOMLOE, PAU común y sin redes sociales antes de los 14 años."],["2025","Afrontar la falta de médicos y financiar la ley ELA; ley de lenguas con enseñanza en español."],["2023","Plan de choque de especialistas, 0-3 gratuito y EBAU común."]],
     PSOE:[["2023","Dentista, fisio y psicología en la sanidad pública, plazos máximos por ley, 250.000 plazas de FP y matrícula gratis aprobando a la primera."]],
     VOX:[["2023","Recentralizar sanidad y educación, conciertos para las listas de espera, cheque escolar y derogar las leyes de eutanasia y aborto."]],
     FA:[["2023","Medio punto más de PIB en sanidad al año, dental y psicoterapia públicas, 0-3 gratuito y 7% del PIB en educación."]],
     POD:[],
     SALF:[]}},
   {id:"inmigracion", name:"Inmigración", rows:{
-    PP:[["2026","Visado por puntos y temporal ligado al empleo, cuotas por países que cooperen, fin de las regularizaciones generalizadas y pérdida de residencia por delitos graves."]],
+    PP:[["2026","Autoridad única de inmigración, identificación en 7 días, prohibir por ley las regularizaciones masivas, visado por puntos y cuotas, expulsión por delitos graves y prohibir el burka y el niqab."]],
     PSOE:[["2026","Regularización extraordinaria aprobada en 2026."],["2024","Canales de migración segura y ordenada."]],
     VOX:[["2026","Remigración de quienes «viven de ayudas», prioridad nacional y recurso contra la regularización."],["2023","Repatriar a menores extranjeros y sanidad solo de urgencias para irregulares."]],
     FA:[["2026","Apoya la regularización y rechaza el visado por puntos del PP."]],
     POD:[["2026","A favor de la regularización y en contra del endurecimiento migratorio."]],
     SALF:[["2025","Vincula inmigración e inseguridad, sin medidas concretas."]]}},
   {id:"territorial", name:"Modelo territorial", rows:{
-    PP:[["2026","Ligar la financiación autonómica a la construcción de viviendas."],["2023","Reformar el Código Penal en sedición, malversación y referéndum ilegal."]],
+    PP:[["2026","Nueva financiación autonómica en el Consejo de Política Fiscal y Financiera, sin acuerdos bilaterales; recuperar la sedición y el referéndum ilegal como delitos."],["2023","Reformar el Código Penal en sedición, malversación y referéndum ilegal."]],
     PSOE:[["2024","Más recursos para todas las comunidades, federalizar la Agencia Tributaria y Senado territorial."]],
     VOX:[["2023","Estado unitario, suspender autonomías que atenten contra la unidad e integrar las policías autonómicas."]],
     FA:[["2023","España plurinacional y consulta en Cataluña sobre el acuerdo de la mesa de diálogo."]],
     POD:[],
     SALF:[]}},
   {id:"instituciones", name:"Instituciones y justicia", rows:{
-    PP:[["2025","Cargos por mérito, reformar CGPJ, Constitucional y Fiscalía, y elecciones si no hay Presupuestos."],["2023","Derogar la Ley de Memoria Democrática."]],
+    PP:[["2026","Derogar la amnistía, jueces eligen a 12 vocales del CGPJ, fiscal general con mandato único de 5 años, elecciones tras dos prórrogas presupuestarias, auditar el CIS y reformar RTVE."],["2025","Cargos por mérito, reformar CGPJ, Constitucional y Fiscalía, y elecciones si no hay Presupuestos."],["2023","Derogar la Ley de Memoria Democrática."]],
     PSOE:[["2023","Debates electorales obligatorios y fin de aforamientos no ligados al cargo."],["2024","Voto a los 16 años y blindar derechos en la Constitución."]],
     VOX:[["2023","Suprimir subvenciones a partidos y sindicatos, cerrar televisiones autonómicas y recuperar el delito de sedición."]],
     FA:[["2023","Prohibir las pelotas de goma y castigar las devoluciones en caliente."]],
     POD:[],
     SALF:[["2025","Lucha anticorrupción y reforma del sistema político."]]}},
   {id:"clima", name:"Clima y energía", rows:{
-    PP:[["2025","Plan Nacional del Agua."],["2023","Desbloquear renovables y retirar la intervención en el mercado eléctrico."]],
+    PP:[["2026","Mantener las nucleares (anular el calendario de cierre), plan contra apagones y Pacto Nacional del Agua de hasta 40.000 millones."],["2025","Plan Nacional del Agua."],["2023","Desbloquear renovables y retirar la intervención en el mercado eléctrico."]],
     PSOE:[["2024","80% de electricidad renovable en 2030, desaladoras y bono climático."],["2023","Que los vecinos cobren el 10% de los beneficios de las renovables cercanas."]],
     VOX:[["2023","Contra la prohibición del motor de combustión en 2035 y eliminar los impuestos «verdes»."]],
     FA:[["2023","500.000 empleos verdes."]],
     POD:[["2026","La emergencia climática como uno de sus cinco ejes."]],
     SALF:[]}},
   {id:"defensa", name:"Defensa y exterior", rows:{
-    PP:[["2023","Fuerzas Armadas hasta 140.000 efectivos."],["2025","Posición «firme y fiable» en los compromisos internacionales."]],
+    PP:[["2026","Mantener el apoyo a Ucrania y pedir a la UE un trato de frontera exterior para Ceuta y Melilla."],["2023","Fuerzas Armadas hasta 140.000 efectivos."],["2025","Posición «firme y fiable» en los compromisos internacionales."]],
     PSOE:[["2026","Rechaza el objetivo del 5% del PIB en defensa."],["2024","Más integración europea en defensa, apoyo a Ucrania y dos Estados en Israel y Palestina."]],
     VOX:[["2023","Recuperar Gibraltar, Ceuta y Melilla en la OTAN y más gasto en defensa."]],
     FA:[["2026","Contra aumentar el gasto militar."]],
-    POD:[["2026","«Paz» frente al rearme."]],
+    POD:[["2026","«Paz» frente al rearme: pasar 24.000 millones de gasto militar a sanidad y otros servicios."]],
     SALF:[]}}
 ];
 
@@ -654,6 +681,20 @@ const GROUPS = {
 /* ---------- Encuestas recientes ----------
    d: fecha (fin de campo o publicación según el agregador). seats: escaños publicados por la propia encuestadora. */
 const POLLS = [
+  {firm:"DYM", media:"20minutos", d:"2026-11-10", field:"4–6 nov. · 1.025 · en línea", PP:33.1,PSOE:27.3,VOX:18.6,FA:5.6,POD:1.9,SALF:0.4, seats:"PP (con UPN) 135–139 · PSOE 104–108 · Vox 63–66 · FA 8–10 · Podemos 1–2"},
+  {firm:"SW Demoscopia", media:"La Séptima", d:"2026-11-09", field:"Seguimiento diario 26 oct.–8 nov. · 5.500 · telefónica", PP:28.3,PSOE:31.1,VOX:17.3,FA:7.6,POD:1.7,SALF:2.0, ERC:2.6,JUNTS:1.3,BILDU:1.4,PNV:0.8,BNG:1.0,CC:0.4,UPN:0.2,AA:1.4, seats:"PSOE 128 · PP 114 · Vox 63 · FA con Compromís y UPC 13 · ERC 10 · Bildu 7 · Junts 4 · PNV 3 · AA 3 · UPN-PP 2 · BNG 2 · CC 1"},
+  {firm:"Data10", media:"OKdiario", d:"2026-11-09", field:"2–3 nov. · 1.500", PP:32.4,PSOE:24.7,VOX:19.8,FA:6.9,POD:3.1,SALF:1.5, ERC:2.3,JUNTS:1.5,BILDU:1.3,PNV:0.7,BNG:1.0,CC:0.4,AA:1.3, seats:"PP 134 · PSOE 97 · Vox 69 · FA 14 · ERC 9 · Bildu 7 · Junts 6 · PNV 4 · AA 3 · Podemos 2 · BNG 2 · UPN 2 · CC 1"},
+  {firm:"40dB", media:"El País / SER", d:"2026-11-09", field:"2–4 nov. · 2.000 · en línea", PP:31.9,PSOE:29.9,VOX:18.0,FA:5.0,POD:1.2,SALF:2.0, seats:"PP 124–137 · PSOE 115–123 · Vox 58–64 · FA con Compromís y UPC 7–11 · ERC 10 · Bildu 7 · Junts 3 · PNV 3 · AA 3 · UPN-PP 2 · BNG 2 · CC 1 · Podemos 0–1"},
+  {firm:"GAD3", media:"ABC", d:"2026-11-09", field:"3–5 nov. · 1.502 · telefónica", PP:31.9,PSOE:25.9,VOX:18.6,FA:5.7,POD:1.4,SALF:1.3, CFV:1.5, ERC:2.7,JUNTS:1.4,BILDU:1.5,PNV:0.9,BNG:0.9,CC:0.4,UPN:0,AA:1.6, seats:"PP (con UPN) 136 · PSOE 103 · Vox 63 · ERC 12 · Bildu 8 · FA 7 · Compromís 5 · Junts 5 · PNV 4 · AA 3 · BNG 2 · CC 1 · Podemos 1"},
+  {firm:"NC Report", media:"La Razón", d:"2026-11-09", field:"2–5 nov. · 1.000", PP:33.0,PSOE:25.6,VOX:19.3,FA:6.9,POD:2.4,SALF:null, ERC:2.0,JUNTS:1.8,BILDU:1.4,PNV:0.9,BNG:0.8,CC:0.4,AA:1.2, seats:"PP (con UPN) 138–140 · PSOE 99–101 · Vox 67–69 · FA 9–10 · Junts 8–9 · ERC 7–8 · Bildu 6–7 · PNV 4–5 · AA 2–3 · BNG 2 · CC 1 · Podemos 0–1"},
+  {firm:"Sigma Dos", media:"El Mundo", d:"2026-11-08", field:"30 oct.–6 nov. · 4.172", PP:31.0,PSOE:25.2,VOX:19.4,FA:6.5,POD:1.6,SALF:null, CFV:1.2, ERC:2.9,JUNTS:1.2,BILDU:1.3,PNV:0.9,BNG:1.0,CC:0.4,UPN:0.2,AA:1.6, seats:"PP 131–137 · PSOE 101–106 · Vox 62–70 · FA 9–11 · ERC 8–9 · Bildu 6–8 · Junts 5–6 · PNV 4–6 · Compromís 3–4 · AA 3–4 · BNG 2 · CC 0–1 · UPC 0–1 · Podemos 0"},
+  {firm:"Ateneo del Dato", media:"elDiario.es", d:"2026-11-08", field:"2–5 nov. · 2.000 · en línea", PP:31.5,PSOE:28.6,VOX:18.6,FA:6.1,POD:1.5,SALF:1.7, seats:"PP 123–133 · PSOE 108–116 · Vox 61–69 · FA 9–11"},
+  {firm:"SocioMétrica", media:"El Español", d:"2026-11-08", field:"Acumulado 1 sep.–8 nov. · 5.460 · en línea", PP:32.0,PSOE:27.7,VOX:18.9,FA:4.4,POD:1.2,SALF:2.2, CFV:0.9, ERC:2.4,JUNTS:1.4,BILDU:1.6,PNV:0.8,BNG:1.0,CC:0.5,UPN:0.3,AA:1.7, seats:"PP 134 · PSOE 108 · Vox 66 · ERC 9 · Bildu 8 · Junts 6 · FA 5 · AA 3 · PNV 3 · Compromís 2 · BNG 2 · UPN-PP 2 · CC 1 · Podemos 0"},
+  {firm:"IMOP Insights", media:"El Confidencial", d:"2026-11-08", field:"2–6 nov. · 1.000", PP:29.8,PSOE:25.9,VOX:19.9,FA:8.1,POD:1.2,SALF:1.7, ERC:2.6,JUNTS:1.2,BILDU:1.6,PNV:0.7,BNG:1.3,CC:0.5,UPN:0,AA:1.8, seats:"PP (con UPN) 126 · PSOE 106 · Vox 70 · FA 13 · ERC 11 · Bildu 7 · Junts 4 · PNV 4 · AA 4 · BNG 3 · CC 1 · Podemos 1"},
+  {firm:"Sondaxe", media:"La Voz de Galicia", d:"2026-11-08", field:"2–4 nov. · 1.200", PP:29.7,PSOE:27.3,VOX:18.6,FA:7.1,POD:2.2,SALF:1.6, ERC:2.9,JUNTS:1.4,BILDU:1.5,PNV:0.7,BNG:0.9,CC:0.5,UPN:0,AA:2.3},
+  {firm:"EM-Analytics", media:"Electomanía (ElectoPanel)", d:"2026-11-08", field:"1–6 nov. · 1.860", PP:31.1,PSOE:25.3,VOX:19.2,FA:6.1,POD:1.8,SALF:1.9, ERC:2.2,AA:1.0, seats:"PP 131 · PSOE 108 · Vox 66 · FA 12 · ERC 8 · AA 2 · Podemos 1"},
+  {firm:"Celeste-Tel", media:"Onda Cero", d:"2026-11-06", field:"29 oct.–3 nov. · 1.100 · telefónica", PP:31.4,PSOE:25.7,VOX:19.2,FA:6.8,POD:1.9,SALF:1.6, CFV:1.2, ERC:2.2,JUNTS:1.5,BILDU:1.4,PNV:0.9,BNG:0.8,CC:0.5,UPN:0.4,AA:1.2, seats:"PP 136 · PSOE 101 · Vox 66 · FA 10 · ERC 8 · Bildu 7 · Junts 6 · PNV 4 · Compromís 3 · AA 3 · UPN 2 · BNG 2 · CC 1 · Podemos 1"},
+  {firm:"More in Common", media:"Pulso electoral", d:"2026-11-03", field:"21–25 oct. · 2.210 · en línea", PP:28.3,PSOE:27.6,VOX:20.8,FA:7.8,POD:2.6,SALF:2.4},
   {firm:"Target Point", media:"El Debate", d:"2026-11-02", field:"28–30 oct. · 1.024 · en línea", PP:31.8,PSOE:25.5,VOX:19.9,FA:6.6,POD:2.4,SALF:2.6, seats:"PP (con UPN) 131–135 · PSOE 99–103 · Vox 68–72 · FA (con Compromís y UPC) 9–11 · Podemos 1"},
   {firm:"Hamalgama Métrica", media:"Vozpópuli", d:"2026-11-02", field:"22–28 oct. · 1.000", PP:32.4,PSOE:26.4,VOX:19.9,FA:5.4,POD:2.2,SALF:1.8, ERC:1.9,JUNTS:1.7,BILDU:1.3,PNV:0.9,BNG:0.8,CC:0,UPN:0.2,AA:1.1, seats:"PP+UPN 137 · PSOE 106 · Vox 70 · FA 7 · ERC 7 · Junts 7 · Bildu 7 · PNV 4 · AA 2 · BNG 2 · Podemos 1"},
   {firm:"NC Report", media:"La Razón", d:"2026-11-02", field:"26–29 oct. · 1.000", PP:33.0,PSOE:25.6,VOX:19.3,FA:6.9,POD:2.4,SALF:null, ERC:2.0,JUNTS:1.8,BILDU:1.4,PNV:0.9,BNG:0.8,CC:0.4,AA:1.2, seats:"PP 140–142 · PSOE 100–102 · Vox 66–68 · FA 9–10 · Junts 8–9 · ERC 7–8 · Bildu 6–7 · PNV 4–5 · AA 2–3 · BNG 2 · CC 1 · Podemos 0–1"},
@@ -720,6 +761,7 @@ const TREND = [
  [10,34.1,25.0,18.2,5.3,3.9,null],[10,32.8,28.0,18.8,6.3,3.2,1.8],[10,31.9,28.1,18.9,5.3,2.3,1.8],[10,30.4,26.5,19.0,7.6,2.3,1.9],[10,34.0,28.2,18.2,3.6,2.6,0.5],[10,33.4,25.3,19.6,5.4,3.3,1.8],[10,31.9,25.3,19.1,7.6,3.1,null],[10,32.0,25.9,18.7,6.9,3.4,1.3],[10,32.6,26.2,18.8,5.8,2.8,2.1],[10,31.5,26.9,19.1,6.0,3.4,1.7],[10,31.4,26.4,18.2,7.4,2.3,1.8],[10,28.7,26.1,18.9,8.0,2.6,2.0],[10,31.8,27.1,18.9,6.2,2.0,1.7],[10,31.5,25.3,19.5,8.1,2.8,null],
  [10,28.5,27.1,20.0,8.9,1.9,1.2],[10,30.9,26.7,19.0,7.0,1.7,1.7],[10,31.1,27.6,19.8,6.8,2.7,null],[10,32.1,27.0,18.6,4.6,1.9,null],[10,32.9,25.8,19.0,6.6,2.6,null],[10,30.6,26.1,19.9,8.2,2.8,null],
  [10,29.4,27.1,19.2,5.6,null,null],
+ [11,33.1,27.3,18.6,5.6,1.9,0.4],[11,28.3,31.1,17.3,7.6,1.7,2.0],[11,32.4,24.7,19.8,6.9,3.1,1.5],[11,31.9,29.9,18.0,5.0,1.2,2.0],[11,31.9,25.9,18.6,7.2,1.4,1.3],[11,33.0,25.6,19.3,6.9,2.4,null],[11,31.0,25.2,19.4,7.7,1.6,null],[11,31.5,28.6,18.6,6.1,1.5,1.7],[11,32.0,27.7,18.9,5.3,1.2,2.2],[11,29.8,25.9,19.9,8.1,1.2,1.7],[11,29.7,27.3,18.6,7.1,2.2,1.6],[11,31.1,25.3,19.2,6.1,1.8,1.9],[11,31.4,25.7,19.2,8.0,1.9,1.6],[11,28.3,27.6,20.8,7.8,2.6,2.4],
  [11,31.8,25.5,19.9,6.6,2.4,2.6],[11,32.4,26.4,19.9,5.4,2.2,1.8],[11,33.0,25.6,19.3,6.9,2.4,null],[11,31.1,24.6,19.3,8.0,1.9,null],[11,32.7,26.6,19.1,5.8,1.7,2.5],[11,31.5,25.8,19.2,6.2,1.7,1.6],[11,29.2,26.9,19.2,7.2,2.0,2.4],
 ];
 
@@ -740,18 +782,21 @@ const CALENDAR = [
   {d:"2026-10-27", t:"Los Comuns retiran sus listas al Senado en Girona, Lleida y Tarragona en favor del PSC", k:"hecho"},
   {d:"2026-10-28", t:"El BOE publica las 929 candidaturas presentadas. El Gobierno entrega al Supremo la lista de la «ley de nietos». Accidente ferroviario de Urda (Toledo): los partidos, salvo Vox, suspenden la precampaña", k:"hecho"},
   {d:"2026-10-29", t:"Tres días de luto oficial (29–31 de octubre)", k:"hecho"},
-  {d:"2026-10-31", t:"Empieza el sorteo de los miembros de las mesas electorales (hasta el 4 de noviembre; la notificación llega como tarde el 7)", k:"votante"},
+  {d:"2026-10-31", t:"Sorteo de los miembros de las mesas electorales (31 oct.–4 nov.; la notificación llega como tarde el 7)", k:"hecho"},
   {d:"2026-11-02", t:"Las juntas electorales proclaman las candidaturas. Los partidos retoman la precampaña tras el luto", k:"hecho"},
-  {d:"2026-11-03", t:"El BOE publica las candidaturas proclamadas", k:"hecho"},
-  {d:"2026-11-04", t:"Recursos contra la proclamación de candidaturas (4–5 nov.); amparo ante el Constitucional hasta el 9", k:"plazo"},
-  {d:"2026-11-11", t:"Huelga general por la vivienda convocada por los sindicatos", k:"partidos"},
+  {d:"2026-11-03", t:"El BOE publica las candidaturas proclamadas. Óscar Puente dimite como ministro de Transportes y renuncia a encabezar la lista del PSOE por Valladolid", k:"hecho"},
+  {d:"2026-11-04", t:"Carlos Cuerpo asume Transportes de forma transitoria. Recursos contra la proclamación de candidaturas (4–5 nov.); amparo ante el Constitucional hasta el 9", k:"hecho"},
+  {d:"2026-11-09", t:"El Supremo rechaza suspender el voto de los hijos de los nacionalizados por la «ley de nietos». PSOE y PP aceptan que la Academia de Televisión organice los debates", k:"hecho"},
+  {d:"2026-11-10", t:"Feijóo presenta el programa del PP (249 medidas). El Gobierno aprueba el decreto de familias monoparentales. Funeral en Toledo por las víctimas de Urda", k:"hecho"},
+  {d:"2026-11-11", t:"Huelga general de 24 horas por la vivienda y los salarios (CCOO, UGT, CGT y Sindicato de Inquilinas)", k:"partidos"},
+  {d:"2026-11-12", t:"La Diputación Permanente vota los dos decretos de vivienda", k:"partidos"},
   {d:"2026-11-13", t:"Empieza la campaña electoral (00:00 h)", k:"plazo"},
-  {d:"2026-11-16", t:"Cara a cara Sánchez–Feijóo en Mediaset", k:"debate"},
+  {d:"2026-11-16", t:"Cara a cara Sánchez–Feijóo, que organizaría la Academia de Televisión. Fecha propuesta por el PP; formato y hora sin cerrar", k:"debate"},
   {d:"2026-11-19", t:"Último día para solicitar el voto por correo", k:"votante"},
   {d:"2026-11-23", t:"Último día en que pueden publicarse encuestas", k:"plazo"},
-  {d:"2026-11-23", t:"Debate de portavoces en TVE", k:"debate"},
+  {d:"2026-11-23", t:"Propuestas sin confirmar: debate a cuatro de Atresmedia (han dicho que sí Feijóo, Abascal y Colau; el PSOE, no) y debate de ocho portavoces en RTVE", k:"debate"},
   {d:"2026-11-25", t:"Último día para depositar el voto por correo en Correos", k:"votante"},
-  {d:"2026-11-26", t:"Debate a cuatro, sin confirmar: el PSOE acepta el de RTVE y el PP, el de Atresmedia. Podemos pide estar", k:"debate"},
+  {d:"2026-11-26", t:"Debate de los candidatos (cuatro o cinco) en la Academia de Televisión, sin confirmar. Se discute si entra Podemos", k:"debate"},
   {d:"2026-11-27", t:"Termina la campaña (24:00 h)", k:"plazo"},
   {d:"2026-11-28", t:"Jornada de reflexión", k:"plazo"},
   {d:"2026-11-29", t:"Elecciones generales: Congreso y Senado", k:"votante"},
@@ -760,16 +805,16 @@ const CALENDAR = [
 
 /* ---------- Novedades (Resumen · «Lo último») ---------- */
 const NEWS = [
-  ["3 nov.","El BOE publica las candidaturas proclamadas. Los partidos pueden recurrir el 4 y el 5 de noviembre."],
-  ["2 nov.","Las juntas electorales proclaman las candidaturas. Acaba el luto y los partidos retoman la precampaña."],
-  ["2 nov.","Sánchez anuncia un decreto de ayudas para las víctimas de Urda (anticipos de indemnizaciones, incapacidad temporal y oficinas de atención) para el Consejo de Ministros del 3 de noviembre. Feijóo pide por primera vez la dimisión de Óscar Puente y resume su programa como «reconstrucción nacional»."],
-  ["1–2 nov.","Primeras encuestas tras Urda: el PSOE baja en todas. Sigma Dos lo deja en el 24,6%, su peor dato de la legislatura (97–103 escaños). PP y Vox suman entre 196 y 210 diputados según el sondeo."],
-  ["2 nov.","SocioMétrica estima para el Senado que PP y Vox tienen un 72% de opciones de lograr tres quintos y el PP solo, un 89% de mantener la mayoría absoluta."],
-  ["1 nov.","The Objective publica un sondeo interno de Vox, hecho antes de Urda: PSOE 29,6%, PP 28,1%, Vox 20,2%. Es una encuesta de parte y no entra en la media."],
-  ["31 oct.","Narciso Michavila (GAD3) dice en X que detectan «un cambio abrupto de voto» desde el accidente de Urda y que «ahora es imposible que Sánchez sea el más votado». No publica cifras ni ficha técnica."],
-  ["30 oct.","Óscar Puente, ministro de Transportes y cabeza de lista del PSOE por Valladolid, puso su cargo a disposición de Sánchez por el accidente de Urda; Sánchez rechazó su dimisión. El balance sube a al menos 69 muertos."],
-  ["30 oct.","Sociómetro del Gobierno Vasco: EH Bildu sería primera fuerza en el País Vasco con 7 escaños; el PNV perdería uno en Gipuzkoa, el PSE mantendría 5 y el PP, 2."],
-  ["30 oct.","El Supremo da tres días a las partes para opinar sobre si suspende también el voto de los hijos de los nacionalizados por la «ley de nietos»."],
+  ["10 nov.","El PP presenta su programa, «La reconstrucción nacional»: 249 medidas en 82 páginas (un millón de viviendas, IVA del 4% en la primera vivienda para menores de 40, autoridad única de inmigración, recuperar la sedición, derogar la amnistía). Guarda ocho medidas para la campaña."],
+  ["10 nov.","El Consejo de Ministros aprueba un decreto que crea un título oficial para las familias monoparentales y equipara las que tienen dos hijos a las numerosas."],
+  ["6–10 nov.","Trece encuestas tras la dimisión de Puente (Sigma Dos, GAD3, 40dB., NC Report, DYM, SocioMétrica, IMOP, Data10, Celeste-Tel, Sondaxe, Ateneo del Dato, ElectoPanel y SW Demoscopia). El PSOE recupera algo en varias, pero PP y Vox suman entre 177 y 207 escaños según el sondeo. Solo SW Demoscopia pone al PSOE primero (31,1% frente a 28,3%), y aun así PP, Vox y UPN llegarían a 179. El CIS aún no ha publicado su preelectoral."],
+  ["9 nov.","PSOE y PP aceptan que la Academia de Televisión organice los debates. El PP propone cara a cara el 16 y debate de candidatos el 26; faltan fechas, formato y decidir si entra Podemos. Atresmedia mantiene su debate a cuatro del 23, sin el PSOE."],
+  ["9 nov.","El Supremo rechaza suspender el voto de unos 190.000 hijos de nacionalizados por la «ley de nietos», como pedían Vox e Iustitia Europa. Sigue suspendido el de unos 163.000 nacionalizados que no acreditan descender de exiliados."],
+  ["8 nov.","Vox presenta su cartel con el lema «Es sentido común». El Frente Amplio, el suyo: «Un voto como una casa». Colau propone expropiar viviendas a grandes fondos."],
+  ["6 nov.","Irene Montero (Podemos) propone jubilarse a los 63 años y pasar 24.000 millones de gasto militar a sanidad, a nacionalizar Repsol y a un supermercado público."],
+  ["4 nov.","Carlos Cuerpo, vicepresidente primero, asume Transportes de forma transitoria. Puente seguirá en la papeleta del PSOE por Valladolid porque la lista ya está proclamada; si sale elegido, el acta pasará a la siguiente, Ana Redondo."],
+  ["3 nov.","Óscar Puente dimite como ministro de Transportes tras comparecer por el accidente de Urda (69 muertos) y renuncia a encabezar la lista del PSOE por Valladolid."],
+  ["3 nov.","El BOE publica las candidaturas proclamadas."],
 ];
 
 
@@ -785,7 +830,9 @@ const CONTEXT = [
   ["19–22 oct. 2026","Feijóo presenta su «Contrato con España» y cierra su lista por Madrid. PP y Vox negocian cómo no dividir el voto de la derecha en el Senado."],
   ["26 oct. 2026","Cierre de candidaturas. PP y Vox anuncian un acuerdo para el Senado: Vox se retira en seis provincias y el PP en tres."],
   ["28 oct. 2026","El BOE publica 929 candidaturas. Accidente ferroviario de Urda (Toledo), con al menos 68 muertos: tres días de luto oficial y precampaña suspendida salvo por Vox."],
-  ["1–2 nov. 2026","Primeras encuestas tras Urda: el PSOE cae en todas y PP y Vox amplían su ventaja. Proclamación de candidaturas y fin del luto."]
+  ["1–2 nov. 2026","Primeras encuestas tras Urda: el PSOE cae en todas y PP y Vox amplían su ventaja. Proclamación de candidaturas y fin del luto."],
+  ["3–4 nov. 2026","Óscar Puente dimite como ministro de Transportes y deja la cabeza de lista del PSOE por Valladolid. Carlos Cuerpo asume la cartera."],
+  ["10 nov. 2026","El PP presenta su programa, el primero de los grandes partidos. La campaña empieza el 13."]
 ];
 
 /* ---------- Parlamentos autonómicos (resultado de las últimas elecciones de cada comunidad) ----------
@@ -852,6 +899,34 @@ const PARLIAMENTS = [
 ];
 
 const SOURCES = [
+  ["Encuestas del 6 al 10 de noviembre (Electográfica: GAD3)","https://www.electografica.com/2026/11/encuesta-gad3-261109.html"],
+  ["Sigma Dos, 8 nov. (sigmados.com)","https://www.sigmados.com/noticia?id=Zr7XEKTN9GLN00s"],
+  ["40dB., informe preelectoral de noviembre (PDF)","https://ep00.epimg.net/infografias/encuestas40db/2026/11-preelectoral/2026_11_preelectoral_informe.pdf"],
+  ["NC Report, 9 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-nc-report-261109.html"],
+  ["DYM, 10 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-dym-261110.html"],
+  ["Data10, 9 nov. (OKdiario)","https://okdiario.com/espana/psoe-paga-tragedia-urda-hunde-hasta-97-escanos-mientras-pp-vox-suman-203-20728358"],
+  ["SocioMétrica, 8 nov. (El Español)","https://www.elespanol.com/espana/politica/20261108/pp-vox-suman-escanos-sanchez-recupera-perdio-urda-dimision-puente-sondeo-noche/1003744450645_0.html"],
+  ["IMOP Insights, 8 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-imop-insights-261108.html"],
+  ["Ateneo del Dato, 8 nov. (elDiario.es)","https://www.eldiario.es/politica/psoe-crece-dimision-oscar-puente-pp-vox-mantienen-mayoria-absoluta_1_13643551.html"],
+  ["Sondaxe, 8 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-sondaxe-261108.html"],
+  ["ElectoPanel, 8 nov. (Electomanía)","https://electomania.es/electopanel-8-nov-el-bipartidismo-cede-terreno-vox-sube-en-escanos-y-eh-bildu-se-distancia-del-pnv/"],
+  ["Celeste-Tel, barómetro del 4 nov. (PDF)","https://www.celeste-tel.es/wp-content/uploads/2026/11/Bar%C3%B3metro-Electoral-Elecciones-29-N-4-Noviembre-2026-1.pdf"],
+  ["SW Demoscopia, seguimiento del 9 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-sw-demoscopia-261109.html"],
+  ["More in Common, pulso de octubre (Electográfica)","https://www.electografica.com/2026/11/encuesta-more-in-common-261103.html"],
+  ["Programa del PP «La reconstrucción nacional» (PDF publicado por Demócrata)","https://www.democrata.es/uploads/s1/35/09/79/8/la-reconstruccion-nacional.pdf"],
+  ["El PP presenta su programa (Infobae, 10 nov.)","https://www.infobae.com/espana/2026/11/10/el-pp-presenta-su-programa-electoral-para-concurrir-al-29-n-el-proyecto-no-tiene-unicornios-dice-la-verdad/"],
+  ["Dimisión de Óscar Puente (The Objective, 3 nov.)","https://theobjective.com/espana/politica/2026-11-03/oscar-puente-crisis-ferroviaria/"],
+  ["Puente seguirá en la papeleta de Valladolid (El Debate/EFE)","https://www.eldebate.com/espana/20261103/puente-figurara-como-numero-papeleta-psoe-valladolid-pese-renuncia_476934.html"],
+  ["Carlos Cuerpo asume Transportes (El Plural)","https://www.elplural.com/politica/espana/sanchez-despide-emotivamente-puente-nombra-carlos-cuerpo-nuevo-ministro-transportes_803181102"],
+  ["Debates: la Academia de TV acepta organizarlos (elDiario.es, 10 nov.)","https://www.eldiario.es/vertele/noticias/academia-tv-acepta-organizar-debates-electorales-29n-veto-feijoo-rtve_1_13651287.html"],
+  ["El PP acepta la Academia de TV: fechas propuestas (Moncloa.com)","https://www.moncloa.com/2026/11/09/debates-electorales-29n-academia-television-3464779"],
+  ["Supremo y voto de los hijos de nacionalizados por la ley de nietos (elDiario.es)","https://www.eldiario.es/politica/supremo-rechaza-peticion-vox-impedir-votar-29n-hijos-nacionalizados-ley-nietos_1_13649698.html"],
+  ["Decretos de vivienda: votación el 12 de noviembre (idealista)","https://www.idealista.com/news/inmobiliario/vivienda/2026/11/05/922768-la-diputacion-permantente-votara-el-12-de-noviembre-los-decretos-de-vivienda-del"],
+  ["Decreto de familias monoparentales (Deia, 10 nov.)","https://www.deia.eus/politica/2026/11/10/consejo-ministros-aprueba-decreto-ley-11740535.html"],
+  ["Huelga general del 11 de noviembre (Infobae)","https://www.infobae.com/espana/2026/11/05/huelga-general-del-11-de-noviembre-estos-son-los-horarios-servicios-minimos-y-sectores-afectados/"],
+  ["Cartel y lema de Vox (El Diario Alerta)","https://www.eldiarioalerta.com/articulo/politica/abascal-lanza-campana-vox-29-n-tres-prioridades-inmigracion-burocracia-acceso-servicios-publicos/20261108123552585942.html"],
+  ["Colau propone expropiar viviendas a fondos (Artículo14)","https://www.articulo14.es/politica/ada-colau-candidata-de-frente-amplio-para-el-29n-si-de-mi-depende-los-fondos-buitre-seran-expulsados-de-este-pais-20261108.html"],
+  ["Montero propone jubilarse a los 63 (Demócrata)","https://www.democrata.es/politica/irene-montero-propone-jubilarse-a-los-63-anos-y-elevar-las-pensiones-minimas-y-no-contributivas/"],
   ["Encuestas del 1 y 2 de noviembre (Electográfica: Sigma Dos)","https://www.electografica.com/2026/11/encuesta-sigmados-261101.html"],
   ["SocioMétrica, 1 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-sociometrica-261101.html"],
   ["Target Point, 2 nov. (Electográfica)","https://www.electografica.com/2026/11/encuesta-target-point-261102.html"],
